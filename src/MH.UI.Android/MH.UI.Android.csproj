@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0-android</TargetFramework>
+    <Nullable>enable</Nullable>
+    <Authors>Martin Holý</Authors>
+    <Copyright>Martin Holý</Copyright>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Xamarin.AndroidX.RecyclerView" Version="1.3.2.10" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\MH.UI\src\MH.UI\MH.UI.csproj" />
+    <ProjectReference Include="..\..\..\MH.Utils\src\MH.Utils\MH.Utils.csproj" />
+  </ItemGroup>
+
+</Project>
