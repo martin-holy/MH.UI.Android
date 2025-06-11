@@ -1,0 +1,5 @@
+﻿<?xml version="1.0" encoding="utf-8" ?> 
+<selector xmlns:a="http://schemas.android.com/apk/res/android">
+  <item a:state_selected="true" a:drawable="@drawable/tree_item_expanded_true"/>
+  <item a:drawable="@drawable/tree_item_expanded_false"/>
+</selector>
