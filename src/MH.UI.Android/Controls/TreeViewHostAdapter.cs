@@ -2,16 +2,31 @@
 using Android.OS;
 using Android.Views;
 using AndroidX.RecyclerView.Widget;
+using MH.Utils;
 using MH.Utils.BaseClasses;
+using MH.Utils.Extensions;
+using MH.Utils.Interfaces;
 using System.Collections;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
+using System.ComponentModel;
 using System.Linq;
 
 namespace MH.UI.Android.Controls;
 
-public class TreeViewHostAdapter(Context context) : RecyclerView.Adapter {
-  private readonly Context _context = context;
+public class TreeViewHostAdapter : RecyclerView.Adapter {
+  private readonly Context _context;
+  private readonly ObservableCollection<ITreeItem> _treeItems;
   private object[] _items = [];
   private readonly Handler _handler = new(Looper.MainLooper);
+
+  public TreeViewHostAdapter(Context context, ObservableCollection<ITreeItem> treeItems) {
+    _context = context;
+    _treeItems = treeItems;
+    _treeItems.CollectionChanged += _onTreeItemsChanged;
+    _setItemsSource();
+  }
 
   public override int ItemCount => _items.Length;
 
@@ -26,5 +41,30 @@ public class TreeViewHostAdapter(Context context) : RecyclerView.Adapter {
   public void UpdateItems(IEnumerable? newItems) {
     _items = newItems == null ? [] : [.. newItems.Cast<object>()];
     _handler.Post(NotifyDataSetChanged);
+  }
+
+  private void _onTreeItemsChanged(object? sender, NotifyCollectionChangedEventArgs e) =>
+    _setItemsSource();
+
+  private void _setItemsSource() {
+    var newFlatItems = Tree.ToFlatTreeItems(_treeItems);
+    _updateTreeItemSubscriptions(_items as IEnumerable<FlatTreeItem>, newFlatItems);
+    UpdateItems(newFlatItems);
+  }
+
+  private void _updateTreeItemSubscriptions(IEnumerable<FlatTreeItem>? oldItems, IEnumerable<FlatTreeItem>? newItems) {
+    var o = oldItems?.Except(newItems ?? []).ToArray() ?? [];
+    var n = newItems?.Except(oldItems ?? []).ToArray() ?? [];
+
+    foreach (var item in o)
+      item.TreeItem.PropertyChanged -= _onTreeItemPropertyChanged;
+
+    foreach (var item in n)
+      item.TreeItem.PropertyChanged += _onTreeItemPropertyChanged;
+  }
+
+  private void _onTreeItemPropertyChanged(object? sender, PropertyChangedEventArgs e) {
+    if (e.Is(nameof(TreeItem.IsExpanded)))
+      _setItemsSource();
   }
 }
