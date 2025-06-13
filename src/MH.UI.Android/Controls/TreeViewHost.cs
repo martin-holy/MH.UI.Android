@@ -8,7 +8,7 @@ using MH.UI.Controls;
 
 namespace MH.UI.Android.Controls;
 
-public class TreeViewHost : FrameLayout {
+public class TreeViewHost : RelativeLayout {
   private RecyclerView _recyclerView;
   private TreeViewHostAdapter _adapter;
   private TreeView _viewModel;
