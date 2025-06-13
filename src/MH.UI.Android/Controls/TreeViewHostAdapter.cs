@@ -16,9 +16,9 @@ using System.Linq;
 namespace MH.UI.Android.Controls;
 
 public class TreeViewHostAdapter : RecyclerView.Adapter {
-  private readonly Context _context;
+  protected readonly Context _context;
   private readonly ObservableCollection<ITreeItem> _treeItems;
-  private object[] _items = [];
+  protected object[] _items = [];
   private readonly Handler _handler = new(Looper.MainLooper);
 
   public TreeViewHostAdapter(Context context, ObservableCollection<ITreeItem> treeItems) {
