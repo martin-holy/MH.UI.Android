@@ -2,13 +2,12 @@
 using Android.OS;
 using Android.Views;
 using AndroidX.RecyclerView.Widget;
+using MH.UI.Controls;
 using MH.Utils;
 using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
-using MH.Utils.Interfaces;
 using System.Collections;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
@@ -17,14 +16,14 @@ namespace MH.UI.Android.Controls;
 
 public class TreeViewHostAdapter : RecyclerView.Adapter {
   protected readonly Context _context;
-  private readonly ObservableCollection<ITreeItem> _treeItems;
+  protected readonly TreeView _viewModel;
   protected object[] _items = [];
   private readonly Handler _handler = new(Looper.MainLooper);
 
-  public TreeViewHostAdapter(Context context, ObservableCollection<ITreeItem> treeItems) {
+  public TreeViewHostAdapter(Context context, TreeView viewModel) {
     _context = context;
-    _treeItems = treeItems;
-    _treeItems.CollectionChanged += _onTreeItemsChanged;
+    _viewModel = viewModel;
+    _viewModel.RootHolder.CollectionChanged += _onTreeItemsChanged;
     _setItemsSource();
   }
 
@@ -32,7 +31,7 @@ public class TreeViewHostAdapter : RecyclerView.Adapter {
 
   public override RecyclerView.ViewHolder OnCreateViewHolder(ViewGroup parent, int viewType) {
     var view = LayoutInflater.From(_context)?.Inflate(Resource.Layout.flat_tree_item, parent, false);
-    return new TreeViewHostViewHolder(view);
+    return new TreeViewHostViewHolder(view, _viewModel);
   }
 
   public override void OnBindViewHolder(RecyclerView.ViewHolder holder, int position) =>
@@ -47,7 +46,7 @@ public class TreeViewHostAdapter : RecyclerView.Adapter {
     _setItemsSource();
 
   private void _setItemsSource() {
-    var newFlatItems = Tree.ToFlatTreeItems(_treeItems);
+    var newFlatItems = Tree.ToFlatTreeItems(_viewModel.RootHolder);
     _updateTreeItemSubscriptions(_items as IEnumerable<FlatTreeItem>, newFlatItems);
     UpdateItems(newFlatItems);
   }

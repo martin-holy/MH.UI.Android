@@ -21,7 +21,7 @@ public class TreeViewHost : RelativeLayout {
 
   private void _initialize(Context context, TreeView viewModel) {
     LayoutInflater.From(context).Inflate(Resource.Layout.tree_view_host, this, true);
-    _adapter = new TreeViewHostAdapter(Context, viewModel.RootHolder);
+    _adapter = new TreeViewHostAdapter(Context, viewModel);
     _recyclerView = FindViewById<RecyclerView>(Resource.Id.tree_recycler_view);
     _recyclerView.SetLayoutManager(new LinearLayoutManager(context));
     _recyclerView.SetAdapter(_adapter);

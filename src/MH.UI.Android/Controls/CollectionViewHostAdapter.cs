@@ -1,14 +1,14 @@
 ﻿using Android.Content;
 using Android.Views;
 using AndroidX.RecyclerView.Widget;
+using MH.UI.Controls;
 using MH.UI.Interfaces;
 using MH.Utils.BaseClasses;
-using MH.Utils.Interfaces;
-using System.Collections.ObjectModel;
 
 namespace MH.UI.Android.Controls;
 
-public class CollectionViewHostAdapter(Context context, ObservableCollection<ITreeItem> treeItems) : TreeViewHostAdapter(context, treeItems) {
+// TODO viewModel prop
+public class CollectionViewHostAdapter(Context context, CollectionView viewModel) : TreeViewHostAdapter(context, viewModel) {
   public override int GetItemViewType(int position) =>
     _items[position] is FlatTreeItem { TreeItem: ICollectionViewGroup } ? 0 : 1;
 
