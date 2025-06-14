@@ -5,7 +5,10 @@
   a:layout_height="wrap_content"
   a:orientation="horizontal"
   a:padding="4dp"
-  a:gravity="center_vertical">
+  a:gravity="center_vertical"
+  a:clickable="true"
+  a:focusable="true"
+  a:background="@color/c_static_ba">
   
   <ImageView
     a:id="@+id/expanded_icon"
