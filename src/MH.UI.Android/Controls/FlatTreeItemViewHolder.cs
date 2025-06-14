@@ -7,7 +7,7 @@ using MH.Utils.BaseClasses;
 
 namespace MH.UI.Android.Controls;
 
-public class TreeViewHostViewHolder(View itemView, TreeView parent) : RecyclerView.ViewHolder(itemView) {
+public class FlatTreeItemViewHolder(View itemView, TreeView parent) : RecyclerView.ViewHolder(itemView) {
   private readonly TreeView _parent = parent;
   private readonly LinearLayout _container = (LinearLayout)itemView;  
   private readonly ImageView _expandedIcon = itemView.FindViewById<ImageView>(Resource.Id.expanded_icon)!;

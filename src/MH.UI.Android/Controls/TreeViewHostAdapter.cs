@@ -31,11 +31,11 @@ public class TreeViewHostAdapter : RecyclerView.Adapter {
 
   public override RecyclerView.ViewHolder OnCreateViewHolder(ViewGroup parent, int viewType) {
     var view = LayoutInflater.From(_context)?.Inflate(Resource.Layout.flat_tree_item, parent, false);
-    return new TreeViewHostViewHolder(view, _viewModel);
+    return new FlatTreeItemViewHolder(view, _viewModel);
   }
 
   public override void OnBindViewHolder(RecyclerView.ViewHolder holder, int position) =>
-    ((TreeViewHostViewHolder)holder).Bind(_items[position] as FlatTreeItem);
+    ((FlatTreeItemViewHolder)holder).Bind(_items[position] as FlatTreeItem);
 
   public void UpdateItems(IEnumerable? newItems) {
     _items = newItems == null ? [] : [.. newItems.Cast<object>()];
