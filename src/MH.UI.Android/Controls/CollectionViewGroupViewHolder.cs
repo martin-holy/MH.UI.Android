@@ -2,6 +2,7 @@
 using Android.Widget;
 using AndroidX.RecyclerView.Widget;
 using MH.UI.Android.Utils;
+using MH.UI.Interfaces;
 using MH.Utils.BaseClasses;
 
 namespace MH.UI.Android.Controls;
@@ -17,6 +18,10 @@ public class CollectionViewGroupViewHolder(View itemView) : RecyclerView.ViewHol
   public void Bind(FlatTreeItem? item) {
     Item = item;
     if (item == null) return;
+
+    // TODO do it on _container size changed
+    if (item.TreeItem is ICollectionViewGroup group)
+      group.Width = _container.Width;
 
     int indent = item.Level * _container.Resources?.GetDimensionPixelSize(Resource.Dimension.flat_tree_item_indent_size) ?? 32;
     _container.SetPadding(indent, _container.PaddingTop, _container.PaddingRight, _container.PaddingBottom);
