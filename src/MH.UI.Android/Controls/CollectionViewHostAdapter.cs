@@ -13,12 +13,12 @@ public class CollectionViewHostAdapter(Context context, CollectionView viewModel
     _items[position] is FlatTreeItem { TreeItem: ICollectionViewGroup } ? 0 : 1;
 
   public override RecyclerView.ViewHolder OnCreateViewHolder(ViewGroup parent, int viewType) {
-    var inflater = LayoutInflater.From(_context);
+    var inflater = LayoutInflater.From(_context)!;
 
     if (viewType == 0)
-      return new CollectionViewGroupViewHolder(inflater.Inflate(Resource.Layout.collection_view_group, parent, false));
+      return new CollectionViewGroupViewHolder(inflater.Inflate(Resource.Layout.collection_view_group, parent, false)!);
     else
-      return new CollectionViewRowViewHolder(inflater.Inflate(Resource.Layout.collection_view_row, parent, false));
+      return new CollectionViewRowViewHolder(inflater.Inflate(Resource.Layout.collection_view_row, parent, false)!);
   }
 
   public override void OnBindViewHolder(RecyclerView.ViewHolder holder, int position) {
