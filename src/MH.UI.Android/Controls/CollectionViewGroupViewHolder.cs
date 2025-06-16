@@ -7,11 +7,23 @@ using MH.Utils.BaseClasses;
 
 namespace MH.UI.Android.Controls;
 
-public class CollectionViewGroupViewHolder(View itemView) : RecyclerView.ViewHolder(itemView) {
-  private readonly LinearLayout _container = (LinearLayout)itemView;  
-  private readonly ImageView _expandedIcon = itemView.FindViewById<ImageView>(Resource.Id.expanded_icon)!;
-  private readonly ImageView _icon = itemView.FindViewById<ImageView>(Resource.Id.icon)!;
-  private readonly TextView _name = itemView.FindViewById<TextView>(Resource.Id.name)!;
+public class CollectionViewGroupViewHolder : RecyclerView.ViewHolder {
+  private readonly LinearLayout _container;
+  private readonly ImageView _expandedIcon;
+  private readonly ImageView _icon;
+  private readonly TextView _name;
+  private readonly ViewGroup _visualParent;
+
+  public CollectionViewGroupViewHolder(View itemView, ViewGroup visualParent) : base(itemView) {
+    _visualParent = visualParent;
+    _container = (LinearLayout)itemView;
+
+    _expandedIcon = itemView.FindViewById<ImageView>(Resource.Id.expanded_icon)!;
+    _expandedIcon.Click += _onExpandedChanged;
+
+    _icon = itemView.FindViewById<ImageView>(Resource.Id.icon)!;
+    _name = itemView.FindViewById<TextView>(Resource.Id.name)!;
+  }
 
   public FlatTreeItem? Item { get; private set; }
 
@@ -19,17 +31,14 @@ public class CollectionViewGroupViewHolder(View itemView) : RecyclerView.ViewHol
     Item = item;
     if (item == null) return;
 
-    // TODO do it on _container size changed
     if (item.TreeItem is ICollectionViewGroup group)
-      group.Width = _container.Width;
+      group.Width = _visualParent.Width;
 
     int indent = item.Level * _container.Resources?.GetDimensionPixelSize(Resource.Dimension.flat_tree_item_indent_size) ?? 32;
     _container.SetPadding(indent, _container.PaddingTop, _container.PaddingRight, _container.PaddingBottom);
 
     _expandedIcon.Visibility = item.TreeItem.Items.Count > 0 ? ViewStates.Visible : ViewStates.Invisible;
     _expandedIcon.Selected = item.TreeItem.IsExpanded;
-    _expandedIcon.Click -= _onExpandedChanged; // Prevent multiple handlers
-    _expandedIcon.Click += _onExpandedChanged;
 
     _icon.SetImageDrawable(Icons.GetIcon(_container.Context, item.TreeItem.Icon));
 

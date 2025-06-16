@@ -16,7 +16,7 @@ public class CollectionViewHostAdapter(Context context, CollectionView viewModel
     var inflater = LayoutInflater.From(_context)!;
 
     if (viewType == 0)
-      return new CollectionViewGroupViewHolder(inflater.Inflate(Resource.Layout.collection_view_group, parent, false)!);
+      return new CollectionViewGroupViewHolder(inflater.Inflate(Resource.Layout.collection_view_group, parent, false)!, parent);
     else
       return new CollectionViewRowViewHolder(inflater.Inflate(Resource.Layout.collection_view_row, parent, false)!);
   }
