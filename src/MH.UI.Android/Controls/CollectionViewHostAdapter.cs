@@ -1,14 +1,14 @@
 ﻿using Android.Content;
 using Android.Views;
 using AndroidX.RecyclerView.Widget;
-using MH.UI.Controls;
 using MH.UI.Interfaces;
 using MH.Utils.BaseClasses;
 
 namespace MH.UI.Android.Controls;
 
-// TODO viewModel prop
-public class CollectionViewHostAdapter(Context context, CollectionView viewModel) : TreeViewHostAdapter(context, viewModel) {
+public class CollectionViewHostAdapter(Context context, CollectionViewHost host) : TreeViewHostAdapter(context, host.ViewModel) {
+  private readonly CollectionViewHost _host = host;
+
   public override int GetItemViewType(int position) =>
     _items[position] is FlatTreeItem { TreeItem: ICollectionViewGroup } ? 0 : 1;
 
@@ -18,7 +18,7 @@ public class CollectionViewHostAdapter(Context context, CollectionView viewModel
     if (viewType == 0)
       return new CollectionViewGroupViewHolder(inflater.Inflate(Resource.Layout.collection_view_group, parent, false)!, parent);
     else
-      return new CollectionViewRowViewHolder(inflater.Inflate(Resource.Layout.collection_view_row, parent, false)!);
+      return new CollectionViewRowViewHolder(inflater.Inflate(Resource.Layout.collection_view_row, parent, false)!, _host);
   }
 
   public override void OnBindViewHolder(RecyclerView.ViewHolder holder, int position) {

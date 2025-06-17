@@ -5,6 +5,8 @@ using Android.Views;
 using Android.Widget;
 using AndroidX.RecyclerView.Widget;
 using MH.UI.Controls;
+using MH.UI.Interfaces;
+using System;
 
 namespace MH.UI.Android.Controls;
 
@@ -17,10 +19,13 @@ public class CollectionViewHost : RelativeLayout {
     get => _viewModel;
     set {
       _viewModel = value;
-      _adapter = new CollectionViewHostAdapter(Context!, _viewModel);
+      _adapter = new CollectionViewHostAdapter(Context!, this);
       _recyclerView.SetAdapter(_adapter);
     }
   }
+
+  public Func<LinearLayout, ICollectionViewGroup, object?, View?> GetItemView { get; set; } =
+    (container, group, item) => throw new NotImplementedException();
 
   public CollectionViewHost(Context context) : base(context) => _initialize(context);
   public CollectionViewHost(Context context, IAttributeSet attrs) : base(context, attrs) => _initialize(context);

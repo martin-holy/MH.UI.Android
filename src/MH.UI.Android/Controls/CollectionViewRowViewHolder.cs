@@ -1,12 +1,25 @@
 ﻿using Android.Views;
+using Android.Widget;
 using AndroidX.RecyclerView.Widget;
+using MH.UI.Interfaces;
 using MH.Utils.BaseClasses;
+using MH.Utils.Interfaces;
 
 namespace MH.UI.Android.Controls;
 
-// TODO no no, no need for RecyclerView. all items will be visible
-public class CollectionViewRowViewHolder(View itemView) : RecyclerView.ViewHolder(itemView) {
-  public void Bind(FlatTreeItem? item) {
+public class CollectionViewRowViewHolder(View itemView, CollectionViewHost host) : RecyclerView.ViewHolder(itemView) {
+  private readonly CollectionViewHost _host = host;
+  private readonly LinearLayout _container = itemView.FindViewById<LinearLayout>(Resource.Id.row_container)!;
 
+  public FlatTreeItem? Item { get; private set; }
+
+  public void Bind(FlatTreeItem? item) {
+    Item = item;
+    _container.RemoveAllViews();
+
+    if (item?.TreeItem is not ICollectionViewRow row || row is not ITreeItem { Parent: ICollectionViewGroup group }) return;
+
+    foreach (var rowItem in row.Leaves)
+      _container.AddView(_host.GetItemView(_container, group, rowItem));
   }
 }

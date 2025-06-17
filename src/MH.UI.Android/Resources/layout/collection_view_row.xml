@@ -1,18 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
   xmlns:a="http://schemas.android.com/apk/res/android"
+  a:id="@+id/row_container"
   a:layout_width="match_parent"
   a:layout_height="wrap_content"
   a:orientation="horizontal"
   a:padding="4dp"
   a:gravity="center_vertical">
-  
-  <TextView
-    a:id="@+id/name"
-    a:layout_width="wrap_content"
-    a:layout_height="wrap_content"
-    a:layout_marginStart="8dp"
-    a:textColor="@color/c_static_fo"
-    a:layout_gravity="center_vertical"
-    a:text="row"/>
 </LinearLayout>
