@@ -2,17 +2,16 @@
 using Android.Graphics;
 using Android.Graphics.Drawables;
 using AndroidX.Core.Content;
+using MH.Utils.Extensions;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace MH.UI.Android.Utils;
 
 public static class Icons {
   public static Color DefaultColor { get; set; } = Color.Gray;
   public static Dictionary<object, object>? IconNameToColor { get; set; }
-  public static Func<string, string> ConvertIconName { get; set; } = (iconName) =>
-    string.Concat(iconName.Select((c, i) => char.IsUpper(c) ? i == 0 ? c.ToString().ToLower() : "_" + char.ToLower(c) : c.ToString()));
+  public static Func<string, string> ConvertIconName { get; set; } = (iconName) => iconName.ToSnakeCase();
 
   public static Drawable? GetIcon(Context? context, string? iconName, Dictionary<object, object>? iconNameToColor = null) {
     if (context == null || context.Resources == null || iconName == null) return null;
