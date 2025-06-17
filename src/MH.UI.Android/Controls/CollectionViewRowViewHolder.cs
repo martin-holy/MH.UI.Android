@@ -19,7 +19,9 @@ public class CollectionViewRowViewHolder(View itemView, CollectionViewHost host)
 
     if (item?.TreeItem is not ICollectionViewRow row || row is not ITreeItem { Parent: ICollectionViewGroup group }) return;
 
-    foreach (var rowItem in row.Leaves)
-      _container.AddView(_host.GetItemView(_container, group, rowItem));
+    foreach (var rowItem in row.Leaves) {
+      if (_host.GetItemView(_container, group, rowItem) is not { } view) continue;
+      _container.AddView(view);
+    }
   }
 }
