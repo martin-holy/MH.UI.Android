@@ -1,5 +1,4 @@
 ﻿using Android.Content;
-using Android.OS;
 using Android.Views;
 using AndroidX.RecyclerView.Widget;
 using MH.UI.Controls;
@@ -18,7 +17,6 @@ public class TreeViewHostAdapter : RecyclerView.Adapter {
   protected readonly Context _context;
   protected readonly TreeView _viewModel;
   protected object[] _items = [];
-  private readonly Handler _handler = new(Looper.MainLooper);
 
   public TreeViewHostAdapter(Context context, TreeView viewModel) {
     _context = context;
@@ -39,7 +37,7 @@ public class TreeViewHostAdapter : RecyclerView.Adapter {
 
   public void UpdateItems(IEnumerable? newItems) {
     _items = newItems == null ? [] : [.. newItems.Cast<object>()];
-    _handler.Post(NotifyDataSetChanged);
+    Tasks.Dispatch(NotifyDataSetChanged);
   }
 
   private void _onTreeItemsChanged(object? sender, NotifyCollectionChangedEventArgs e) =>
