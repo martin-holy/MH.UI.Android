@@ -22,7 +22,7 @@ public class CollectionViewHostAdapter(Context context, CollectionViewHost host)
   }
 
   public override void OnBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-    var item = _items[position] as FlatTreeItem;
+    var item = _items[position];
 
     if (holder is CollectionViewGroupViewHolder groupHolder)
       groupHolder.Bind(item);
