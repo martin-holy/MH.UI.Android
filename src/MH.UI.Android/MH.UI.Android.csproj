@@ -4,7 +4,6 @@
     <TargetFramework>net9.0-android</TargetFramework>
     <Nullable>enable</Nullable>
     <ApplicationId>cz.martinholy.mh.ui.android</ApplicationId>
-    <IsLibrary>true</IsLibrary>
     <Authors>Martin Holý</Authors>
     <Copyright>Martin Holý</Copyright>
   </PropertyGroup>
