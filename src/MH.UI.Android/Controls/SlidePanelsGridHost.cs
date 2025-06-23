@@ -15,11 +15,11 @@ public class SlidePanelsGridHost : LinearLayout {
   private LinearLayout _bottomPanel;
   private Func<int, View>? _panelFactory;
 
-  public SlidePanelsGridHost(Context context) : base(context) => Initialize(context, null);
-  public SlidePanelsGridHost(Context context, IAttributeSet attrs) : base(context, attrs) => Initialize(context, attrs);
-  protected SlidePanelsGridHost(nint javaReference, JniHandleOwnership transfer) : base(javaReference, transfer) => Initialize(Context!, null);
+  public SlidePanelsGridHost(Context context) : base(context) => _initialize(context, null);
+  public SlidePanelsGridHost(Context context, IAttributeSet attrs) : base(context, attrs) => _initialize(context, attrs);
+  protected SlidePanelsGridHost(nint javaReference, JniHandleOwnership transfer) : base(javaReference, transfer) => _initialize(Context!, null);
 
-  private void Initialize(Context context, IAttributeSet? attrs) {
+  private void _initialize(Context context, IAttributeSet? attrs) {
     Orientation = Orientation.Vertical;
     SetBackgroundResource(Resource.Color.c_static_ba);
 
