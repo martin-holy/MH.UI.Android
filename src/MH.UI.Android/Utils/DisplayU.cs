@@ -8,4 +8,6 @@ public class DisplayU {
   public static void Init(DisplayMetrics displayMetrics) {
     Metrics = displayMetrics;
   }
+
+  public static int GetDP(int px) => (int)(px * Metrics.Density);
 }
