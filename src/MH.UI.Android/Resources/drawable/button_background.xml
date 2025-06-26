@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:a="http://schemas.android.com/apk/res/android">
+  <item a:state_pressed="true">
+    <shape>
+      <solid a:color="@color/c_accent2"/>
+      <stroke a:width="1dp" a:color="@color/c_accent9"/>
+    </shape>
+  </item>
+  <item>
+    <shape>
+      <solid a:color="@color/c_static_ba"/>
+    </shape>
+  </item>
+</selector>
