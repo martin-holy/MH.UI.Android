@@ -46,7 +46,7 @@ public class ButtonMenu : LinearLayout {
       ScrollBarStyle = ScrollbarStyles.OutsideOverlay,
       Divider = null,
       DividerHeight = 0,
-      Adapter = new CustomMenuAdapter(context, [.. root.Items.Cast<MenuItem>()], parent)
+      Adapter = new ButtonMenuAdapter(context, [.. root.Items.Cast<MenuItem>()], parent)
     };
     listView.SetBackgroundResource(Resource.Drawable.view_border);
     listView.SetPadding(DisplayU.GetDP(1), DisplayU.GetDP(1), DisplayU.GetDP(1), DisplayU.GetDP(1));
@@ -65,11 +65,11 @@ public class ButtonMenu : LinearLayout {
   }
 }
 
-public class CustomMenuAdapter : ArrayAdapter<MenuItem> {
+public class ButtonMenuAdapter : ArrayAdapter<MenuItem> {
   private readonly List<MenuItem> _items;
   private readonly View _parent;
 
-  public CustomMenuAdapter(Context context, List<MenuItem> items, View parent) : base(context, Resource.Layout.menu_item, items) {
+  public ButtonMenuAdapter(Context context, List<MenuItem> items, View parent) : base(context, Resource.Layout.menu_item, items) {
     _items = items;
     _parent = parent;
   }
