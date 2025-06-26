@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8" ?> 
+<resources>
+  <style name="MHAppTheme" parent="android:Theme.NoTitleBar">
+    <item name="android:windowBackground">@color/c_static_ba</item>
+    <item name="android:imageButtonStyle">@style/mh_ImageButton</item>
+  </style>
+  
+  <style name="mh_ImageButton" parent="android:Widget.ImageButton">
+    <item name="android:background">@drawable/button_background</item>
+    <item name="android:padding">4dp</item>
+  </style>
+</resources>
