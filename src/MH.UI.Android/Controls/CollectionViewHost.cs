@@ -4,21 +4,28 @@ using Android.Util;
 using Android.Views;
 using Android.Widget;
 using AndroidX.RecyclerView.Widget;
+using MH.UI.Android.Utils;
 using MH.UI.Controls;
 using MH.UI.Interfaces;
+using MH.Utils.Interfaces;
 using System;
 
 namespace MH.UI.Android.Controls;
 
-public class CollectionViewHost : RelativeLayout {
+public class CollectionViewHost : RelativeLayout, ICollectionViewHost {
   private RecyclerView _recyclerView = null!;
-  private CollectionViewHostAdapter _adapter = null!;
-  private CollectionView _viewModel = null!;
+  private CollectionViewHostAdapter? _adapter;
+  private CollectionView? _viewModel;
 
-  public CollectionView ViewModel {
+  public event EventHandler<bool>? HostIsVisibleChangedEvent;
+
+  public CollectionView? ViewModel {
     get => _viewModel;
     set {
       _viewModel = value;
+      if (_viewModel == null) return;
+      _viewModel.Host = this;
+      ((TreeView)_viewModel).Host = this;
       _adapter = new CollectionViewHostAdapter(Context!, this);
       _recyclerView.SetAdapter(_adapter);
     }
@@ -35,5 +42,26 @@ public class CollectionViewHost : RelativeLayout {
     LayoutInflater.From(context)!.Inflate(Resource.Layout.collection_view_host, this, true);
     _recyclerView = FindViewById<RecyclerView>(Resource.Id.tree_recycler_view)!;
     _recyclerView.SetLayoutManager(new LinearLayoutManager(context));
+  }
+
+  protected override void OnVisibilityChanged(View changedView, [GeneratedEnum] ViewStates visibility) {
+    base.OnVisibilityChanged(changedView, visibility);
+    var isVisible = visibility == ViewStates.Visible;
+    HostIsVisibleChangedEvent?.Invoke(this, isVisible);
+
+    if (isVisible && Parent is View { Width: > 0 } parent && _viewModel?.RootHolder is [ICollectionViewGroup { Width: 0 } group]) {
+      group.Width = parent.Width / DisplayU.Metrics.Density;
+      _adapter?.SetItemsSource();
+    }
+  }
+
+  public void ExpandRootWhenReady(ITreeItem root) => root.IsExpanded = true;
+
+  public void ScrollToTop() {
+    // TODO PORT
+  }
+
+  public void ScrollToItems(object[] items, bool exactly) {
+    // TODO PORT
   }
 }

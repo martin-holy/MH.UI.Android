@@ -12,10 +12,8 @@ public class CollectionViewGroupViewHolder : RecyclerView.ViewHolder {
   private readonly ImageView _expandedIcon;
   private readonly ImageView _icon;
   private readonly TextView _name;
-  private readonly ViewGroup _visualParent;
 
-  public CollectionViewGroupViewHolder(View itemView, ViewGroup visualParent) : base(itemView) {
-    _visualParent = visualParent;
+  public CollectionViewGroupViewHolder(View itemView) : base(itemView) {
     _container = (LinearLayout)itemView;
 
     _expandedIcon = itemView.FindViewById<ImageView>(Resource.Id.expanded_icon)!;
@@ -30,9 +28,6 @@ public class CollectionViewGroupViewHolder : RecyclerView.ViewHolder {
   public void Bind(FlatTreeItem? item) {
     Item = item;
     if (item == null) return;
-
-    if (item.TreeItem is ICollectionViewGroup group)
-      group.Width = _visualParent.Width;
 
     int indent = item.Level * _container.Resources?.GetDimensionPixelSize(Resource.Dimension.flat_tree_item_indent_size) ?? 32;
     _container.SetPadding(indent, _container.PaddingTop, _container.PaddingRight, _container.PaddingBottom);

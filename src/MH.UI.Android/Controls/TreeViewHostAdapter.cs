@@ -21,7 +21,7 @@ public class TreeViewHostAdapter : RecyclerView.Adapter {
     _context = context;
     _viewModel = viewModel;
     _viewModel.RootHolder.CollectionChanged += _onTreeItemsChanged;
-    _setItemsSource();
+    SetItemsSource();
   }
 
   public override int ItemCount => _items.Length;
@@ -35,9 +35,9 @@ public class TreeViewHostAdapter : RecyclerView.Adapter {
     ((FlatTreeItemViewHolder)holder).Bind(_items[position]);
 
   private void _onTreeItemsChanged(object? sender, NotifyCollectionChangedEventArgs e) =>
-    _setItemsSource();
+    SetItemsSource();
 
-  private void _setItemsSource() {
+  internal void SetItemsSource() {
     var newFlatItems = Tree.ToFlatTreeItems(_viewModel.RootHolder);
     _updateTreeItemSubscriptions(_items, newFlatItems);
     _items = [.. newFlatItems];
@@ -57,6 +57,6 @@ public class TreeViewHostAdapter : RecyclerView.Adapter {
 
   private void _onTreeItemPropertyChanged(object? sender, PropertyChangedEventArgs e) {
     if (e.Is(nameof(TreeItem.IsExpanded)))
-      _setItemsSource();
+      SetItemsSource();
   }
 }
