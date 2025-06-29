@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+  xmlns:a="http://schemas.android.com/apk/res/android"
+  a:layout_width="wrap_content"
+  a:layout_height="48dp"
+  a:orientation="horizontal"
+  a:padding="8dp"
+  a:background="@drawable/tab_item_header_background">
+  
+  <ImageView
+    a:id="@+id/icon"
+    a:layout_width="24dp"
+    a:layout_height="24dp"
+    a:layout_gravity="center_vertical"/>
+  
+  <TextView
+    a:id="@+id/text"
+    a:layout_width="wrap_content"
+    a:layout_height="wrap_content"
+    a:layout_gravity="center_vertical"
+    a:layout_marginStart="8dp"
+    a:textColor="@color/c_static_fo"/>
+</LinearLayout>
