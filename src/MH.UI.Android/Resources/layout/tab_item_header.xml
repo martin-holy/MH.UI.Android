@@ -2,15 +2,16 @@
 <LinearLayout
   xmlns:a="http://schemas.android.com/apk/res/android"
   a:layout_width="wrap_content"
-  a:layout_height="48dp"
+  a:layout_height="wrap_content"
   a:orientation="horizontal"
-  a:padding="8dp"
+  a:padding="4dp"
   a:background="@drawable/tab_item_header_background">
   
   <ImageView
     a:id="@+id/icon"
     a:layout_width="24dp"
     a:layout_height="24dp"
+    a:layout_margin="4dp"
     a:layout_gravity="center_vertical"/>
   
   <TextView
