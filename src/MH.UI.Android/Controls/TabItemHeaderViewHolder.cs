@@ -8,7 +8,6 @@ using System;
 namespace MH.UI.Android.Controls;
 
 public class TabItemHeaderViewHolder : RecyclerView.ViewHolder {
-  private readonly LinearLayout _container;
   private readonly ImageView _icon;
   private readonly TextView _name;
 
@@ -16,9 +15,7 @@ public class TabItemHeaderViewHolder : RecyclerView.ViewHolder {
   public Action<IListItem>? SelectedAction { get; set; }
 
   public TabItemHeaderViewHolder(View itemView) : base(itemView) {
-    _container = (LinearLayout)itemView;
-    _container.Click += _onContainerClick;
-
+    itemView.Click += _onContainerClick;
     _icon = itemView.FindViewById<ImageView>(Resource.Id.icon)!;
     _name = itemView.FindViewById<TextView>(Resource.Id.text)!;
   }
@@ -27,7 +24,9 @@ public class TabItemHeaderViewHolder : RecyclerView.ViewHolder {
     Item = item;
     if (item == null) return;
 
-    _name.Text = item.IsNameHidden ? null : item.Name;
+    _name.Visibility = item.IsNameHidden || string.IsNullOrEmpty(item.Name) ? ViewStates.Gone : ViewStates.Invisible;
+    _name.Text = item.Name;
+    _icon.Visibility = item.IsIconHidden ? ViewStates.Gone : ViewStates.Visible;
     _icon.SetImageDrawable(item.IsIconHidden ? null : Icons.GetIcon(_icon.Context, item.Icon));
     ItemView.Selected = item.IsSelected;
   }
