@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+  xmlns:a="http://schemas.android.com/apk/res/android"
+  a:layout_width="match_parent"
+  a:layout_height="match_parent"
+  a:orientation="vertical">
+  
+  <androidx.recyclerview.widget.RecyclerView
+    a:id="@+id/tab_headers"
+    a:layout_width="match_parent"
+    a:layout_height="wrap_content"
+    a:padding="4dp"
+    a:scrollbars="none"
+    a:background="@color/c_static_ba"/>
+  
+  <FrameLayout
+    a:id="@+id/tab_content"
+    a:layout_width="match_parent"
+    a:layout_height="0dp"
+    a:layout_weight="1"/>
+</LinearLayout>
