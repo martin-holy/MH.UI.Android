@@ -61,8 +61,12 @@ public class TabControlHost : LinearLayout {
 
   private void _onTabsChanged(object? sender, NotifyCollectionChangedEventArgs e) {
     if (e.Action is NotifyCollectionChangedAction.Remove or NotifyCollectionChangedAction.Reset)
-      foreach (var item in e.OldItems?.Cast<IListItem>() ?? [])
-        _contentViews.Remove(item);
+      foreach (var item in e.OldItems?.Cast<IListItem>() ?? []) {
+        if (_contentViews.TryGetValue(item, out var view)) {
+          _tabContent.RemoveView(view);
+          _contentViews.Remove(item);
+        }
+      }
 
     _updateContent();
   }
@@ -73,8 +77,6 @@ public class TabControlHost : LinearLayout {
   }
 
   private void _updateContent() {
-    _tabContent.RemoveAllViews();
-
     if (_dataContext?.Selected is not { } selectedItem) {
       _adapter?.NotifyDataSetChanged();
       return;
