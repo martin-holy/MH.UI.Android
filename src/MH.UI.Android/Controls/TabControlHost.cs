@@ -36,11 +36,11 @@ public class TabControlHost : LinearLayout {
     }
   }
 
-  public TabControlHost(Context context) : base(context) => _initialize(context, null);
-  public TabControlHost(Context context, IAttributeSet attrs) : base(context, attrs) => _initialize(context, attrs);
-  protected TabControlHost(nint javaReference, JniHandleOwnership transfer) : base(javaReference, transfer) => _initialize(Context!, null);
+  public TabControlHost(Context context) : base(context) => _initialize(context);
+  public TabControlHost(Context context, IAttributeSet attrs) : base(context, attrs) => _initialize(context);
+  protected TabControlHost(nint javaReference, JniHandleOwnership transfer) : base(javaReference, transfer) => _initialize(Context!);
 
-  private void _initialize(Context context, IAttributeSet? attrs) {
+  private void _initialize(Context context) {
     LayoutInflater.From(context)!.Inflate(Resource.Layout.tab_control_host, this, true);
     _tabHeaders = FindViewById<RecyclerView>(Resource.Id.tab_headers)!;
     _tabHeaders.SetLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.Horizontal, false));

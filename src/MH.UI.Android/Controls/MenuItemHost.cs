@@ -15,11 +15,11 @@ public class MenuItemHost : LinearLayout {
 
   public MenuItem DataContext { get => _dataContext; set { _dataContext = value; _bind(value); } }
 
-  public MenuItemHost(Context context) : base(context) => _initialize(context, null);
-  public MenuItemHost(Context context, IAttributeSet attrs) : base(context, attrs) => _initialize(context, attrs);
-  protected MenuItemHost(nint javaReference, JniHandleOwnership transfer) : base(javaReference, transfer) => _initialize(Context!, null);
+  public MenuItemHost(Context context) : base(context) => _initialize(context);
+  public MenuItemHost(Context context, IAttributeSet attrs) : base(context, attrs) => _initialize(context);
+  protected MenuItemHost(nint javaReference, JniHandleOwnership transfer) : base(javaReference, transfer) => _initialize(Context!);
 
-  private void _initialize(Context context, IAttributeSet? attrs) {
+  private void _initialize(Context context) {
     var height = DisplayU.GetDP(32);
     LayoutInflater.From(context)!.Inflate(Resource.Layout.menu_item, this, true);
     LayoutParameters = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MatchParent, height);

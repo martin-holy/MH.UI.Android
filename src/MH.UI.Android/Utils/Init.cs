@@ -4,7 +4,7 @@ namespace MH.UI.Android.Utils;
 
 // TODO PORT
 public static class Init {
-  private static Handler _handler;
+  private static Handler? _handler;
 
   public static void SetDelegates() {
     MH.Utils.Keyboard.IsCtrlOn = () => false;

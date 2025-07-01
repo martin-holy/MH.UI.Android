@@ -26,11 +26,11 @@ public class ButtonMenu : LinearLayout {
     }
   }
 
-  public ButtonMenu(Context context) : base(context) => Initialize(context, null);
-  public ButtonMenu(Context context, IAttributeSet attrs) : base(context, attrs) => Initialize(context, attrs);
-  protected ButtonMenu(nint javaReference, JniHandleOwnership transfer) : base(javaReference, transfer) => Initialize(Context!, null);
+  public ButtonMenu(Context context) : base(context) => _initialize(context);
+  public ButtonMenu(Context context, IAttributeSet attrs) : base(context, attrs) => _initialize(context);
+  protected ButtonMenu(nint javaReference, JniHandleOwnership transfer) : base(javaReference, transfer) => _initialize(Context!);
 
-  private void Initialize(Context context, IAttributeSet? attrs) {
+  private void _initialize(Context context) {
     Orientation = Orientation.Horizontal;
 
     _menuButton = new ImageButton(context) {
@@ -65,14 +65,11 @@ public class ButtonMenu : LinearLayout {
   }
 }
 
-public class ButtonMenuAdapter : ArrayAdapter<MenuItem> {
-  private readonly List<MenuItem> _items;
-  private readonly View _parent;
+public class ButtonMenuAdapter(Context context, List<MenuItem> items, View parent) :
+  ArrayAdapter<MenuItem>(context, Resource.Layout.menu_item, items) {
 
-  public ButtonMenuAdapter(Context context, List<MenuItem> items, View parent) : base(context, Resource.Layout.menu_item, items) {
-    _items = items;
-    _parent = parent;
-  }
+  private readonly List<MenuItem> _items = items;
+  private readonly View _parent = parent;
 
   public override View GetView(int position, View? convertView, ViewGroup parent) {
     var item = _items[position];
