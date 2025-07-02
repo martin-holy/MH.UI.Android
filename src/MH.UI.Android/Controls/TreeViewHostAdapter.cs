@@ -26,10 +26,8 @@ public class TreeViewHostAdapter : RecyclerView.Adapter {
 
   public override int ItemCount => _items.Length;
 
-  public override RecyclerView.ViewHolder OnCreateViewHolder(ViewGroup parent, int viewType) {
-    var view = LayoutInflater.From(_context)?.Inflate(Resource.Layout.flat_tree_item, parent, false)!;
-    return new FlatTreeItemViewHolder(view, _viewModel);
-  }
+  public override RecyclerView.ViewHolder OnCreateViewHolder(ViewGroup parent, int viewType) =>
+    FlatTreeItemViewHolder.Create(parent, _viewModel);
 
   public override void OnBindViewHolder(RecyclerView.ViewHolder holder, int position) =>
     ((FlatTreeItemViewHolder)holder).Bind(_items[position]);
