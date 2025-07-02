@@ -7,14 +7,11 @@ using MH.Utils.BaseClasses;
 namespace MH.UI.Android.Controls;
 
 public class CollectionViewGroupViewHolder : RecyclerView.ViewHolder {
-  private readonly LinearLayout _container;
   private readonly ImageView _expandedIcon;
   private readonly ImageView _icon;
   private readonly TextView _name;
 
   public CollectionViewGroupViewHolder(View itemView) : base(itemView) {
-    _container = (LinearLayout)itemView;
-
     _expandedIcon = itemView.FindViewById<ImageView>(Resource.Id.expanded_icon)!;
     _expandedIcon.Click += _onExpandedChanged;
 
@@ -28,16 +25,19 @@ public class CollectionViewGroupViewHolder : RecyclerView.ViewHolder {
     Item = item;
     if (item == null) return;
 
-    int indent = item.Level * _container.Resources?.GetDimensionPixelSize(Resource.Dimension.flat_tree_item_indent_size) ?? 32;
-    _container.SetPadding(indent, _container.PaddingTop, _container.PaddingRight, _container.PaddingBottom);
+    int indent = item.Level * ItemView.Resources?.GetDimensionPixelSize(Resource.Dimension.flat_tree_item_indent_size) ?? 32;
+    ItemView.SetPadding(indent, ItemView.PaddingTop, ItemView.PaddingRight, ItemView.PaddingBottom);
 
     _expandedIcon.Visibility = item.TreeItem.Items.Count > 0 ? ViewStates.Visible : ViewStates.Invisible;
     _expandedIcon.Selected = item.TreeItem.IsExpanded;
 
-    _icon.SetImageDrawable(Icons.GetIcon(_container.Context, item.TreeItem.Icon));
+    _icon.SetImageDrawable(Icons.GetIcon(ItemView.Context, item.TreeItem.Icon));
 
     _name.SetText(item.TreeItem.Name, TextView.BufferType.Normal);
   }
+
+  public static CollectionViewGroupViewHolder Create(ViewGroup parent) =>
+    new(LayoutInflater.From(parent.Context)!.Inflate(Resource.Layout.collection_view_group, parent, false)!);
 
   private void _onExpandedChanged(object? sender, System.EventArgs e) {
     if (Item == null) return;
