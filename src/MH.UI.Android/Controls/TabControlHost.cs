@@ -17,24 +17,12 @@ namespace MH.UI.Android.Controls;
 public class TabControlHost : LinearLayout {
   private RecyclerView _tabHeaders = null!;
   private FrameLayout _tabContent = null!;
-  private TabControl? _dataContext;
   private TabControlHostHeaderAdapter? _adapter;
   private readonly Dictionary<IListItem, View> _contentViews = [];
 
+  public TabControl? DataContext { get; private set; }
   public Func<LinearLayout, object?, View?> GetItemView { get; set; } =
     (container, item) => throw new NotImplementedException();
-
-  public TabControl? DataContext {
-    get => _dataContext;
-    set {
-      _updateEvents(_dataContext, value);
-      _dataContext = value;
-      if (_dataContext == null) return;      
-      _adapter = new TabControlHostHeaderAdapter(_dataContext);
-      _tabHeaders.SetAdapter(_adapter);
-      _updateContent();
-    }
-  }
 
   public TabControlHost(Context context) : base(context) => _initialize(context);
   public TabControlHost(Context context, IAttributeSet attrs) : base(context, attrs) => _initialize(context);
@@ -45,6 +33,16 @@ public class TabControlHost : LinearLayout {
     _tabHeaders = FindViewById<RecyclerView>(Resource.Id.tab_headers)!;
     _tabHeaders.SetLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.Horizontal, false));
     _tabContent = FindViewById<FrameLayout>(Resource.Id.tab_content)!;
+  }
+
+  public TabControlHost Bind(TabControl? dataContext) {
+    _updateEvents(DataContext, dataContext);
+    DataContext = dataContext;
+    if (DataContext == null) return this;      
+    _adapter = new TabControlHostHeaderAdapter(DataContext);
+    _tabHeaders.SetAdapter(_adapter);
+    _updateContent();
+    return this;
   }
 
   private void _updateEvents(TabControl? oldValue, TabControl? newValue) {
@@ -77,7 +75,7 @@ public class TabControlHost : LinearLayout {
   }
 
   private void _updateContent() {
-    if (_dataContext?.Selected is not { } selectedItem) {
+    if (DataContext?.Selected is not { } selectedItem) {
       _adapter?.NotifyDataSetChanged();
       return;
     }
