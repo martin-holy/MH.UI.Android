@@ -2,7 +2,6 @@
 using Android.Widget;
 using AndroidX.RecyclerView.Widget;
 using MH.UI.Android.Utils;
-using MH.UI.Interfaces;
 using MH.Utils.BaseClasses;
 
 namespace MH.UI.Android.Controls;
