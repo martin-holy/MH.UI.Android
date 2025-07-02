@@ -24,4 +24,7 @@ public class CollectionViewRowViewHolder(View itemView, CollectionViewHost host)
       _container.AddView(view);
     }
   }
+
+  public static CollectionViewRowViewHolder Create(ViewGroup parent, CollectionViewHost host) =>
+    new(LayoutInflater.From(parent.Context)!.Inflate(Resource.Layout.collection_view_row, parent, false)!, host);
 }

@@ -12,14 +12,10 @@ public class CollectionViewHostAdapter(Context context, CollectionViewHost host)
   public override int GetItemViewType(int position) =>
     _items[position] is FlatTreeItem { TreeItem: ICollectionViewGroup } ? 0 : 1;
 
-  public override RecyclerView.ViewHolder OnCreateViewHolder(ViewGroup parent, int viewType) {
-    var inflater = LayoutInflater.From(_context)!;
-
-    if (viewType == 0)
-      return CollectionViewGroupViewHolder.Create(parent);
-    else
-      return new CollectionViewRowViewHolder(inflater.Inflate(Resource.Layout.collection_view_row, parent, false)!, _host);
-  }
+  public override RecyclerView.ViewHolder OnCreateViewHolder(ViewGroup parent, int viewType) =>
+    viewType == 0
+      ? CollectionViewGroupViewHolder.Create(parent)
+      : CollectionViewRowViewHolder.Create(parent, _host);
 
   public override void OnBindViewHolder(RecyclerView.ViewHolder holder, int position) {
     var item = _items[position];
