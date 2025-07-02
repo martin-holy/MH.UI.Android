@@ -73,15 +73,14 @@ public class ButtonMenuAdapter(Context context, List<MenuItem> items, View paren
 
   public override View GetView(int position, View? convertView, ViewGroup parent) {
     var item = _items[position];
-    var view = new MenuItemHost(Context) { DataContext = item };
+    var view = new MenuItemHost(Context).Bind(item);
     view.Click += _onMenuItemClick;
 
     return view;
   }
 
   private void _onMenuItemClick(object? sender, EventArgs e) {
-    if (sender is not MenuItemHost host) return;
-    var item = host.DataContext;
+    if (sender is not MenuItemHost { DataContext: { } item } host) return;
 
     if (item.Items.Count == 0) {
       if (item.Command?.CanExecute(null) == true)
