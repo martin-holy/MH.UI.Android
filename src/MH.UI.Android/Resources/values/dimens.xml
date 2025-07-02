@@ -1,4 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?> 
 <resources>
   <dimen name="flat_tree_item_indent_size">16dp</dimen>
+  <dimen name="menu_item_height">32dp</dimen>
 </resources>
