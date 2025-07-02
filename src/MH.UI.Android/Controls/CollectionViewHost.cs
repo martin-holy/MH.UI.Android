@@ -15,21 +15,10 @@ namespace MH.UI.Android.Controls;
 public class CollectionViewHost : RelativeLayout, ICollectionViewHost {
   private RecyclerView _recyclerView = null!;
   private CollectionViewHostAdapter? _adapter;
-  private CollectionView? _viewModel;
 
   public event EventHandler<bool>? HostIsVisibleChangedEvent;
 
-  public CollectionView? ViewModel {
-    get => _viewModel;
-    set {
-      _viewModel = value;
-      if (_viewModel == null) return;
-      _viewModel.Host = this;
-      ((TreeView)_viewModel).Host = this;
-      _adapter = new CollectionViewHostAdapter(Context!, this);
-      _recyclerView.SetAdapter(_adapter);
-    }
-  }
+  public CollectionView? ViewModel { get; private set; }
 
   public Func<LinearLayout, ICollectionViewGroup, object?, View?> GetItemView { get; set; } =
     (container, group, item) => throw new NotImplementedException();
@@ -44,12 +33,22 @@ public class CollectionViewHost : RelativeLayout, ICollectionViewHost {
     _recyclerView.SetLayoutManager(new LinearLayoutManager(context));
   }
 
+  public CollectionViewHost Bind(CollectionView? viewModel) {
+    ViewModel = viewModel;
+    if (ViewModel == null) return this;
+    ViewModel.Host = this;
+    ((TreeView)ViewModel).Host = this;
+    _adapter = new CollectionViewHostAdapter(Context!, this);
+    _recyclerView.SetAdapter(_adapter);
+    return this;
+  }
+
   protected override void OnVisibilityChanged(View changedView, [GeneratedEnum] ViewStates visibility) {
     base.OnVisibilityChanged(changedView, visibility);
     var isVisible = visibility == ViewStates.Visible;
     HostIsVisibleChangedEvent?.Invoke(this, isVisible);
 
-    if (isVisible && Parent is View { Width: > 0 } parent && _viewModel?.RootHolder is [ICollectionViewGroup { Width: 0 } group]) {
+    if (isVisible && Parent is View { Width: > 0 } parent && ViewModel?.RootHolder is [ICollectionViewGroup { Width: 0 } group]) {
       group.Width = parent.Width / DisplayU.Metrics.Density;
       _adapter?.SetItemsSource();
     }
