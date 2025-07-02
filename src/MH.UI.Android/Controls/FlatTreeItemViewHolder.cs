@@ -13,6 +13,8 @@ public class FlatTreeItemViewHolder : RecyclerView.ViewHolder {
   private readonly ImageView _icon;
   private readonly TextView _name;
 
+  public FlatTreeItem? DataContext { get; private set; }
+
   public FlatTreeItemViewHolder(View itemView, TreeView vmParent) : base(itemView) {
     _vmParent = vmParent;
 
@@ -25,10 +27,8 @@ public class FlatTreeItemViewHolder : RecyclerView.ViewHolder {
     _name = itemView.FindViewById<TextView>(Resource.Id.name)!;
   }
 
-  public FlatTreeItem? Item { get; private set; }
-
   public void Bind(FlatTreeItem? item) {
-    Item = item;
+    DataContext = item;
     if (item == null) return;
 
     int indent = item.Level * ItemView.Resources?.GetDimensionPixelSize(Resource.Dimension.flat_tree_item_indent_size) ?? 32;
@@ -46,12 +46,12 @@ public class FlatTreeItemViewHolder : RecyclerView.ViewHolder {
     new(LayoutInflater.From(parent.Context)!.Inflate(Resource.Layout.flat_tree_item, parent, false)!, vmParent);
 
   private void _onExpandedChanged(object? sender, System.EventArgs e) {
-    if (Item == null) return;
-    Item.TreeItem.IsExpanded = !Item.TreeItem.IsExpanded;
+    if (DataContext == null) return;
+    DataContext.TreeItem.IsExpanded = !DataContext.TreeItem.IsExpanded;
   }
 
   private void _onContainerClick(object? sender, System.EventArgs e) {
-    if (Item != null && _vmParent.SelectItemCommand.CanExecute(Item.TreeItem))
-      _vmParent.SelectItemCommand.Execute(Item.TreeItem);
+    if (DataContext != null && _vmParent.SelectItemCommand.CanExecute(DataContext.TreeItem))
+      _vmParent.SelectItemCommand.Execute(DataContext.TreeItem);
   }
 }
