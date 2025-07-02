@@ -12,20 +12,11 @@ namespace MH.UI.Android.Controls;
 
 public class TreeViewHost : RelativeLayout, ITreeViewHost {
   private RecyclerView _recyclerView = null!;
-  private TreeViewHostAdapter _adapter = null!;
-  private TreeView _viewModel = null!;
+  private TreeViewHostAdapter? _adapter;
 
   public event EventHandler<bool>? HostIsVisibleChangedEvent;
 
-  public TreeView ViewModel {
-    get => _viewModel;
-    set {
-      _viewModel = value;
-      _viewModel.Host = this;
-      _adapter = new TreeViewHostAdapter(Context!, _viewModel);
-      _recyclerView.SetAdapter(_adapter);
-    }
-  }
+  public TreeView? ViewModel { get; private set; }
 
   public TreeViewHost(Context context) : base(context) => _initialize(context);
   public TreeViewHost(Context context, IAttributeSet attrs) : base(context, attrs) => _initialize(context);
@@ -35,6 +26,15 @@ public class TreeViewHost : RelativeLayout, ITreeViewHost {
     LayoutInflater.From(context)!.Inflate(Resource.Layout.tree_view_host, this, true);
     _recyclerView = FindViewById<RecyclerView>(Resource.Id.tree_recycler_view)!;
     _recyclerView.SetLayoutManager(new LinearLayoutManager(context));
+  }
+
+  public TreeViewHost Bind(TreeView? treeView) {
+    ViewModel = treeView;
+    if (ViewModel == null) return this;
+    ViewModel.Host = this;
+    _adapter = new TreeViewHostAdapter(Context!, ViewModel);
+    _recyclerView.SetAdapter(_adapter);
+    return this;
   }
 
   protected override void OnVisibilityChanged(View changedView, [GeneratedEnum] ViewStates visibility) {
