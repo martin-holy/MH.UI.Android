@@ -52,7 +52,7 @@ public class CollectionViewHost : RelativeLayout, ICollectionViewHost {
     HostIsVisibleChangedEvent?.Invoke(this, isVisible);
 
     if (isVisible && Parent is View { Width: > 0 } parent && ViewModel?.RootHolder is [ICollectionViewGroup { Width: 0 } group]) {
-      group.Width = parent.Width / DisplayU.Metrics.Density;
+      group.Width = parent.Width;
       _adapter?.SetItemsSource();
     }
   }
