@@ -29,10 +29,23 @@ public class TabControlHost : LinearLayout {
   protected TabControlHost(nint javaReference, JniHandleOwnership transfer) : base(javaReference, transfer) => _initialize(Context!);
 
   private void _initialize(Context context) {
-    LayoutInflater.From(context)!.Inflate(Resource.Layout.tab_control_host, this, true);
-    _tabHeaders = FindViewById<RecyclerView>(Resource.Id.tab_headers)!;
+    LayoutParameters = new LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.MatchParent);
+    Orientation = Orientation.Vertical;
+    SetBackgroundResource(Resource.Color.c_static_ba);
+
+    var genPadding = context.Resources!.GetDimensionPixelSize(Resource.Dimension.general_padding);
+    _tabHeaders = new(context) {
+      LayoutParameters = new LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.WrapContent),
+    };
     _tabHeaders.SetLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.Horizontal, false));
-    _tabContent = FindViewById<FrameLayout>(Resource.Id.tab_content)!;
+    _tabHeaders.ScrollBarStyle = ScrollbarStyles.OutsideOverlay;
+    _tabHeaders.SetPadding(genPadding, genPadding, genPadding, genPadding);
+    AddView(_tabHeaders);
+
+    _tabContent = new(context) {
+      LayoutParameters = new LayoutParams(ViewGroup.LayoutParams.MatchParent, 0, 1),
+    };
+    AddView(_tabContent);
   }
 
   public TabControlHost Bind(TabControl? dataContext) {
