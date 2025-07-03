@@ -2,4 +2,5 @@
 <resources>
   <dimen name="flat_tree_item_indent_size">16dp</dimen>
   <dimen name="menu_item_height">32dp</dimen>
+  <dimen name="general_padding">4dp</dimen>
 </resources>
