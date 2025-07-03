@@ -25,7 +25,7 @@ public class CollectionViewGroupViewHolder : RecyclerView.ViewHolder {
     Item = item;
     if (item == null) return;
 
-    int indent = item.Level * ItemView.Resources?.GetDimensionPixelSize(Resource.Dimension.flat_tree_item_indent_size) ?? 32;
+    int indent = item.Level * ItemView.Resources!.GetDimensionPixelSize(Resource.Dimension.flat_tree_item_indent_size);
     ItemView.SetPadding(indent, ItemView.PaddingTop, ItemView.PaddingRight, ItemView.PaddingBottom);
 
     _expandedIcon.Visibility = item.TreeItem.Items.Count > 0 ? ViewStates.Visible : ViewStates.Invisible;
