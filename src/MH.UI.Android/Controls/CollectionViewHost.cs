@@ -50,9 +50,13 @@ public class CollectionViewHost : RelativeLayout, ICollectionViewHost {
     base.OnVisibilityChanged(changedView, visibility);
     var isVisible = visibility == ViewStates.Visible;
     HostIsVisibleChangedEvent?.Invoke(this, isVisible);
+  }
 
-    if (isVisible && Parent is View { Width: > 0 } parent && ViewModel?.RootHolder is [ICollectionViewGroup { Width: 0 } group]) {
-      group.Width = parent.Width;
+  protected override void OnSizeChanged(int w, int h, int oldw, int oldh) {
+    base.OnSizeChanged(w, h, oldw, oldh);
+
+    if (Visibility == ViewStates.Visible && ViewModel?.RootHolder is [ICollectionViewGroup { Width: 0 } group]) {
+      group.Width = w;
       _adapter?.SetItemsSource();
     }
   }
