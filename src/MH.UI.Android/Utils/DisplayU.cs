@@ -9,7 +9,6 @@ public class DisplayU {
     Metrics = displayMetrics;
   }
 
-  public static int GetDP(int px) => (int)(px * Metrics.Density);
   public static int DpToPx(float dp) => (int)(dp * Metrics.Density);
   public static float PxToDp(int px) => px / Metrics.Density;
 }
