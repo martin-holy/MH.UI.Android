@@ -49,7 +49,7 @@ public class ButtonMenu : LinearLayout {
       Adapter = new ButtonMenuAdapter(context, [.. root.Items.Cast<MenuItem>()], parent)
     };
     listView.SetBackgroundResource(Resource.Drawable.view_border);
-    listView.SetPadding(DisplayU.GetDP(1), DisplayU.GetDP(1), DisplayU.GetDP(1), DisplayU.GetDP(1));
+    listView.SetPadding(DisplayU.DpToPx(1), DisplayU.DpToPx(1), DisplayU.DpToPx(1), DisplayU.DpToPx(1));
 
     // Measure ListView with screen constraints
     int maxWidth = DisplayU.Metrics.WidthPixels;
@@ -58,7 +58,7 @@ public class ButtonMenu : LinearLayout {
       MeasureSpec.MakeMeasureSpec(maxWidth, MeasureSpecMode.AtMost),
       MeasureSpec.MakeMeasureSpec(maxHeight, MeasureSpecMode.AtMost)
     );
-    int width = Math.Max(listView.MeasuredWidth, DisplayU.GetDP(120)); // Min width 120dp
+    int width = Math.Max(listView.MeasuredWidth, DisplayU.DpToPx(120)); // Min width 120dp
     int height = Math.Min(listView.MeasuredHeight, maxHeight);
 
     return new PopupWindow(listView, width, height, true);
