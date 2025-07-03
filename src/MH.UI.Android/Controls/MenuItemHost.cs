@@ -20,7 +20,9 @@ public class MenuItemHost : LinearLayout {
 
   private void _initialize(Context context) {
     LayoutInflater.From(context)!.Inflate(Resource.Layout.menu_item, this, true);
-    LayoutParameters = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MatchParent, Resource.Dimension.menu_item_height);
+    LayoutParameters = new ViewGroup.LayoutParams(
+      ViewGroup.LayoutParams.MatchParent,
+      context.Resources!.GetDimensionPixelSize(Resource.Dimension.menu_item_height));
     Orientation = Orientation.Horizontal;
     SetBackgroundResource(Resource.Color.c_static_ba);
     _icon = FindViewById<ImageView>(Resource.Id.icon)!;
