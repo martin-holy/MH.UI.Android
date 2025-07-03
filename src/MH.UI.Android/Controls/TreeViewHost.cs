@@ -23,9 +23,12 @@ public class TreeViewHost : RelativeLayout, ITreeViewHost {
   protected TreeViewHost(nint javaReference, JniHandleOwnership transfer) : base(javaReference, transfer) { }
 
   private void _initialize(Context context) {
-    LayoutInflater.From(context)!.Inflate(Resource.Layout.tree_view_host, this, true);
-    _recyclerView = FindViewById<RecyclerView>(Resource.Id.tree_recycler_view)!;
-    _recyclerView.SetLayoutManager(new LinearLayoutManager(context));
+    SetBackgroundResource(Resource.Color.c_static_ba);
+    _recyclerView = new(context) {
+      LayoutParameters = new LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.MatchParent),
+    };
+    _recyclerView.SetLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.Vertical, false));
+    AddView(_recyclerView);
   }
 
   public TreeViewHost Bind(TreeView? treeView) {
