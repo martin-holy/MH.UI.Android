@@ -2,6 +2,7 @@
 using Android.Widget;
 using AndroidX.RecyclerView.Widget;
 using MH.UI.Android.Utils;
+using MH.UI.Controls;
 using MH.Utils.Interfaces;
 using System;
 
@@ -20,19 +21,23 @@ public class TabItemHeaderViewHolder : RecyclerView.ViewHolder {
     _name = itemView.FindViewById<TextView>(Resource.Id.text)!;
   }
 
-  public void Bind(IListItem? item) {
+  public static TabItemHeaderViewHolder Create(ViewGroup parent) =>
+    new(LayoutInflater.From(parent.Context)!.Inflate(Resource.Layout.tab_item_header, parent, false)!);
+
+  public void Bind(IListItem? item, IconTextVisibility itv) {
     Item = item;
     if (item == null) return;
 
-    _name.Visibility = item.IsNameHidden || string.IsNullOrEmpty(item.Name) ? ViewStates.Gone : ViewStates.Invisible;
+    _name.Visibility = itv.HasFlag(IconTextVisibility.Text) && !string.IsNullOrEmpty(item.Name)
+      ? ViewStates.Visible
+      : ViewStates.Gone;
     _name.Text = item.Name;
-    _icon.Visibility = item.IsIconHidden ? ViewStates.Gone : ViewStates.Visible;
-    _icon.SetImageDrawable(item.IsIconHidden ? null : Icons.GetIcon(_icon.Context, item.Icon));
+
+    _icon.Visibility = itv.HasFlag(IconTextVisibility.Icon) ? ViewStates.Visible : ViewStates.Gone;
+    _icon.SetImageDrawable(itv.HasFlag(IconTextVisibility.Icon) ? Icons.GetIcon(_icon.Context, item.Icon) : null);
+    
     ItemView.Selected = item.IsSelected;
   }
-
-  public static TabItemHeaderViewHolder Create(ViewGroup parent) =>
-    new(LayoutInflater.From(parent.Context)!.Inflate(Resource.Layout.tab_item_header, parent, false)!);
 
   private void _onContainerClick(object? sender, EventArgs e) {
     if (SelectedAction != null && Item != null)

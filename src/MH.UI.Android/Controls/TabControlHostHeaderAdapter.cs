@@ -16,6 +16,6 @@ public class TabControlHostHeaderAdapter(TabControl tabControl) : RecyclerView.A
   }
 
   public override void OnBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-    ((TabItemHeaderViewHolder)holder).Bind(_tabControl.Tabs[position]);
+    ((TabItemHeaderViewHolder)holder).Bind(_tabControl.Tabs[position], _tabControl.TabStrip.IconTextVisibility);
   }
 }
