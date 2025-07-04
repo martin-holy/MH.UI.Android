@@ -4,14 +4,15 @@
   a:layout_width="wrap_content"
   a:layout_height="wrap_content"
   a:orientation="horizontal"
-  a:padding="4dp"
+  a:padding="@dimen/general_padding"
+  a:clickable="true"
+  a:focusable="true"
   a:background="@drawable/tab_item_header_background">
   
   <ImageView
     a:id="@+id/icon"
-    a:layout_width="24dp"
-    a:layout_height="24dp"
-    a:layout_margin="4dp"
+    a:layout_width="@dimen/icon_size"
+    a:layout_height="@dimen/icon_size"
     a:layout_gravity="center_vertical"/>
   
   <TextView
@@ -19,6 +20,5 @@
     a:layout_width="wrap_content"
     a:layout_height="wrap_content"
     a:layout_gravity="center_vertical"
-    a:layout_marginStart="8dp"
     a:textColor="@color/c_static_fo"/>
 </LinearLayout>

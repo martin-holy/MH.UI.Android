@@ -28,13 +28,17 @@ public class TabItemHeaderViewHolder : RecyclerView.ViewHolder {
     Item = item;
     if (item == null) return;
 
-    _name.Visibility = itv.HasFlag(IconTextVisibility.Text) && !string.IsNullOrEmpty(item.Name)
-      ? ViewStates.Visible
-      : ViewStates.Gone;
-    _name.Text = item.Name;
+    var isIconVisible = itv.HasFlag(IconTextVisibility.Icon);
+    var isTextVisible = itv.HasFlag(IconTextVisibility.Text) && !string.IsNullOrEmpty(item.Name);
 
-    _icon.Visibility = itv.HasFlag(IconTextVisibility.Icon) ? ViewStates.Visible : ViewStates.Gone;
-    _icon.SetImageDrawable(itv.HasFlag(IconTextVisibility.Icon) ? Icons.GetIcon(_icon.Context, item.Icon) : null);
+    _icon.Visibility = isIconVisible ? ViewStates.Visible : ViewStates.Gone;
+    _icon.SetImageDrawable(isIconVisible ? Icons.GetIcon(_icon.Context, item.Icon) : null);
+
+    _name.Visibility = isTextVisible ? ViewStates.Visible : ViewStates.Gone;
+    _name.Text = item.Name;
+    _name.SetPadding(isIconVisible
+      ? ItemView.Resources!.GetDimensionPixelSize(Resource.Dimension.general_padding)
+      : 0, 0, 0, 0);
     
     ItemView.Selected = item.IsSelected;
   }
