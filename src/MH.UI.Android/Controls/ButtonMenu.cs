@@ -33,8 +33,9 @@ public class ButtonMenu : LinearLayout {
   private void _initialize(Context context) {
     Orientation = Orientation.Horizontal;
 
-    _menuButton = new ImageButton(context) {
-      LayoutParameters = new LayoutParams(ViewGroup.LayoutParams.WrapContent, ViewGroup.LayoutParams.WrapContent)
+    var imgBtnSize = context.Resources!.GetDimensionPixelSize(Resource.Dimension.image_button_size);
+    _menuButton = new(context) {
+      LayoutParameters = new(imgBtnSize, imgBtnSize)
     };
     _menuButton.Click += (_, _) => _rootMenu?.ShowAsDropDown(_menuButton);
     AddView(_menuButton);
@@ -42,7 +43,7 @@ public class ButtonMenu : LinearLayout {
 
   public static PopupWindow CreateMenu(Context context, View parent, MenuItem root) {
     var listView = new ListView(context) {
-      LayoutParameters = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WrapContent, ViewGroup.LayoutParams.WrapContent),
+      LayoutParameters = new(LayoutParams.WrapContent, LayoutParams.WrapContent),
       ScrollBarStyle = ScrollbarStyles.OutsideOverlay,
       Divider = null,
       DividerHeight = 0,
