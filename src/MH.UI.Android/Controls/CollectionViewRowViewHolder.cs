@@ -13,6 +13,9 @@ public class CollectionViewRowViewHolder(View itemView, CollectionViewHost host)
 
   public FlatTreeItem? Item { get; private set; }
 
+  public static CollectionViewRowViewHolder Create(ViewGroup parent, CollectionViewHost host) =>
+    new(LayoutInflater.From(parent.Context)!.Inflate(Resource.Layout.collection_view_row, parent, false)!, host);
+
   public void Bind(FlatTreeItem? item) {
     Item = item;
     _container.RemoveAllViews();
@@ -21,10 +24,13 @@ public class CollectionViewRowViewHolder(View itemView, CollectionViewHost host)
 
     foreach (var rowItem in row.Leaves) {
       if (_host.GetItemView(_container, group, rowItem) is not { } view) continue;
+      view.Clickable = true;
+      view.Click += (_, _) => {
+        if (_host.ViewModel is not { } vm) return;        
+        if (vm.CanSelect) vm.SelectItem(row, rowItem, false, false);
+        if (vm.CanOpen) vm.OpenItem(rowItem);
+      };
       _container.AddView(view);
     }
   }
-
-  public static CollectionViewRowViewHolder Create(ViewGroup parent, CollectionViewHost host) =>
-    new(LayoutInflater.From(parent.Context)!.Inflate(Resource.Layout.collection_view_row, parent, false)!, host);
 }
