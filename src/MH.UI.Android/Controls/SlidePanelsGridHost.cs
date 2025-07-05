@@ -15,6 +15,8 @@ public class SlidePanelsGridHost : LinearLayout {
   private LinearLayout _bottomPanel = null!;
   private Func<int, View>? _panelFactory;
 
+  public ViewPager2 ViewPager { get => _viewPager; }
+
   public SlidePanelsGridHost(Context context) : base(context) => _initialize(context);
   public SlidePanelsGridHost(Context context, IAttributeSet attrs) : base(context, attrs) => _initialize(context);
   protected SlidePanelsGridHost(nint javaReference, JniHandleOwnership transfer) : base(javaReference, transfer) => _initialize(Context!);
