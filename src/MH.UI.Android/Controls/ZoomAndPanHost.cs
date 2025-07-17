@@ -17,8 +17,8 @@ public class ZoomAndPanHost : FrameLayout, IZoomAndPanHost {
   private ZoomAndPan? _dataContext;
 
   public ZoomAndPan DataContext { get => _dataContext ?? throw new NotImplementedException(); }
-  double IZoomAndPanHost.Width => MeasuredWidth;
-  double IZoomAndPanHost.Height => MeasuredHeight;
+  double IZoomAndPanHost.Width => Width;
+  double IZoomAndPanHost.Height => Height;
 
   public event EventHandler? HostSizeChangedEvent;
   public event EventHandler<PointD>? HostMouseMoveEvent;
@@ -40,7 +40,6 @@ public class ZoomAndPanHost : FrameLayout, IZoomAndPanHost {
     _setDataContext(dataContext);
     if (dataContext == null) return this;
     dataContext.Host = this;
-    _updateImageTransform();
     return this;
   }
 
@@ -52,30 +51,25 @@ public class ZoomAndPanHost : FrameLayout, IZoomAndPanHost {
       _dataContext.PropertyChanged += _onDataContextPropertyChanged;
   }
 
-  public void SetImageBitmap(global::Android.Graphics.Bitmap? bitmap) {
+  public void SetImageBitmap(global::Android.Graphics.Bitmap? bitmap) =>
     _imageView.SetImageBitmap(bitmap);
-    if (bitmap != null)
-      DataContext.ScaleToFitContent(bitmap.Width, bitmap.Height);
-  }
 
   private void _onDataContextPropertyChanged(object? sender, PropertyChangedEventArgs e) {
     // TODO agregate change
-    if (e.PropertyName is
+    /*if (e.PropertyName is
         nameof(ZoomAndPan.ScaleX) or nameof(ZoomAndPan.ScaleY) or
         nameof(ZoomAndPan.TransformX) or nameof(ZoomAndPan.TransformY) or
         nameof(ZoomAndPan.ContentWidth) or nameof(ZoomAndPan.ContentHeight)) {
       _updateImageTransform();
-    }
+    }*/
   }
 
-  private void _updateImageTransform() {
-    //return; // TODO for now
+  public void UpdateImageTransform() {
     var matrix = new global::Android.Graphics.Matrix();
     matrix.SetScale((float)DataContext.ScaleX, (float)DataContext.ScaleY);
     matrix.PostTranslate((float)DataContext.TransformX, (float)DataContext.TransformY);
-    _imageView.ImageMatrix = matrix;
-    _imageView.LayoutParameters.Width = (int)DataContext.ContentWidth;
-    _imageView.LayoutParameters.Height = (int)DataContext.ContentHeight;
+    _imageView.SetScaleType(ImageView.ScaleType.Matrix);
+    _imageView.ImageMatrix = matrix;    
     _imageView.RequestLayout(); // TODO test it without it
   }
 
@@ -116,8 +110,10 @@ public class ZoomAndPanHost : FrameLayout, IZoomAndPanHost {
   protected override void OnSizeChanged(int w, int h, int oldw, int oldh) {
     base.OnSizeChanged(w, h, oldw, oldh);
     HostSizeChangedEvent?.Invoke(this, EventArgs.Empty);
+    UpdateImageTransform();
   }
 
+  // TODO make animation in ZoomAndPan optional
   public void StartAnimation(double toValue, double duration, bool horizontal, Action onCompleted) {
     // Not implemented (animation skipped)
     onCompleted();
