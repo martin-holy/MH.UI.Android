@@ -32,6 +32,7 @@ public class ZoomAndPanHost : FrameLayout, IZoomAndPanHost {
     _imageView = new ImageView(context) {
       LayoutParameters = new LayoutParams(LayoutParams.MatchParent, LayoutParams.MatchParent)
     };
+    _imageView.SetScaleType(ImageView.ScaleType.Matrix);
     _scaleDetector = new ScaleGestureDetector(context, new ScaleListener(this));
     AddView(_imageView);
   }
@@ -68,7 +69,6 @@ public class ZoomAndPanHost : FrameLayout, IZoomAndPanHost {
     var matrix = new global::Android.Graphics.Matrix();
     matrix.SetScale((float)DataContext.ScaleX, (float)DataContext.ScaleY);
     matrix.PostTranslate((float)DataContext.TransformX, (float)DataContext.TransformY);
-    _imageView.SetScaleType(ImageView.ScaleType.Matrix);
     _imageView.ImageMatrix = matrix;    
     _imageView.RequestLayout(); // TODO test it without it
   }
