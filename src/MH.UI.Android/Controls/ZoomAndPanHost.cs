@@ -10,6 +10,7 @@ namespace MH.UI.Android.Controls;
 
 public class ZoomAndPanHost : FrameLayout, IZoomAndPanHost {
   private ImageView _imageView = null!;
+  private readonly global::Android.Graphics.Matrix _matrix = new();
   private ScaleGestureDetector _scaleDetector = null!;
   private float _lastTouchX;
   private float _lastTouchY;
@@ -56,7 +57,7 @@ public class ZoomAndPanHost : FrameLayout, IZoomAndPanHost {
     _imageView.SetImageBitmap(bitmap);
 
   private void _onDataContextPropertyChanged(object? sender, PropertyChangedEventArgs e) {
-    // TODO agregate change
+    // TODO agregate change if needed. try not to do it this way
     /*if (e.PropertyName is
         nameof(ZoomAndPan.ScaleX) or nameof(ZoomAndPan.ScaleY) or
         nameof(ZoomAndPan.TransformX) or nameof(ZoomAndPan.TransformY) or
@@ -66,11 +67,9 @@ public class ZoomAndPanHost : FrameLayout, IZoomAndPanHost {
   }
 
   public void UpdateImageTransform() {
-    var matrix = new global::Android.Graphics.Matrix();
-    matrix.SetScale((float)DataContext.ScaleX, (float)DataContext.ScaleY);
-    matrix.PostTranslate((float)DataContext.TransformX, (float)DataContext.TransformY);
-    _imageView.ImageMatrix = matrix;    
-    _imageView.RequestLayout(); // TODO test it without it
+    _matrix.SetScale((float)DataContext.ScaleX, (float)DataContext.ScaleY);
+    _matrix.PostTranslate((float)DataContext.TransformX, (float)DataContext.TransformY);
+    _imageView.ImageMatrix = _matrix;
   }
 
   public override bool OnTouchEvent(MotionEvent? e) {
