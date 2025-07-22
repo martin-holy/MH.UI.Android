@@ -12,6 +12,7 @@ public class ZoomAndPanHost : FrameLayout, IZoomAndPanHost {
   private ImageView _imageView = null!;
   private readonly global::Android.Graphics.Matrix _matrix = new();
   private ScaleGestureDetector _scaleDetector = null!;
+  private GestureDetector _gestureDetector = null!;
   private float _lastTouchX;
   private float _lastTouchY;
   private bool _isPanning;
@@ -35,6 +36,7 @@ public class ZoomAndPanHost : FrameLayout, IZoomAndPanHost {
     };
     _imageView.SetScaleType(ImageView.ScaleType.Matrix);
     _scaleDetector = new ScaleGestureDetector(context, new ScaleListener(this));
+    _gestureDetector = new GestureDetector(context, new GestureListener(this));
     AddView(_imageView);
   }
 
@@ -73,10 +75,11 @@ public class ZoomAndPanHost : FrameLayout, IZoomAndPanHost {
   }
 
   public override bool OnTouchEvent(MotionEvent? e) {
-    return base.OnTouchEvent(e); // TODO for now
-
     if (e == null) return base.OnTouchEvent(e);
     _scaleDetector.OnTouchEvent(e);
+    _gestureDetector.OnTouchEvent(e);
+
+    return true; // TODO for now
 
     switch (e.Action) {
       case MotionEventActions.Down:
@@ -135,6 +138,19 @@ public class ZoomAndPanHost : FrameLayout, IZoomAndPanHost {
         (focusX - _host.DataContext.TransformX) / _host.DataContext.ScaleX,
         (focusY - _host.DataContext.TransformY) / _host.DataContext.ScaleY);
       _host.DataContext.Zoom(scaleFactor, contentPos);
+
+  private class GestureListener : GestureDetector.SimpleOnGestureListener {
+    private readonly ZoomAndPanHost _host;
+
+    public GestureListener(ZoomAndPanHost host) => _host = host;
+
+    public override bool OnDoubleTap(MotionEvent e) {
+      if (_host.DataContext.IsZoomed)
+        _host.DataContext.ScaleToFit();
+      else
+        _host.DataContext.Zoom(1, new PointD(e.GetX(), e.GetY()));
+
+      _host.UpdateImageTransform();
       return true;
     }
   }
