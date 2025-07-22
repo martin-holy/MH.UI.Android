@@ -27,6 +27,7 @@ public class ZoomAndPanHost : FrameLayout, IZoomAndPanHost {
   public event EventHandler<(PointD, PointD)>? HostMouseDownEvent;
   public event EventHandler? HostMouseUpEvent;
   public event EventHandler<(int, PointD)>? HostMouseWheelEvent;
+  public event EventHandler? SingleTapConfirmedEvent;
 
   public ZoomAndPanHost(Context context) : base(context) => _initialize(context);
 
@@ -143,6 +144,11 @@ public class ZoomAndPanHost : FrameLayout, IZoomAndPanHost {
     private readonly ZoomAndPanHost _host;
 
     public GestureListener(ZoomAndPanHost host) => _host = host;
+
+    public override bool OnSingleTapConfirmed(MotionEvent e) {
+      _host.SingleTapConfirmedEvent?.Invoke(_host, EventArgs.Empty);
+      return true;
+    }
 
     public override bool OnDoubleTap(MotionEvent e) {
       if (_host.DataContext.IsZoomed)
