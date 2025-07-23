@@ -80,31 +80,63 @@ public class ZoomAndPanHost : FrameLayout, IZoomAndPanHost {
     _scaleDetector.OnTouchEvent(e);
     _gestureDetector.OnTouchEvent(e);
 
-    return true; // TODO for now
-
     switch (e.Action) {
       case MotionEventActions.Down:
         _lastTouchX = e.GetX();
         _lastTouchY = e.GetY();
         _isPanning = true;
-        var contentPos = new PointD(
-          (_lastTouchX - DataContext.TransformX) / DataContext.ScaleX,
-          (_lastTouchY - DataContext.TransformY) / DataContext.ScaleY);
-        HostMouseDownEvent?.Invoke(this, (new PointD(_lastTouchX, _lastTouchY), contentPos));
         return true;
 
       case MotionEventActions.Move:
         if (_isPanning && !_scaleDetector.IsInProgress) {
           float x = e.GetX();
           float y = e.GetY();
-          HostMouseMoveEvent?.Invoke(this, new PointD(x, y));
+          double deltaX = x - _lastTouchX;
+          double deltaY = y - _lastTouchY;
+
+          // Calculate image bounds
+          double scaledWidth = DataContext.ContentWidth * DataContext.ScaleX;
+          double scaledHeight = DataContext.ContentHeight * DataContext.ScaleY;
+          double maxX = Math.Max(0, (Width - scaledWidth) / 2);
+          double minX = Math.Min(0, Width - scaledWidth - maxX);
+          double maxY = Math.Max(0, (Height - scaledHeight) / 2);
+          double minY = Math.Min(0, Height - scaledHeight - maxY);
+
+          double newTransformX = DataContext.TransformX + deltaX;
+          double newTransformY = DataContext.TransformY + deltaY;
+
+          if (DataContext.IsZoomed) {
+            if (scaledWidth > Width) {
+              if (newTransformX > maxX) {
+                newTransformX = maxX;
+              }
+              else if (newTransformX < minX) {
+                newTransformX = minX;
+              }
+            }
+
+            if (scaledHeight > Height) {
+              if (newTransformY > maxY) {
+                newTransformY = maxY;
+              }
+              else if (newTransformY < minY) {
+                newTransformY = minY;
+              }
+            }
+
+            DataContext.TransformX = newTransformX;
+            DataContext.TransformY = newTransformY;
+            UpdateImageTransform();
+          }
+
+          _lastTouchX = x;
+          _lastTouchY = y;
           return true;
         }
         break;
 
       case MotionEventActions.Up:
         _isPanning = false;
-        HostMouseUpEvent?.Invoke(this, EventArgs.Empty);
         return true;
     }
     return base.OnTouchEvent(e);
