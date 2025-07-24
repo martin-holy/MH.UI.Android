@@ -4,7 +4,6 @@ using Android.Widget;
 using MH.UI.Controls;
 using MH.Utils.Types;
 using System;
-using System.ComponentModel;
 
 namespace MH.UI.Android.Controls;
 
@@ -14,6 +13,7 @@ public class ZoomAndPanHost : FrameLayout, IZoomAndPanHost {
   private ScaleGestureDetector _scaleDetector = null!;
   private GestureDetector _gestureDetector = null!;
   private bool _isPanning;
+  private bool _isScaling;
   private ZoomAndPan? _dataContext;
 
   public ZoomAndPan DataContext { get => _dataContext ?? throw new NotImplementedException(); }
@@ -68,7 +68,8 @@ public class ZoomAndPanHost : FrameLayout, IZoomAndPanHost {
         return true;
 
       case MotionEventActions.Move:
-        if (_isPanning && !_scaleDetector.IsInProgress) {
+        if (_scaleDetector.IsInProgress) _isScaling = true;
+        if (_isPanning && !_isScaling) {
           HostMouseMoveEvent?.Invoke(this, new PointD(e.GetX(), e.GetY()));
           UpdateImageTransform();
           return true;
@@ -77,6 +78,7 @@ public class ZoomAndPanHost : FrameLayout, IZoomAndPanHost {
 
       case MotionEventActions.Up:
         _isPanning = false;
+        _isScaling = false;
         return true;
     }
     return base.OnTouchEvent(e);
