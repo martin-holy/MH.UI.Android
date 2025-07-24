@@ -40,32 +40,14 @@ public class ZoomAndPanHost : FrameLayout, IZoomAndPanHost {
   }
 
   public ZoomAndPanHost Bind(ZoomAndPan? dataContext) {
-    _setDataContext(dataContext);
+    _dataContext = dataContext;
     if (dataContext == null) return this;
     dataContext.Host = this;
     return this;
   }
 
-  private void _setDataContext(ZoomAndPan? value) {
-    if (_dataContext != null)
-      _dataContext.PropertyChanged -= _onDataContextPropertyChanged;
-    _dataContext = value;
-    if (_dataContext != null)
-      _dataContext.PropertyChanged += _onDataContextPropertyChanged;
-  }
-
   public void SetImageBitmap(global::Android.Graphics.Bitmap? bitmap) =>
     _imageView.SetImageBitmap(bitmap);
-
-  private void _onDataContextPropertyChanged(object? sender, PropertyChangedEventArgs e) {
-    // TODO agregate change if needed. try not to do it this way
-    /*if (e.PropertyName is
-        nameof(ZoomAndPan.ScaleX) or nameof(ZoomAndPan.ScaleY) or
-        nameof(ZoomAndPan.TransformX) or nameof(ZoomAndPan.TransformY) or
-        nameof(ZoomAndPan.ContentWidth) or nameof(ZoomAndPan.ContentHeight)) {
-      _updateImageTransform();
-    }*/
-  }
 
   public void UpdateImageTransform() {
     _matrix.SetScale((float)DataContext.ScaleX, (float)DataContext.ScaleY);
