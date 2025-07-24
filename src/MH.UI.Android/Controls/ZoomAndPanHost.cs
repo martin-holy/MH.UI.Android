@@ -158,19 +158,13 @@ public class ZoomAndPanHost : FrameLayout, IZoomAndPanHost {
     // Not implemented
   }
 
-  private class ScaleListener : ScaleGestureDetector.SimpleOnScaleGestureListener {
-    private readonly ZoomAndPanHost _host;
-
-    public ScaleListener(ZoomAndPanHost host) => _host = host;
-
-    public override bool OnScale(ScaleGestureDetector detector) {
-      var scaleFactor = detector.ScaleFactor;
-      var focusX = detector.FocusX;
-      var focusY = detector.FocusY;
-      var contentPos = new PointD(
-        (focusX - _host.DataContext.TransformX) / _host.DataContext.ScaleX,
-        (focusY - _host.DataContext.TransformY) / _host.DataContext.ScaleY);
-      _host.DataContext.Zoom(scaleFactor, contentPos);
+  private class ScaleListener(ZoomAndPanHost _host) : ScaleGestureDetector.SimpleOnScaleGestureListener {
+    public override bool OnScale(ScaleGestureDetector d) {
+      _host.DataContext.Zoom(_host.DataContext.ScaleX + d.ScaleFactor - 1, new PointD(d.FocusX, d.FocusY));
+      _host.UpdateImageTransform();
+      return true;
+    }
+  }
 
   private class GestureListener : GestureDetector.SimpleOnGestureListener {
     private readonly ZoomAndPanHost _host;
