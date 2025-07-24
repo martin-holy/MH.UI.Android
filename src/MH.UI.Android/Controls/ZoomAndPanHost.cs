@@ -13,8 +13,6 @@ public class ZoomAndPanHost : FrameLayout, IZoomAndPanHost {
   private readonly global::Android.Graphics.Matrix _matrix = new();
   private ScaleGestureDetector _scaleDetector = null!;
   private GestureDetector _gestureDetector = null!;
-  private float _lastTouchX;
-  private float _lastTouchY;
   private bool _isPanning;
   private ZoomAndPan? _dataContext;
 
@@ -82,55 +80,15 @@ public class ZoomAndPanHost : FrameLayout, IZoomAndPanHost {
 
     switch (e.Action) {
       case MotionEventActions.Down:
-        _lastTouchX = e.GetX();
-        _lastTouchY = e.GetY();
         _isPanning = true;
+        // TODO contentPos, but it is not used anyway in android
+        HostMouseDownEvent?.Invoke(this, new(new(e.GetX(), e.GetY()), new()));
         return true;
 
       case MotionEventActions.Move:
         if (_isPanning && !_scaleDetector.IsInProgress) {
-          float x = e.GetX();
-          float y = e.GetY();
-          double deltaX = x - _lastTouchX;
-          double deltaY = y - _lastTouchY;
-
-          // Calculate image bounds
-          double scaledWidth = DataContext.ContentWidth * DataContext.ScaleX;
-          double scaledHeight = DataContext.ContentHeight * DataContext.ScaleY;
-          double maxX = Math.Max(0, (Width - scaledWidth) / 2);
-          double minX = Math.Min(0, Width - scaledWidth - maxX);
-          double maxY = Math.Max(0, (Height - scaledHeight) / 2);
-          double minY = Math.Min(0, Height - scaledHeight - maxY);
-
-          double newTransformX = DataContext.TransformX + deltaX;
-          double newTransformY = DataContext.TransformY + deltaY;
-
-          if (DataContext.IsZoomed) {
-            if (scaledWidth > Width) {
-              if (newTransformX > maxX) {
-                newTransformX = maxX;
-              }
-              else if (newTransformX < minX) {
-                newTransformX = minX;
-              }
-            }
-
-            if (scaledHeight > Height) {
-              if (newTransformY > maxY) {
-                newTransformY = maxY;
-              }
-              else if (newTransformY < minY) {
-                newTransformY = minY;
-              }
-            }
-
-            DataContext.TransformX = newTransformX;
-            DataContext.TransformY = newTransformY;
-            UpdateImageTransform();
-          }
-
-          _lastTouchX = x;
-          _lastTouchY = y;
+          HostMouseMoveEvent?.Invoke(this, new PointD(e.GetX(), e.GetY()));
+          UpdateImageTransform();
           return true;
         }
         break;
@@ -166,11 +124,7 @@ public class ZoomAndPanHost : FrameLayout, IZoomAndPanHost {
     }
   }
 
-  private class GestureListener : GestureDetector.SimpleOnGestureListener {
-    private readonly ZoomAndPanHost _host;
-
-    public GestureListener(ZoomAndPanHost host) => _host = host;
-
+  private class GestureListener(ZoomAndPanHost _host) : GestureDetector.SimpleOnGestureListener {
     public override bool OnSingleTapConfirmed(MotionEvent e) {
       _host.SingleTapConfirmedEvent?.Invoke(_host, EventArgs.Empty);
       return true;
