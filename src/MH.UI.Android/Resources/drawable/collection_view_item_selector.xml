@@ -1,0 +1,37 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:a="http://schemas.android.com/apk/res/android">
+  <item a:left="1dp" a:top="1dp" a:right="1dp" a:bottom="1dp">
+    <shape a:shape="rectangle">
+      <stroke a:width="2dp" a:color="@color/c_black" />
+    </shape>
+  </item>
+  
+  <item a:state_selected="true">
+    <layer-list>
+      <item a:left="1dp" a:top="1dp" a:right="1dp" a:bottom="1dp">
+        <shape a:shape="rectangle">
+          <stroke a:width="2dp" a:color="@color/c_black" />
+        </shape>
+      </item>
+
+      <item>
+        <shape a:shape="rectangle">
+          <stroke a:width="2dp" a:color="@color/c_accent9" />
+        </shape>
+      </item>
+
+      <item a:right="0dp" a:bottom="0dp">
+        <shape a:shape="rectangle">
+          <size a:width="40dp" a:height="40dp" />
+          <solid a:color="@color/c_accent9" />
+          <stroke a:width="1dp" a:color="@color/c_black" />
+          <path
+            a:pathData="M 0,40 L 40,40 L 40,0 Z"
+            a:fillColor="@color/c_accent9"
+            a:strokeColor="@color/c_black"
+            a:strokeWidth="1" />
+        </shape>
+      </item>
+    </layer-list>
+  </item>
+</selector>
