@@ -69,7 +69,7 @@ public class ZoomAndPanHost : FrameLayout, IZoomAndPanHost {
 
       case MotionEventActions.Move:
         if (_scaleDetector.IsInProgress) _isScaling = true;
-        if (_isPanning && !_isScaling) {
+        if (_isPanning && !_isScaling && DataContext.IsZoomed) {
           HostMouseMoveEvent?.Invoke(this, new PointD(e.GetX(), e.GetY()));
           UpdateImageTransform();
           return true;
