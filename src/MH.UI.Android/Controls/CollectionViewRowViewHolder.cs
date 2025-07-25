@@ -7,8 +7,7 @@ using MH.Utils.Interfaces;
 
 namespace MH.UI.Android.Controls;
 
-public class CollectionViewRowViewHolder(View itemView, CollectionViewHost host) : RecyclerView.ViewHolder(itemView) {
-  private readonly CollectionViewHost _host = host;
+public class CollectionViewRowViewHolder(View itemView, CollectionViewHost _host) : RecyclerView.ViewHolder(itemView) {
   private readonly LinearLayout _container = itemView.FindViewById<LinearLayout>(Resource.Id.row_container)!;
 
   public FlatTreeItem? Item { get; private set; }
@@ -24,13 +23,19 @@ public class CollectionViewRowViewHolder(View itemView, CollectionViewHost host)
 
     foreach (var rowItem in row.Leaves) {
       if (_host.GetItemView(_container, group, rowItem) is not { } view) continue;
-      view.Clickable = true;
-      view.Click += (_, _) => {
+
+      var wrapper = new FrameLayout(_container.Context!) {
+        LayoutParameters = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WrapContent, ViewGroup.LayoutParams.WrapContent),
+        Clickable = true
+      };
+      wrapper.SetBackgroundResource(Resource.Drawable.collection_view_item_selector);
+      wrapper.AddView(view);
+      wrapper.Click += (_, _) => {
         if (_host.ViewModel is not { } vm) return;        
         if (vm.CanSelect) vm.SelectItem(row, rowItem, false, false);
         if (vm.CanOpen) vm.OpenItem(rowItem);
       };
-      _container.AddView(view);
+      _container.AddView(wrapper);
     }
   }
 }
