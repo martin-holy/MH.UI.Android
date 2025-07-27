@@ -1,35 +1,42 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <selector xmlns:a="http://schemas.android.com/apk/res/android">
-  <item a:left="1dp" a:top="1dp" a:right="1dp" a:bottom="1dp">
-    <shape a:shape="rectangle">
-      <stroke a:width="2dp" a:color="@color/c_black" />
-    </shape>
-  </item>
-  
   <item a:state_selected="true">
     <layer-list>
-      <item a:left="1dp" a:top="1dp" a:right="1dp" a:bottom="1dp">
-        <shape a:shape="rectangle">
-          <stroke a:width="2dp" a:color="@color/c_black" />
-        </shape>
-      </item>
-
       <item>
         <shape a:shape="rectangle">
           <stroke a:width="2dp" a:color="@color/c_accent9" />
         </shape>
       </item>
 
-      <item a:right="0dp" a:bottom="0dp">
+      <item a:left="2dp" a:top="2dp" a:right="2dp" a:bottom="2dp">
         <shape a:shape="rectangle">
-          <size a:width="40dp" a:height="40dp" />
-          <solid a:color="@color/c_accent9" />
           <stroke a:width="1dp" a:color="@color/c_black" />
+        </shape>
+      </item>
+
+      <item a:gravity="bottom|end" a:width="40dp" a:height="40dp" a:right="2dp" a:bottom="2dp">
+        <vector a:width="40dp" a:height="40dp" a:viewportWidth="40" a:viewportHeight="40">
           <path
             a:pathData="M 0,40 L 40,40 L 40,0 Z"
             a:fillColor="@color/c_accent9"
             a:strokeColor="@color/c_black"
             a:strokeWidth="1" />
+        </vector>
+      </item>
+    </layer-list>
+  </item>
+
+  <item>
+    <layer-list>
+      <item>
+        <shape a:shape="rectangle">
+          <stroke a:width="1dp" a:color="@a:color/transparent" />
+        </shape>
+      </item>
+
+      <item a:left="1dp" a:top="1dp" a:right="1dp" a:bottom="1dp">
+        <shape a:shape="rectangle">
+          <stroke a:width="2dp" a:color="@color/c_black" />
         </shape>
       </item>
     </layer-list>
