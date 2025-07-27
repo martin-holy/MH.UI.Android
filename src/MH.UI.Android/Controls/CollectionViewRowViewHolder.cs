@@ -21,21 +21,8 @@ public class CollectionViewRowViewHolder(View itemView, CollectionViewHost _host
 
     if (item?.TreeItem is not ICollectionViewRow row || row is not ITreeItem { Parent: ICollectionViewGroup group }) return;
 
-    foreach (var rowItem in row.Leaves) {
-      if (_host.GetItemView(_container, group, rowItem) is not { } view) continue;
-
-      var wrapper = new FrameLayout(_container.Context!) {
-        LayoutParameters = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WrapContent, ViewGroup.LayoutParams.WrapContent),
-        Clickable = true
-      };
-      wrapper.SetBackgroundResource(Resource.Drawable.collection_view_item_selector);
-      wrapper.AddView(view);
-      wrapper.Click += (_, _) => {
-        if (_host.ViewModel is not { } vm) return;        
-        if (vm.CanSelect) vm.SelectItem(row, rowItem, false, false);
-        if (vm.CanOpen) vm.OpenItem(rowItem);
-      };
-      _container.AddView(wrapper);
-    }
+    foreach (var rowItem in row.Leaves)
+      if (_host.GetItemView(_container, group, rowItem) is { } view)
+        _container.AddView(new CollectionViewItem(_container.Context!).Bind(_host, row, rowItem, view));
   }
 }
