@@ -4,6 +4,10 @@ using Android.Widget;
 using MH.UI.Android.Extensions;
 using MH.UI.Controls;
 using MH.UI.Interfaces;
+using MH.Utils.Extensions;
+using MH.Utils.Interfaces;
+using System;
+using System.ComponentModel;
 
 namespace MH.UI.Android.Controls;
 
@@ -11,7 +15,9 @@ public class CollectionViewItem : FrameLayout {
   private View _border = null!;
   private CollectionViewHost _host = null!;
   private ICollectionViewRow _row = null!;
-  private object _item = null!;
+  private ISelectable? _dataContext;
+
+  public ISelectable DataContext { get => _dataContext ?? throw new NotImplementedException(); }
 
   public CollectionViewItem(Context context) : base(context) => _initialize(context);
 
@@ -26,16 +32,19 @@ public class CollectionViewItem : FrameLayout {
     _border.SetBackgroundResource(Resource.Drawable.collection_view_item_selector);
   }
 
-  public CollectionViewItem Bind(CollectionViewHost host, ICollectionViewRow row, object item, View itemView) {
+  public CollectionViewItem Bind(CollectionViewHost host, ICollectionViewRow row, ISelectable dataContext, View itemView) {
+    _updateEvents(_dataContext, dataContext);
+    _dataContext = dataContext;
+    if (_dataContext == null) return this;   
+
     _host = host;
     _row = row;
-    _item = item;
     RemoveAllViews();
 
     if (row.Parent is not ICollectionViewGroup { } group) return this;
 
-    var itemWidth = group.GetItemSize(item, true);
-    var itemHeight = group.GetItemSize(item, false);
+    var itemWidth = group.GetItemSize(dataContext, true);
+    var itemHeight = group.GetItemSize(dataContext, false);
     itemView.LayoutParameters = new MarginLayoutParams(itemWidth, itemHeight);
     itemView.SetMarginUnified(CollectionView.ItemBorderSize);
 
@@ -48,16 +57,26 @@ public class CollectionViewItem : FrameLayout {
     return this;
   }
 
-  private void _onClick(object? sender, System.EventArgs e) {
+  private void _updateEvents(ISelectable? oldValue, ISelectable? newValue) {
+    if (oldValue != null) oldValue.PropertyChanged -= _onDataContextPropertyChanged;
+    if (newValue != null) newValue.PropertyChanged += _onDataContextPropertyChanged;
+  }
+
+  private void _onDataContextPropertyChanged(object? sender, PropertyChangedEventArgs e) {
+    if (e.Is(nameof(ISelectable.IsSelected))) {
+      _border.Selected = DataContext.IsSelected;
+      _border.Invalidate();
+    }
+  }
+
+  private void _onClick(object? sender, EventArgs e) {
     if (_host.ViewModel is not { } vm) return;
-    if (vm.CanSelect) vm.SelectItem(_row, _item, false, false);
-    if (vm.CanOpen) vm.OpenItem(_item);
+    if (vm.CanSelect) vm.SelectItem(_row, DataContext, false, false);
+    if (vm.CanOpen) vm.OpenItem(DataContext);
   }
 
   private void _onLongClick(object? sender, LongClickEventArgs e) {
     if (_host.ViewModel is not { } vm) return;
-    if (vm.CanSelect) vm.SelectItem(_row, _item, false, false);
-    _border.Selected = true; // TODO just for test
-    _border.Invalidate();
+    if (vm.CanSelect) vm.SelectItem(_row, DataContext, false, false);
   }
 }
