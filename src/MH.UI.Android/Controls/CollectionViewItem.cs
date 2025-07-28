@@ -71,12 +71,15 @@ public class CollectionViewItem : FrameLayout {
 
   private void _onClick(object? sender, EventArgs e) {
     if (_host.ViewModel is not { } vm) return;
+    _host.IsMultiSelectOn = false;
     if (vm.CanSelect) vm.SelectItem(_row, DataContext, false, false);
     if (vm.CanOpen) vm.OpenItem(DataContext);
   }
 
   private void _onLongClick(object? sender, LongClickEventArgs e) {
     if (_host.ViewModel is not { } vm) return;
-    if (vm.CanSelect) vm.SelectItem(_row, DataContext, false, false);
+    var isCtrlOn = _host.IsMultiSelectOn;
+    _host.IsMultiSelectOn = true;
+    if (vm.CanSelect) vm.SelectItem(_row, DataContext, isCtrlOn, false);
   }
 }

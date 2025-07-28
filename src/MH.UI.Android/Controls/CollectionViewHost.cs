@@ -4,7 +4,6 @@ using Android.Util;
 using Android.Views;
 using Android.Widget;
 using AndroidX.RecyclerView.Widget;
-using MH.UI.Android.Utils;
 using MH.UI.Controls;
 using MH.UI.Interfaces;
 using MH.Utils.Interfaces;
@@ -19,6 +18,7 @@ public class CollectionViewHost : RelativeLayout, ICollectionViewHost {
   public event EventHandler<bool>? HostIsVisibleChangedEvent;
 
   public CollectionView? ViewModel { get; private set; }
+  public bool IsMultiSelectOn { get; set; }
 
   public Func<LinearLayout, ICollectionViewGroup, object?, View?> GetItemView { get; set; } =
     (container, group, item) => throw new NotImplementedException();
