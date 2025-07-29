@@ -1,4 +1,5 @@
 ﻿using Android.Content;
+using Android.Graphics.Drawables;
 using Android.Views;
 using Android.Widget;
 using MH.UI.Controls;
@@ -7,7 +8,8 @@ using System;
 
 namespace MH.UI.Android.Controls;
 
-public class ZoomAndPanHost : FrameLayout, IZoomAndPanHost {
+public class ZoomAndPanHost : FrameLayout, IZoomAndPanHost, IDisposable {
+  private bool _disposed;
   private ImageView _imageView = null!;
   private readonly global::Android.Graphics.Matrix _matrix = new();
   private ScaleGestureDetector _scaleDetector = null!;
@@ -46,8 +48,11 @@ public class ZoomAndPanHost : FrameLayout, IZoomAndPanHost {
     return this;
   }
 
-  public void SetImageBitmap(global::Android.Graphics.Bitmap? bitmap) =>
+  public void SetImageBitmap(global::Android.Graphics.Bitmap? bitmap) {
+    var oldBitmap = _imageView.Drawable is BitmapDrawable bd ? bd.Bitmap : null;
     _imageView.SetImageBitmap(bitmap);
+    if (oldBitmap?.IsRecycled == false) oldBitmap.Recycle();
+  }
 
   public void UpdateImageTransform() {
     _matrix.SetScale((float)DataContext.ScaleX, (float)DataContext.ScaleY);
@@ -98,6 +103,20 @@ public class ZoomAndPanHost : FrameLayout, IZoomAndPanHost {
 
   public void StopAnimation() {
     // Not implemented
+  }
+
+  protected override void Dispose(bool disposing) {
+    if (_disposed) return;
+
+    if (disposing) {
+      _imageView.Dispose();
+      _matrix.Dispose();
+      _scaleDetector.Dispose();
+      _gestureDetector.Dispose();
+    }
+
+    _disposed = true;
+    base.Dispose(disposing);
   }
 
   private class ScaleListener(ZoomAndPanHost _host) : ScaleGestureDetector.SimpleOnScaleGestureListener {
