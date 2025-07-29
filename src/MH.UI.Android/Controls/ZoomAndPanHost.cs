@@ -2,6 +2,7 @@
 using Android.Graphics.Drawables;
 using Android.Views;
 using Android.Widget;
+using MH.UI.Android.Utils;
 using MH.UI.Controls;
 using MH.Utils.Types;
 using System;
@@ -18,7 +19,7 @@ public class ZoomAndPanHost : FrameLayout, IZoomAndPanHost, IDisposable {
   private bool _isScaling;
   private ZoomAndPan? _dataContext;
 
-  public ZoomAndPan DataContext { get => _dataContext ?? throw new NotImplementedException(); }
+  public ZoomAndPan DataContext { get => _dataContext ?? throw new InvalidOperationException(ErrorMessages.DataContextNotInitialized); }
   double IZoomAndPanHost.Width => Width;
   double IZoomAndPanHost.Height => Height;
 
@@ -51,7 +52,7 @@ public class ZoomAndPanHost : FrameLayout, IZoomAndPanHost, IDisposable {
   public void SetImageBitmap(global::Android.Graphics.Bitmap? bitmap) {
     var oldBitmap = _imageView.Drawable is BitmapDrawable bd ? bd.Bitmap : null;
     _imageView.SetImageBitmap(bitmap);
-    if (oldBitmap?.IsRecycled == false) oldBitmap.Recycle();
+    if (oldBitmap?.IsRecycled == false && bitmap != oldBitmap) oldBitmap.Recycle();
   }
 
   public void UpdateImageTransform() {
@@ -109,6 +110,15 @@ public class ZoomAndPanHost : FrameLayout, IZoomAndPanHost, IDisposable {
     if (_disposed) return;
 
     if (disposing) {
+      HostSizeChangedEvent = null;
+      HostMouseMoveEvent = null;
+      HostMouseDownEvent = null;
+      HostMouseUpEvent = null;
+      HostMouseWheelEvent = null;
+      SingleTapConfirmedEvent = null;
+
+      DataContext.Host = null;
+      _imageView.SetImageBitmap(null);
       _imageView.Dispose();
       _matrix.Dispose();
       _scaleDetector.Dispose();
