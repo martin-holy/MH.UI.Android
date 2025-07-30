@@ -1,4 +1,6 @@
 ﻿using Android.Content;
+using Android.Runtime;
+using Android.Util;
 using Android.Views;
 using Android.Widget;
 using MH.UI.Android.Extensions;
@@ -20,6 +22,8 @@ public class CollectionViewItem : FrameLayout {
   public ISelectable DataContext { get => _dataContext ?? throw new NotImplementedException(); }
 
   public CollectionViewItem(Context context) : base(context) => _initialize(context);
+  public CollectionViewItem(Context context, IAttributeSet attrs) : base(context, attrs) => _initialize(context);
+  protected CollectionViewItem(nint javaReference, JniHandleOwnership transfer) : base(javaReference, transfer) => _initialize(Context!);
 
   private void _initialize(Context context) {
     LayoutParameters = new LayoutParams(ViewGroup.LayoutParams.WrapContent, ViewGroup.LayoutParams.WrapContent);
