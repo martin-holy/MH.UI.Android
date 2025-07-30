@@ -1,5 +1,7 @@
 ﻿using Android.Content;
 using Android.Graphics.Drawables;
+using Android.Runtime;
+using Android.Util;
 using Android.Views;
 using Android.Widget;
 using MH.UI.Android.Utils;
@@ -31,6 +33,8 @@ public class ZoomAndPanHost : FrameLayout, IZoomAndPanHost, IDisposable {
   public event EventHandler? SingleTapConfirmedEvent;
 
   public ZoomAndPanHost(Context context) : base(context) => _initialize(context);
+  public ZoomAndPanHost(Context context, IAttributeSet attrs) : base(context, attrs) => _initialize(context);
+  protected ZoomAndPanHost(nint javaReference, JniHandleOwnership transfer) : base(javaReference, transfer) => _initialize(Context!);
 
   private void _initialize(Context context) {
     _imageView = new ImageView(context) {
