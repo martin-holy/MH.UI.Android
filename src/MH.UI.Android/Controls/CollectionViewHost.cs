@@ -1,6 +1,5 @@
 ﻿using Android.Content;
 using Android.Runtime;
-using Android.Util;
 using Android.Views;
 using Android.Widget;
 using AndroidX.RecyclerView.Widget;
@@ -11,39 +10,46 @@ using System;
 
 namespace MH.UI.Android.Controls;
 
-public class CollectionViewHost : RelativeLayout, ICollectionViewHost {
-  private RecyclerView _recyclerView = null!;
-  private CollectionViewHostAdapter? _adapter;
+public class CollectionViewHost : RelativeLayout, ICollectionViewHost, IDisposable {
+  private bool _disposed;
+  private readonly RecyclerView _recyclerView;
+  private readonly CollectionViewHostAdapter _adapter;
 
   public event EventHandler<bool>? HostIsVisibleChangedEvent;
 
-  public CollectionView? ViewModel { get; private set; }
+  public CollectionView DataContext { get; }
   public bool IsMultiSelectOn { get; set; }
 
-  public Func<LinearLayout, ICollectionViewGroup, object?, View?> GetItemView { get; set; } =
-    (container, group, item) => throw new NotImplementedException();
+  public Func<LinearLayout, ICollectionViewGroup, object?, View?> GetItemView { get; }
 
-  public CollectionViewHost(Context context) : base(context) => _initialize(context);
-  public CollectionViewHost(Context context, IAttributeSet attrs) : base(context, attrs) => _initialize(context);
-  protected CollectionViewHost(nint javaReference, JniHandleOwnership transfer) : base(javaReference, transfer) { }
-
-  private void _initialize(Context context) {
+  public CollectionViewHost(Context context, CollectionView dataContext, Func<LinearLayout, ICollectionViewGroup, object?, View?> getItemView) : base(context) {
+    DataContext = dataContext;
+    GetItemView = getItemView;
     SetBackgroundResource(Resource.Color.c_static_ba);
+
+    _adapter = new CollectionViewHostAdapter(Context!, this);
     _recyclerView = new(context) {
       LayoutParameters = new LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.MatchParent),
     };
     _recyclerView.SetLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.Vertical, false));
+    _recyclerView.SetAdapter(_adapter);
     AddView(_recyclerView);
+
+    DataContext.Host = this;
+    ((TreeView)DataContext).Host = this;
   }
 
-  public CollectionViewHost Bind(CollectionView? viewModel) {
-    ViewModel = viewModel;
-    if (ViewModel == null) return this;
-    ViewModel.Host = this;
-    ((TreeView)ViewModel).Host = this;
-    _adapter = new CollectionViewHostAdapter(Context!, this);
-    _recyclerView.SetAdapter(_adapter);
-    return this;
+  protected override void Dispose(bool disposing) {
+    if (_disposed) return;
+    if (disposing) {
+      HostIsVisibleChangedEvent = null;
+      DataContext.Host = null;
+      ((TreeView)DataContext).Host = null;
+      _adapter.Dispose();
+      _recyclerView.Dispose();
+    }
+    _disposed = true;
+    base.Dispose(disposing);
   }
 
   protected override void OnVisibilityChanged(View changedView, [GeneratedEnum] ViewStates visibility) {
@@ -55,7 +61,7 @@ public class CollectionViewHost : RelativeLayout, ICollectionViewHost {
   protected override void OnSizeChanged(int w, int h, int oldw, int oldh) {
     base.OnSizeChanged(w, h, oldw, oldh);
 
-    if (Visibility == ViewStates.Visible && ViewModel?.RootHolder is [ICollectionViewGroup { Width: 0 } group]) {
+    if (Visibility == ViewStates.Visible && DataContext?.RootHolder is [ICollectionViewGroup { Width: 0 } group]) {
       group.Width = w;
       _adapter?.SetItemsSource();
     }
