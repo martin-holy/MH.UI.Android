@@ -50,7 +50,7 @@ public class CollectionViewItem : FrameLayout {
     var itemWidth = group.GetItemSize(dataContext, true);
     var itemHeight = group.GetItemSize(dataContext, false);
     itemView.LayoutParameters = new MarginLayoutParams(itemWidth, itemHeight);
-    itemView.SetMarginUnified(CollectionView.ItemBorderSize);
+    itemView.SetMargin(CollectionView.ItemBorderSize);
 
     _border.LayoutParameters = new LayoutParams(
       itemWidth + (CollectionView.ItemBorderSize * 2),

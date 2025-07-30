@@ -11,7 +11,7 @@ public static class ViewExtensions {
     view.LayoutParameters = layoutParams;
   }
 
-  public static void SetMarginUnified(this View view, int value) =>
+  public static void SetMargin(this View view, int value) =>
     view.SetMargin(value, value, value, value);
 
   public static void SetPadding(this View view, int value) =>
