@@ -1,9 +1,8 @@
 ﻿using Android.Content;
-using Android.Runtime;
-using Android.Util;
 using Android.Views;
 using Android.Widget;
 using AndroidX.RecyclerView.Widget;
+using MH.UI.Android.Extensions;
 using MH.UI.Controls;
 using MH.Utils.Extensions;
 using MH.Utils.Interfaces;
@@ -15,80 +14,75 @@ using System.Linq;
 namespace MH.UI.Android.Controls;
 
 public class TabControlHost : LinearLayout {
-  private RecyclerView _tabHeaders = null!;
-  private FrameLayout _tabContent = null!;
-  private TabControlHostHeaderAdapter? _adapter;
+  private bool _disposed;
+  private readonly RecyclerView _tabHeaders;
+  private readonly FrameLayout _tabContent;
+  private readonly TabControlHostHeaderAdapter _adapter;
   private readonly Dictionary<IListItem, View> _contentViews = [];
+  private readonly Func<LinearLayout, object?, View?> _getItemView;
 
-  public TabControl? DataContext { get; private set; }
-  public Func<LinearLayout, object?, View?> GetItemView { get; set; } =
-    (container, item) => throw new NotImplementedException();
+  public TabControl DataContext { get; }  
 
-  public TabControlHost(Context context) : base(context) => _initialize(context);
-  public TabControlHost(Context context, IAttributeSet attrs) : base(context, attrs) => _initialize(context);
-  protected TabControlHost(nint javaReference, JniHandleOwnership transfer) : base(javaReference, transfer) => _initialize(Context!);
-
-  private void _initialize(Context context) {
+  public TabControlHost(Context context, TabControl dataContext, Func<LinearLayout, object?, View?> getItemView) : base(context) {
+    DataContext = dataContext;
+    _getItemView = getItemView;
     Orientation = Orientation.Vertical;
     SetBackgroundResource(Resource.Color.c_static_ba);
+    _adapter = new TabControlHostHeaderAdapter(dataContext);
 
-    var genPadding = context.Resources!.GetDimensionPixelSize(Resource.Dimension.general_padding);
     _tabHeaders = new(context) {
       LayoutParameters = new LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.WrapContent),
+      ScrollBarStyle = ScrollbarStyles.OutsideOverlay
     };
     _tabHeaders.SetLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.Horizontal, false));
-    _tabHeaders.ScrollBarStyle = ScrollbarStyles.OutsideOverlay;
-    _tabHeaders.SetPadding(genPadding, genPadding, genPadding, genPadding);
+    _tabHeaders.SetPadding(context.Resources!.GetDimensionPixelSize(Resource.Dimension.general_padding));
+    _tabHeaders.SetAdapter(_adapter);
     AddView(_tabHeaders);
 
     _tabContent = new(context) {
       LayoutParameters = new LayoutParams(ViewGroup.LayoutParams.MatchParent, 0, 1),
     };
     AddView(_tabContent);
-  }
 
-  public TabControlHost Bind(TabControl? dataContext) {
-    _updateEvents(DataContext, dataContext);
-    DataContext = dataContext;
-    if (DataContext == null) return this;      
-    _adapter = new TabControlHostHeaderAdapter(DataContext);
-    _tabHeaders.SetAdapter(_adapter);
+    dataContext.Tabs.CollectionChanged += _onTabsChanged;
+    dataContext.PropertyChanged += _onDataContextPropertyChanged;
     _updateContent();
-    return this;
   }
 
-  private void _updateEvents(TabControl? oldValue, TabControl? newValue) {
-    if (oldValue != null) {
-      oldValue.Tabs.CollectionChanged -= _onTabsChanged;
-      oldValue.PropertyChanged -= _onDataContextPropertyChanged;
-    }
+  protected override void Dispose(bool disposing) {
+    if (_disposed) return;
+    if (disposing) {
+      DataContext.Tabs.CollectionChanged -= _onTabsChanged;
+      DataContext.PropertyChanged -= _onDataContextPropertyChanged;
 
-    if (newValue != null) {
-      newValue.Tabs.CollectionChanged += _onTabsChanged;
-      newValue.PropertyChanged += _onDataContextPropertyChanged;
+      foreach (var view in _contentViews.Values)
+        _tabContent.RemoveView(view);
+      _contentViews.Clear();
+
+      _adapter.Dispose();
+      _tabHeaders.Dispose();
+      _tabContent.Dispose();
     }
+    _disposed = true;
+    base.Dispose(disposing);
   }
 
   private void _onTabsChanged(object? sender, NotifyCollectionChangedEventArgs e) {
     if (e.Action is NotifyCollectionChangedAction.Remove or NotifyCollectionChangedAction.Reset)
-      foreach (var item in e.OldItems?.Cast<IListItem>() ?? []) {
-        if (_contentViews.TryGetValue(item, out var view)) {
+      foreach (var item in e.OldItems?.Cast<IListItem>() ?? [])
+        if (_contentViews.Remove(item, out var view))
           _tabContent.RemoveView(view);
-          _contentViews.Remove(item);
-        }
-      }
 
     _updateContent();
   }
 
   private void _onDataContextPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e) {
-    if (e.Is(nameof(TabControl.Selected)))
-      _updateContent();
+    if (e.Is(nameof(TabControl.Selected))) _updateContent();
   }
 
   private void _updateContent() {
-    if (DataContext?.Selected is not { } selectedItem) {
-      _adapter?.NotifyDataSetChanged();
+    if (DataContext.Selected is not { } selectedItem) {
+      _adapter.NotifyDataSetChanged();
       return;
     }
 
@@ -96,21 +90,20 @@ public class TabControlHost : LinearLayout {
       var container = new LinearLayout(Context!) {
         LayoutParameters = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.MatchParent)
       };
-      view = GetItemView(container, selectedItem.Data);
+      view = _getItemView(container, selectedItem.Data);
       if (view != null) {
         container.AddView(view);
         _contentViews[selectedItem] = container;
       }
     }
 
-    if (view != null) {
+    if (view != null)
       foreach (var kvp in _contentViews) {
         kvp.Value.Visibility = kvp.Key == selectedItem ? ViewStates.Visible : ViewStates.Invisible;
         if (kvp.Value.Parent == null)
           _tabContent.AddView(kvp.Value);
       }
-    }
 
-    _adapter?.NotifyDataSetChanged();
+    _adapter.NotifyDataSetChanged();
   }
 }
