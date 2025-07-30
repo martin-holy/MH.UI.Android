@@ -4,9 +4,7 @@ using MH.UI.Controls;
 
 namespace MH.UI.Android.Controls;
 
-public class TabControlHostHeaderAdapter(TabControl tabControl) : RecyclerView.Adapter {
-  private readonly TabControl _tabControl = tabControl;
-
+public class TabControlHostHeaderAdapter(TabControl _tabControl) : RecyclerView.Adapter {
   public override int ItemCount => _tabControl.Tabs.Count;
 
   public override RecyclerView.ViewHolder OnCreateViewHolder(ViewGroup parent, int viewType) {
