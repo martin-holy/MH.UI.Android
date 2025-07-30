@@ -13,4 +13,7 @@ public static class ViewExtensions {
 
   public static void SetMarginUnified(this View view, int value) =>
     view.SetMargin(value, value, value, value);
+
+  public static void SetPadding(this View view, int value) =>
+    view.SetPadding(value, value, value, value);
 }
