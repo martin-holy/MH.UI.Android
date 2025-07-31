@@ -1,8 +1,7 @@
 ﻿using Android.Content;
-using Android.Runtime;
-using Android.Util;
 using Android.Views;
 using Android.Widget;
+using MH.UI.Android.Extensions;
 using MH.UI.Android.Utils;
 using MH.Utils.BaseClasses;
 using System;
@@ -12,32 +11,19 @@ using System.Linq;
 namespace MH.UI.Android.Controls;
 
 public class ButtonMenu : LinearLayout {
-  private ImageButton _menuButton = null!;
-  private PopupWindow? _rootMenu;
-  private MenuItem? _root;
+  private readonly ImageButton _menuButton;
+  private readonly PopupWindow _rootMenu;
 
-  public MenuItem? Root {
-    get => _root;
-    set {
-      _root = value;
-      if (_root == null) return;
-      _menuButton.SetImageDrawable(Icons.GetIcon(Context, _root.Icon));
-      _rootMenu = CreateMenu(Context!, _menuButton, _root);
-    }
-  }
-
-  public ButtonMenu(Context context) : base(context) => _initialize(context);
-  public ButtonMenu(Context context, IAttributeSet attrs) : base(context, attrs) => _initialize(context);
-  protected ButtonMenu(nint javaReference, JniHandleOwnership transfer) : base(javaReference, transfer) => _initialize(Context!);
-
-  private void _initialize(Context context) {
+  public ButtonMenu(Context context, MenuItem root) : base(context) {
     Orientation = Orientation.Horizontal;
 
     var imgBtnSize = context.Resources!.GetDimensionPixelSize(Resource.Dimension.image_button_size);
     _menuButton = new(context) {
       LayoutParameters = new(imgBtnSize, imgBtnSize)
     };
-    _menuButton.Click += (_, _) => _rootMenu?.ShowAsDropDown(_menuButton);
+    _menuButton.SetImageDrawable(Icons.GetIcon(Context, root.Icon));
+    _rootMenu = CreateMenu(Context!, _menuButton, root);
+    _menuButton.Click += (_, _) => _rootMenu.ShowAsDropDown(_menuButton);
     AddView(_menuButton);
   }
 
@@ -50,7 +36,7 @@ public class ButtonMenu : LinearLayout {
       Adapter = new ButtonMenuAdapter(context, [.. root.Items.Cast<MenuItem>()], parent)
     };
     listView.SetBackgroundResource(Resource.Drawable.view_border);
-    listView.SetPadding(DisplayU.DpToPx(1), DisplayU.DpToPx(1), DisplayU.DpToPx(1), DisplayU.DpToPx(1));
+    listView.SetPadding(DisplayU.DpToPx(1));
 
     // Measure ListView with screen constraints
     int maxWidth = DisplayU.Metrics.WidthPixels;
@@ -67,14 +53,14 @@ public class ButtonMenu : LinearLayout {
 }
 
 public class ButtonMenuAdapter(Context context, List<MenuItem> items, View parent) :
-  ArrayAdapter<MenuItem>(context, Resource.Layout.menu_item, items) {
+  ArrayAdapter<MenuItem>(context, 0, items) {
 
   private readonly List<MenuItem> _items = items;
   private readonly View _parent = parent;
 
   public override View GetView(int position, View? convertView, ViewGroup parent) {
     var item = _items[position];
-    var view = new MenuItemHost(Context).Bind(item);
+    var view = new MenuItemHost(Context, item);
     view.Click += _onMenuItemClick;
 
     return view;
