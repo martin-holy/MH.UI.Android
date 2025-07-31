@@ -1,29 +1,35 @@
-﻿using Android.Views;
+﻿using Android.Content;
+using Android.Graphics;
+using Android.Views;
 using Android.Widget;
 using AndroidX.RecyclerView.Widget;
+using MH.UI.Android.Extensions;
 using MH.UI.Android.Utils;
 using MH.Utils.BaseClasses;
+using System;
 
 namespace MH.UI.Android.Controls;
 
 public class CollectionViewGroupViewHolder : RecyclerView.ViewHolder {
+  private readonly LinearLayout _container;
   private readonly ImageView _expandedIcon;
   private readonly ImageView _icon;
   private readonly TextView _name;
+  private FlatTreeItem? _item;
 
-  public CollectionViewGroupViewHolder(View itemView) : base(itemView) {
-    _expandedIcon = itemView.FindViewById<ImageView>(Resource.Id.expanded_icon)!;
+  public CollectionViewGroupViewHolder(Context context) : base(_createContainerView(context)) {
+    _expandedIcon = _createExpandedIconView(context);
     _expandedIcon.Click += _onExpandedChanged;
-
-    _icon = itemView.FindViewById<ImageView>(Resource.Id.icon)!;
-    _name = itemView.FindViewById<TextView>(Resource.Id.name)!;
+    _icon = _createIconView(context);
+    _name = _createNameView(context);
+    _container = (LinearLayout)ItemView;
+    _container.AddView(_expandedIcon);
+    _container.AddView(_icon);
+    _container.AddView(_name);
   }
 
-  public FlatTreeItem? Item { get; private set; }
-
-  public void Bind(FlatTreeItem? item) {
-    Item = item;
-    if (item == null) return;
+  public void Bind(FlatTreeItem item) {
+    _item = item;
 
     int indent = item.Level * ItemView.Resources!.GetDimensionPixelSize(Resource.Dimension.flat_tree_item_indent_size);
     ItemView.SetPadding(indent, ItemView.PaddingTop, ItemView.PaddingRight, ItemView.PaddingBottom);
@@ -36,11 +42,55 @@ public class CollectionViewGroupViewHolder : RecyclerView.ViewHolder {
     _name.SetText(item.TreeItem.Name, TextView.BufferType.Normal);
   }
 
-  public static CollectionViewGroupViewHolder Create(ViewGroup parent) =>
-    new(LayoutInflater.From(parent.Context)!.Inflate(Resource.Layout.collection_view_group, parent, false)!);
+  private void _onExpandedChanged(object? sender, EventArgs e) {
+    if (_item == null) return;
+    _item.TreeItem.IsExpanded = !_item.TreeItem.IsExpanded;
+  }
 
-  private void _onExpandedChanged(object? sender, System.EventArgs e) {
-    if (Item == null) return;
-    Item.TreeItem.IsExpanded = !Item.TreeItem.IsExpanded;
+  private static LinearLayout _createContainerView(Context context) {
+    var container = new LinearLayout(context) {
+      LayoutParameters = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.WrapContent),
+      Orientation = Orientation.Horizontal
+    };
+    container.SetGravity(GravityFlags.CenterVertical);
+    container.SetPadding(context.Resources!.GetDimensionPixelSize(Resource.Dimension.general_padding));
+    container.SetBackgroundResource(Resource.Color.gray1);
+
+    return container;
+  }
+
+  private static ImageView _createExpandedIconView(Context context) {
+    var icon = new ImageView(context) {
+      Clickable = true,
+      Focusable = true,
+      LayoutParameters = new LinearLayout.LayoutParams(DisplayU.DpToPx(32), DisplayU.DpToPx(32)) {
+        MarginStart = DisplayU.DpToPx(4),
+        Gravity = GravityFlags.CenterVertical
+      }
+    };
+    icon.SetScaleType(ImageView.ScaleType.Center);
+    icon.SetImageResource(Resource.Drawable.tree_item_expanded_selector);
+
+    return icon;
+  }
+
+  private static ImageView _createIconView(Context context) =>
+    new(context) {
+      LayoutParameters = new LinearLayout.LayoutParams(DisplayU.DpToPx(24), DisplayU.DpToPx(24)) {
+        MarginStart = DisplayU.DpToPx(8),
+        Gravity = GravityFlags.CenterVertical
+      }
+    };
+
+  private static TextView _createNameView(Context context) {
+    var textView = new TextView(context) {
+      LayoutParameters = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WrapContent, ViewGroup.LayoutParams.WrapContent) {
+        MarginStart = DisplayU.DpToPx(8),
+        Gravity = GravityFlags.CenterVertical
+      }
+    };
+    textView.SetTextColor(new Color(context.Resources.GetColor(Resource.Color.c_static_fo, context.Theme)));
+
+    return textView;
   }
 }

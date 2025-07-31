@@ -12,7 +12,7 @@ public class CollectionViewHostAdapter(Context context, CollectionViewHost _host
 
   public override RecyclerView.ViewHolder OnCreateViewHolder(ViewGroup parent, int viewType) =>
     viewType == 0
-      ? CollectionViewGroupViewHolder.Create(parent)
+      ? new CollectionViewGroupViewHolder(parent.Context!)
       : new CollectionViewRowViewHolder(parent.Context!, _host);
 
   public override void OnBindViewHolder(RecyclerView.ViewHolder holder, int position) {
