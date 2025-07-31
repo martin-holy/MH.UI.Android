@@ -1,28 +1,39 @@
-﻿using Android.Views;
+﻿using Android.Content;
+using Android.Views;
 using Android.Widget;
 using AndroidX.RecyclerView.Widget;
+using MH.UI.Android.Extensions;
 using MH.UI.Interfaces;
 using MH.Utils.BaseClasses;
 using MH.Utils.Interfaces;
 
 namespace MH.UI.Android.Controls;
 
-public class CollectionViewRowViewHolder(View itemView, CollectionViewHost _host) : RecyclerView.ViewHolder(itemView) {
-  private readonly LinearLayout _container = itemView.FindViewById<LinearLayout>(Resource.Id.row_container)!;
+public class CollectionViewRowViewHolder : RecyclerView.ViewHolder {
+  private readonly LinearLayout _container;
 
-  public FlatTreeItem? Item { get; private set; }
+  public CollectionViewRowViewHolder(Context context) : base(_createContainerView(context)) {
+    _container = (LinearLayout)ItemView;
+  }
 
-  public static CollectionViewRowViewHolder Create(ViewGroup parent, CollectionViewHost host) =>
-    new(LayoutInflater.From(parent.Context)!.Inflate(Resource.Layout.collection_view_row, parent, false)!, host);
-
-  public void Bind(FlatTreeItem? item) {
-    Item = item;
+  public void Bind(FlatTreeItem item, CollectionViewHost cvHost) {
     _container.RemoveAllViews();
 
-    if (item?.TreeItem is not ICollectionViewRow row || row is not ITreeItem { Parent: ICollectionViewGroup group }) return;
+    if (item.TreeItem is not ICollectionViewRow row || row is not ITreeItem { Parent: ICollectionViewGroup group }) return;
 
     foreach (var rowItem in row.Leaves)
-      if (_host.GetItemView(_container, group, rowItem) is { } view)
-        _container.AddView(new CollectionViewItem(_container.Context!).Bind(_host, row, rowItem, view));
+      if (cvHost.GetItemView(_container, group, rowItem) is { } view)
+        _container.AddView(new CollectionViewItem(_container.Context!).Bind(cvHost, row, rowItem, view));
+  }
+
+  private static LinearLayout _createContainerView(Context context) {
+    var container = new LinearLayout(context) {
+      LayoutParameters = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.WrapContent),
+      Orientation = Orientation.Horizontal
+    };
+    container.SetGravity(GravityFlags.CenterVertical);
+    container.SetPadding(context.Resources!.GetDimensionPixelSize(Resource.Dimension.general_padding));
+
+    return container;
   }
 }
