@@ -76,4 +76,18 @@ public class CollectionViewHost : RelativeLayout, ICollectionViewHost, IDisposab
   public void ScrollToItems(object[] items, bool exactly) {
     // TODO PORT
   }
+
+  internal void HandleItemClick(ICollectionViewRow row, CollectionViewItem? itemView) {
+    IsMultiSelectOn = false;
+    if (itemView == null) return;
+    if (DataContext.CanSelect) DataContext.SelectItem(row, itemView.DataContext, false, false);
+    if (DataContext.CanOpen) DataContext.OpenItem(itemView.DataContext);
+  }
+
+  internal void HandleItemLongClick(ICollectionViewRow row, CollectionViewItem? itemView) {
+    if (itemView == null) return;
+    var isCtrlOn = IsMultiSelectOn;
+    IsMultiSelectOn = true;
+    if (DataContext.CanSelect) DataContext.SelectItem(row, itemView.DataContext, isCtrlOn, false);
+  }
 }
