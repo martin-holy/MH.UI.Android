@@ -38,25 +38,30 @@ public class ButtonMenu : LinearLayout {
     listView.SetBackgroundResource(Resource.Drawable.view_border);
     listView.SetPadding(DisplayU.DpToPx(1));
 
-    // Measure ListView with screen constraints
-    int maxWidth = DisplayU.Metrics.WidthPixels;
-    int maxHeight = (int)(DisplayU.Metrics.HeightPixels * 0.6); // Cap at 60% screen
-    listView.Measure(
-      MeasureSpec.MakeMeasureSpec(maxWidth, MeasureSpecMode.AtMost),
-      MeasureSpec.MakeMeasureSpec(maxHeight, MeasureSpecMode.AtMost)
-    );
-    int width = Math.Max(listView.MeasuredWidth, DisplayU.DpToPx(120)); // Min width 120dp
-    int height = Math.Min(listView.MeasuredHeight, maxHeight);
+    var popup = new PopupWindow(listView, DisplayU.DpToPx(200), ViewGroup.LayoutParams.WrapContent, true);
 
-    return new PopupWindow(listView, width, height, true);
+    listView.Post(() => {
+      int maxWidth = 0;
+      for (int i = 0; i < listView.Adapter.Count; i++) {
+        if (listView.Adapter.GetView(i, null, listView) is not { } view) continue;
+        view.Measure(
+          MeasureSpec.MakeMeasureSpec(0, MeasureSpecMode.Unspecified),
+          MeasureSpec.MakeMeasureSpec(0, MeasureSpecMode.Unspecified));
+        maxWidth = Math.Max(maxWidth, view.MeasuredWidth);
+      }
+
+      maxWidth += DisplayU.DpToPx(8);
+      maxWidth = Math.Min(Math.Max(maxWidth, popup.Width), DisplayU.Metrics.WidthPixels);
+
+      popup.Update(maxWidth, popup.Height);
+    });
+
+    return popup;
   }
 }
 
-public class ButtonMenuAdapter(Context context, List<MenuItem> items, View parent) :
-  ArrayAdapter<MenuItem>(context, 0, items) {
-
-  private readonly List<MenuItem> _items = items;
-  private readonly View _parent = parent;
+public class ButtonMenuAdapter(Context context, List<MenuItem> _items, View _parent) :
+  ArrayAdapter<MenuItem>(context, 0, _items) {
 
   public override View GetView(int position, View? convertView, ViewGroup parent) {
     var item = _items[position];
@@ -77,25 +82,10 @@ public class ButtonMenuAdapter(Context context, List<MenuItem> items, View paren
     }
 
     var subPopup = ButtonMenu.CreateMenu(Context!, _parent, item);
-
-    // Position submenu
-    int[] location = new int[2];
+    var location = new int[2];
     host.GetLocationOnScreen(location);
-    int x = location[0] + host.Width; // Right of parent item
-    int y = location[1];
-
-    // Adjust if off-screen
-    var displayMetrics = Context!.Resources!.DisplayMetrics!;
-    int maxX = displayMetrics.WidthPixels - subPopup.Width;
-    int maxY = displayMetrics.HeightPixels - subPopup.Height;
-    x = Math.Min(x, maxX);
-    y = Math.Min(y, maxY);
-
-    // Avoid overlap with parent
-    if (x == location[0] + host.Width && x + subPopup.Width > location[0]) {
-      x = location[0] - subPopup.Width; // Show to left if overlap
-    }
-
+    int x = location[0] + DisplayU.DpToPx(40);
+    int y = location[1] + context.Resources!.GetDimensionPixelSize(Resource.Dimension.menu_item_height);
     subPopup.ShowAtLocation(_parent, GravityFlags.NoGravity, x, y);
   }
 }
