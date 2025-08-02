@@ -20,6 +20,7 @@ public class MenuItemHost : LinearLayout {
       context.Resources!.GetDimensionPixelSize(Resource.Dimension.menu_item_height));
     Orientation = Orientation.Horizontal;
     SetBackgroundResource(Resource.Color.c_static_ba);
+    SetGravity(GravityFlags.CenterVertical);
 
     _icon = _createIconView(context);
     _icon.SetImageDrawable(Icons.GetIcon(Context, item.Icon));
@@ -36,7 +37,6 @@ public class MenuItemHost : LinearLayout {
     new(context) {
       LayoutParameters = new LinearLayout.LayoutParams(DisplayU.DpToPx(24), DisplayU.DpToPx(24)) {
         MarginStart = DisplayU.DpToPx(8),
-        Gravity = GravityFlags.CenterVertical,
         Weight = 0
       }
     };
@@ -45,7 +45,6 @@ public class MenuItemHost : LinearLayout {
     var textView = new TextView(context) {
       LayoutParameters = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WrapContent, ViewGroup.LayoutParams.WrapContent) {
         MarginStart = DisplayU.DpToPx(8),
-        Gravity = GravityFlags.CenterVertical,
         Weight = 1
       }
     };
@@ -58,7 +57,6 @@ public class MenuItemHost : LinearLayout {
   private static ImageView _createSubMenuItemArrow(Context context) {
     var arrow = new ImageView(context) {
       LayoutParameters = new LinearLayout.LayoutParams(DisplayU.DpToPx(12), DisplayU.DpToPx(12)) {
-        Gravity = GravityFlags.CenterVertical,
         Weight = 0,
         RightMargin = context.Resources!.GetDimensionPixelSize(Resource.Dimension.general_padding)
       }
