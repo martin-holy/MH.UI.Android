@@ -1,5 +1,4 @@
 ﻿using Android.Content;
-using Android.Graphics;
 using Android.Views;
 using Android.Widget;
 using AndroidX.RecyclerView.Widget;
@@ -21,7 +20,7 @@ public class CollectionViewGroupViewHolder : RecyclerView.ViewHolder {
     _expandedIcon = ViewBuilder.CreateTreeItemExpandIconView(context);
     _expandedIcon.Click += _onExpandedChanged;
     _icon = _createIconView(context);
-    _name = _createNameView(context);
+    _name = new TextView(context);
     _container = (LinearLayout)ItemView;
     _container.AddView(_expandedIcon);
     _container.AddView(_icon);
@@ -65,15 +64,4 @@ public class CollectionViewGroupViewHolder : RecyclerView.ViewHolder {
         MarginStart = DisplayU.DpToPx(8)
       }
     };
-
-  private static TextView _createNameView(Context context) {
-    var textView = new TextView(context) {
-      LayoutParameters = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WrapContent, ViewGroup.LayoutParams.WrapContent) {
-        MarginStart = DisplayU.DpToPx(8)
-      }
-    };
-    textView.SetTextColor(new Color(context.Resources.GetColor(Resource.Color.c_static_fo, context.Theme)));
-
-    return textView;
-  }
 }
