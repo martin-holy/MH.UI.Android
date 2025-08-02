@@ -10,26 +10,18 @@ using System.Linq;
 
 namespace MH.UI.Android.Controls;
 
-public class ButtonMenu : LinearLayout {
-  private readonly ImageButton _menuButton;
+public class ButtonMenu : IconButton {
   private readonly PopupWindow _rootMenu;
 
   public ButtonMenu(Context context, MenuItem root) : base(context) {
-    Orientation = Orientation.Horizontal;
-
-    var imgBtnSize = context.Resources!.GetDimensionPixelSize(Resource.Dimension.image_button_size);
-    _menuButton = new(context) {
-      LayoutParameters = new(imgBtnSize, imgBtnSize)
-    };
-    _menuButton.SetImageDrawable(Icons.GetIcon(Context, root.Icon));
-    _rootMenu = CreateMenu(Context!, _menuButton, root);
-    _menuButton.Click += (_, _) => _rootMenu.ShowAsDropDown(_menuButton);
-    AddView(_menuButton);
+    SetIcon(root.Icon);
+    _rootMenu = CreateMenu(Context!, this, root);
+    Click += (_, _) => _rootMenu.ShowAsDropDown(this);
   }
 
   public static PopupWindow CreateMenu(Context context, View parent, MenuItem root) {
     var listView = new ListView(context) {
-      LayoutParameters = new(LayoutParams.WrapContent, LayoutParams.WrapContent),
+      LayoutParameters = new(ViewGroup.LayoutParams.WrapContent, ViewGroup.LayoutParams.WrapContent),
       ScrollBarStyle = ScrollbarStyles.OutsideOverlay,
       Divider = null,
       DividerHeight = 0,
