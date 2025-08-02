@@ -18,7 +18,7 @@ public class CollectionViewGroupViewHolder : RecyclerView.ViewHolder {
   private FlatTreeItem? _item;
 
   public CollectionViewGroupViewHolder(Context context) : base(_createContainerView(context)) {
-    _expandedIcon = _createExpandedIconView(context);
+    _expandedIcon = ViewBuilder.CreateTreeItemExpandIconView(context);
     _expandedIcon.Click += _onExpandedChanged;
     _icon = _createIconView(context);
     _name = _createNameView(context);
@@ -57,20 +57,6 @@ public class CollectionViewGroupViewHolder : RecyclerView.ViewHolder {
     container.SetBackgroundResource(Resource.Color.gray1);
 
     return container;
-  }
-
-  private static ImageView _createExpandedIconView(Context context) {
-    var icon = new ImageView(context) {
-      Clickable = true,
-      Focusable = true,
-      LayoutParameters = new LinearLayout.LayoutParams(DisplayU.DpToPx(32), DisplayU.DpToPx(32)) {
-        MarginStart = DisplayU.DpToPx(4)
-      }
-    };
-    icon.SetScaleType(ImageView.ScaleType.Center);
-    icon.SetImageResource(Resource.Drawable.tree_item_expanded_selector);
-
-    return icon;
   }
 
   private static ImageView _createIconView(Context context) =>
