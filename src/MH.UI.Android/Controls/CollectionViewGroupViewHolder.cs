@@ -64,8 +64,7 @@ public class CollectionViewGroupViewHolder : RecyclerView.ViewHolder {
       Clickable = true,
       Focusable = true,
       LayoutParameters = new LinearLayout.LayoutParams(DisplayU.DpToPx(32), DisplayU.DpToPx(32)) {
-        MarginStart = DisplayU.DpToPx(4),
-        Gravity = GravityFlags.CenterVertical
+        MarginStart = DisplayU.DpToPx(4)
       }
     };
     icon.SetScaleType(ImageView.ScaleType.Center);
@@ -77,16 +76,14 @@ public class CollectionViewGroupViewHolder : RecyclerView.ViewHolder {
   private static ImageView _createIconView(Context context) =>
     new(context) {
       LayoutParameters = new LinearLayout.LayoutParams(DisplayU.DpToPx(24), DisplayU.DpToPx(24)) {
-        MarginStart = DisplayU.DpToPx(8),
-        Gravity = GravityFlags.CenterVertical
+        MarginStart = DisplayU.DpToPx(8)
       }
     };
 
   private static TextView _createNameView(Context context) {
     var textView = new TextView(context) {
       LayoutParameters = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WrapContent, ViewGroup.LayoutParams.WrapContent) {
-        MarginStart = DisplayU.DpToPx(8),
-        Gravity = GravityFlags.CenterVertical
+        MarginStart = DisplayU.DpToPx(8)
       }
     };
     textView.SetTextColor(new Color(context.Resources.GetColor(Resource.Color.c_static_fo, context.Theme)));
