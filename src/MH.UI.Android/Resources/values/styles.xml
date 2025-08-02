@@ -4,6 +4,7 @@
     <item name="android:windowBackground">@color/c_static_ba</item>
     <item name="android:imageButtonStyle">@style/mh_ImageButton</item>
     <item name="android:progressBarStyle">@style/mh_ProgressBar</item>
+    <item name="android:textViewStyle">@style/mh_TextView</item>
   </style>
   
   <style name="mh_ImageButton" parent="android:Widget.ImageButton">
@@ -16,5 +17,12 @@
     <item name="android:layout_height">20dp</item>
     <item name="android:progressDrawable">@drawable/progress_bar_progress</item>
     <item name="android:indeterminate">false</item>
+  </style>
+  
+  <style name="mh_TextView" parent="android:Widget.TextView">
+    <item name="android:layout_width">wrap_content</item>
+    <item name="android:layout_height">wrap_content</item>
+    <item name="android:textColor">@color/c_static_fo</item>
+    <item name="android:padding">@dimen/general_padding</item>
   </style>
 </resources>
