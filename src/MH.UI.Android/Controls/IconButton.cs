@@ -1,15 +1,13 @@
 ﻿using Android.Content;
+using Android.Runtime;
+using Android.Util;
 using Android.Widget;
-using MH.UI.Android.Utils;
 
 namespace MH.UI.Android.Controls;
 
 public class IconButton : ImageButton {
-  public IconButton(Context context) : base(context) {
-    var size = context.Resources!.GetDimensionPixelSize(Resource.Dimension.icon_button_size);
-    LayoutParameters = new(size, size);
-  }
-
-  public void SetIcon(string iconName) =>
-    SetImageDrawable(Icons.GetIcon(Context, iconName));
+  public IconButton(Context context) : this(context, null, Resource.Attribute.iconButtonStyle) { }
+  public IconButton(Context context, IAttributeSet? attrs) : this(context, attrs, Resource.Attribute.iconButtonStyle) { }
+  public IconButton(Context context, IAttributeSet? attrs, int defStyleAttr) : base(context, attrs, defStyleAttr) { }
+  protected IconButton(nint javaReference, JniHandleOwnership transfer) : base(javaReference, transfer) { }
 }

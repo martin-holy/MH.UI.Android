@@ -5,6 +5,7 @@
     <item name="android:imageButtonStyle">@style/mh_ImageButton</item>
     <item name="android:progressBarStyle">@style/mh_ProgressBar</item>
     <item name="android:textViewStyle">@style/mh_TextView</item>
+    <item name="iconButtonStyle">@style/mh_IconButton</item>
   </style>
   
   <style name="mh_ImageButton" parent="android:Widget.ImageButton">
@@ -24,5 +25,10 @@
     <item name="android:layout_height">wrap_content</item>
     <item name="android:textColor">@color/c_static_fo</item>
     <item name="android:padding">@dimen/general_padding</item>
+  </style>
+  
+  <style name="mh_IconButton" parent="mh_ImageButton">
+    <item name="android:layout_width">@dimen/icon_button_size</item>
+    <item name="android:layout_height">@dimen/icon_button_size</item>
   </style>
 </resources>
