@@ -14,7 +14,7 @@ public class ButtonMenu : IconButton {
   private readonly PopupWindow _rootMenu;
 
   public ButtonMenu(Context context, MenuItem root) : base(context) {
-    SetIcon(root.Icon);
+    SetImageDrawable(Icons.GetIcon(Context, root.Icon));
     _rootMenu = CreateMenu(Context!, this, root);
     Click += (_, _) => _rootMenu.ShowAsDropDown(this);
   }
