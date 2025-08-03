@@ -11,7 +11,8 @@ public static class ViewBuilder {
       Clickable = true,
       Focusable = true,
       LayoutParameters = new LinearLayout.LayoutParams(size, size) {
-        MarginStart = generalPadding
+        MarginStart = generalPadding,
+        MarginEnd = generalPadding
       }
     };
     icon.SetScaleType(ImageView.ScaleType.Center);
