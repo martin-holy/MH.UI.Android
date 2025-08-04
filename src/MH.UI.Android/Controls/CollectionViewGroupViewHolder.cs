@@ -19,7 +19,7 @@ public class CollectionViewGroupViewHolder : RecyclerView.ViewHolder {
   public CollectionViewGroupViewHolder(Context context) : base(_createContainerView(context)) {
     _expandedIcon = ViewBuilder.CreateTreeItemExpandIconView(context);
     _expandedIcon.Click += _onExpandedChanged;
-    _icon = _createIconView(context);
+    _icon = new IconButton(context);
     _name = new TextView(context);
     _container = (LinearLayout)ItemView;
     _container.AddView(_expandedIcon);
@@ -57,11 +57,4 @@ public class CollectionViewGroupViewHolder : RecyclerView.ViewHolder {
 
     return container;
   }
-
-  private static ImageView _createIconView(Context context) =>
-    new(context) {
-      LayoutParameters = new LinearLayout.LayoutParams(DisplayU.DpToPx(24), DisplayU.DpToPx(24)) {
-        MarginStart = DisplayU.DpToPx(8)
-      }
-    };
 }
