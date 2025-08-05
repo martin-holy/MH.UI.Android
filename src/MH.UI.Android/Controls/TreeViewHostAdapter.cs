@@ -14,20 +14,20 @@ namespace MH.UI.Android.Controls;
 
 public class TreeViewHostAdapter : RecyclerView.Adapter {
   protected readonly Context _context;
-  protected readonly TreeView _viewModel;
+  protected readonly TreeViewHost _host;
   protected FlatTreeItem[] _items = [];
 
-  public TreeViewHostAdapter(Context context, TreeView viewModel) {
+  public TreeViewHostAdapter(Context context, TreeViewHost host) {
     _context = context;
-    _viewModel = viewModel;
-    _viewModel.RootHolder.CollectionChanged += _onTreeItemsChanged;
+    _host = host;
+    _host.DataContext.RootHolder.CollectionChanged += _onTreeItemsChanged;
     SetItemsSource();
   }
 
   public override int ItemCount => _items.Length;
 
   public override RecyclerView.ViewHolder OnCreateViewHolder(ViewGroup parent, int viewType) =>
-    new FlatTreeItemViewHolder(parent.Context!, _viewModel);
+    new FlatTreeItemViewHolder(parent.Context!, _host);
 
   public override void OnBindViewHolder(RecyclerView.ViewHolder holder, int position) =>
     ((FlatTreeItemViewHolder)holder).Bind(_items[position]);
@@ -36,7 +36,7 @@ public class TreeViewHostAdapter : RecyclerView.Adapter {
     SetItemsSource();
 
   internal void SetItemsSource() {
-    var newFlatItems = Tree.ToFlatTreeItems(_viewModel.RootHolder);
+    var newFlatItems = Tree.ToFlatTreeItems(_host.DataContext.RootHolder);
     _updateTreeItemSubscriptions(_items, newFlatItems);
     _items = [.. newFlatItems];
     Tasks.Dispatch(NotifyDataSetChanged);
