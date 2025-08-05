@@ -1,6 +1,5 @@
 ﻿using Android.Content;
 using Android.Runtime;
-using Android.Util;
 using Android.Views;
 using Android.Widget;
 using AndroidX.RecyclerView.Widget;
@@ -11,33 +10,38 @@ using System;
 namespace MH.UI.Android.Controls;
 
 public class TreeViewHost : RelativeLayout, ITreeViewHost {
-  private RecyclerView _recyclerView = null!;
-  private TreeViewHostAdapter? _adapter;
+  private readonly RecyclerView _recyclerView;
+  private readonly TreeViewHostAdapter _adapter;
+  private bool _disposed;
+
+  public TreeView DataContext { get; }
+  public Func<View, object?, PopupWindow?> ItemMenuFactory { get; }
 
   public event EventHandler<bool>? HostIsVisibleChangedEvent;
 
-  public TreeView? ViewModel { get; private set; }
-
-  public TreeViewHost(Context context) : base(context) => _initialize(context);
-  public TreeViewHost(Context context, IAttributeSet attrs) : base(context, attrs) => _initialize(context);
-  protected TreeViewHost(nint javaReference, JniHandleOwnership transfer) : base(javaReference, transfer) { }
-
-  private void _initialize(Context context) {
+  public TreeViewHost(Context context, TreeView dataContext, Func<View, object?, PopupWindow?> itemMenuFactory) : base(context) {
+    DataContext = dataContext;
+    ItemMenuFactory = itemMenuFactory;
     SetBackgroundResource(Resource.Color.c_static_ba);
+    DataContext.Host = this;
+
+    _adapter = new TreeViewHostAdapter(Context!, this);
+    
     _recyclerView = new(context) {
       LayoutParameters = new LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.MatchParent),
     };
     _recyclerView.SetLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.Vertical, false));
+    _recyclerView.SetAdapter(_adapter);
     AddView(_recyclerView);
   }
 
-  public TreeViewHost Bind(TreeView? treeView) {
-    ViewModel = treeView;
-    if (ViewModel == null) return this;
-    ViewModel.Host = this;
-    _adapter = new TreeViewHostAdapter(Context!, ViewModel);
-    _recyclerView.SetAdapter(_adapter);
-    return this;
+  protected override void Dispose(bool disposing) {
+    if (_disposed) return;
+    if (disposing) {
+      _adapter.Dispose();
+    }
+    _disposed = true;
+    base.Dispose(disposing);
   }
 
   protected override void OnVisibilityChanged(View changedView, [GeneratedEnum] ViewStates visibility) {
