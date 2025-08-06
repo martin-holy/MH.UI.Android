@@ -9,7 +9,11 @@ using System;
 
 namespace MH.UI.Android.Controls;
 
-public abstract class BaseTreeViewHost<TView, TAdapter> : RelativeLayout, ITreeViewHost
+public interface IAndroidTreeViewHost : ITreeViewHost {
+  public Func<View, object?, PopupWindow?> ItemMenuFactory { get; }
+}
+
+public abstract class BaseTreeViewHost<TView, TAdapter> : RelativeLayout, IAndroidTreeViewHost
     where TView : TreeView
     where TAdapter : BaseTreeViewHostAdapter {
   protected readonly RecyclerView _recyclerView;
