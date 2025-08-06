@@ -67,8 +67,8 @@ public class ButtonMenuAdapter(Context context, List<MenuItem> _items, View _par
     if (sender is not MenuItemHost { DataContext: { } item } host) return;
 
     if (item.Items.Count == 0) {
-      if (item.Command?.CanExecute(null) == true)
-        item.Command.Execute(null);
+      if (item.Command?.CanExecute(item.CommandParameter) == true)
+        item.Command.Execute(item.CommandParameter);
 
       return;
     }
