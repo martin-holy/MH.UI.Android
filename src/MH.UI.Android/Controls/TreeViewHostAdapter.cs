@@ -1,60 +1,15 @@
 ﻿using Android.Content;
 using Android.Views;
 using AndroidX.RecyclerView.Widget;
-using MH.UI.Controls;
-using MH.Utils;
-using MH.Utils.BaseClasses;
-using MH.Utils.Extensions;
-using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.ComponentModel;
-using System.Linq;
 
 namespace MH.UI.Android.Controls;
 
-public class TreeViewHostAdapter : RecyclerView.Adapter {
-  protected readonly Context _context;
-  protected readonly TreeViewHost _host;
-  protected FlatTreeItem[] _items = [];
-
-  public TreeViewHostAdapter(Context context, TreeViewHost host) {
-    _context = context;
-    _host = host;
-    _host.DataContext.RootHolder.CollectionChanged += _onTreeItemsChanged;
-    SetItemsSource();
-  }
-
-  public override int ItemCount => _items.Length;
+public class TreeViewHostAdapter(Context _context, TreeViewHost _host)
+  : BaseTreeViewHostAdapter(_context, _host.DataContext.RootHolder) {
 
   public override RecyclerView.ViewHolder OnCreateViewHolder(ViewGroup parent, int viewType) =>
     new FlatTreeItemViewHolder(parent.Context!, _host);
 
   public override void OnBindViewHolder(RecyclerView.ViewHolder holder, int position) =>
     ((FlatTreeItemViewHolder)holder).Bind(_items[position]);
-
-  private void _onTreeItemsChanged(object? sender, NotifyCollectionChangedEventArgs e) =>
-    SetItemsSource();
-
-  internal void SetItemsSource() {
-    var newFlatItems = Tree.ToFlatTreeItems(_host.DataContext.RootHolder);
-    _updateTreeItemSubscriptions(_items, newFlatItems);
-    _items = [.. newFlatItems];
-    Tasks.Dispatch(NotifyDataSetChanged);
-  }
-
-  private void _updateTreeItemSubscriptions(IEnumerable<FlatTreeItem> oldItems, IEnumerable<FlatTreeItem> newItems) {
-    var o = oldItems.Except(newItems).ToArray();
-    var n = newItems.Except(oldItems).ToArray();
-
-    foreach (var item in o)
-      item.TreeItem.PropertyChanged -= _onTreeItemPropertyChanged;
-
-    foreach (var item in n)
-      item.TreeItem.PropertyChanged += _onTreeItemPropertyChanged;
-  }
-
-  private void _onTreeItemPropertyChanged(object? sender, PropertyChangedEventArgs e) {
-    if (e.Is(nameof(TreeItem.IsExpanded)))
-      SetItemsSource();
-  }
 }
