@@ -6,11 +6,23 @@ using MH.Utils.BaseClasses;
 namespace MH.UI.Android.Controls;
 
 public class ButtonMenu : IconButton {
-  private readonly PopupWindow _rootMenu;
+  private PopupWindow? _rootMenu;
+  private readonly MenuItem _rootItem;
 
   public ButtonMenu(Context context, MenuItem root) : base(context) {
+    _rootItem = root;
     SetImageDrawable(Icons.GetIcon(Context, root.Icon));
-    _rootMenu = MenuFactory.CreateMenu(Context!, this, root);
-    Click += (_, _) => _rootMenu.ShowAsDropDown(this);
+    Click += (_, _) => {
+      _rootMenu ??= MenuFactory.CreateMenu(Context!, this, _rootItem);
+      _rootMenu.ShowAsDropDown(this);
+    };
+  }
+
+  protected override void Dispose(bool disposing) {
+    if (disposing) {
+      _rootMenu?.Dismiss();
+      _rootMenu = null;
+    }
+    base.Dispose(disposing);
   }
 }
