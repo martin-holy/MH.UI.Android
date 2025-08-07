@@ -7,7 +7,7 @@ using MH.Utils.BaseClasses;
 namespace MH.UI.Android.Controls;
 
 public class CollectionViewHostAdapter(Context _context, CollectionViewHost _host)
-  : BaseTreeViewHostAdapter(_context, _host.DataContext.RootHolder) {
+  : TreeViewHostAdapterBase(_context, _host.DataContext.RootHolder) {
 
   public override int GetItemViewType(int position) =>
     _items[position] is FlatTreeItem { TreeItem: ICollectionViewGroup } ? 0 : 1;

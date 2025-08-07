@@ -7,7 +7,7 @@ using System;
 
 namespace MH.UI.Android.Controls;
 
-public class CollectionViewHost : BaseTreeViewHost<CollectionView, CollectionViewHostAdapter>, ICollectionViewHost {
+public class CollectionViewHost : TreeViewHostBase<CollectionView, CollectionViewHostAdapter>, ICollectionViewHost {
   public bool IsMultiSelectOn { get; set; }
   public Func<LinearLayout, ICollectionViewGroup, object?, View?> GetItemView { get; }
 

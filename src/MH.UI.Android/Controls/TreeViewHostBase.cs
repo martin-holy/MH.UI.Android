@@ -13,9 +13,9 @@ public interface IAndroidTreeViewHost : ITreeViewHost {
   public Func<View, object?, PopupWindow?> ItemMenuFactory { get; }
 }
 
-public abstract class BaseTreeViewHost<TView, TAdapter> : RelativeLayout, IAndroidTreeViewHost
+public abstract class TreeViewHostBase<TView, TAdapter> : RelativeLayout, IAndroidTreeViewHost
     where TView : TreeView
-    where TAdapter : BaseTreeViewHostAdapter {
+    where TAdapter : TreeViewHostAdapterBase {
   protected readonly RecyclerView _recyclerView;
   protected TAdapter? _adapter;
   protected bool _disposed;
@@ -24,7 +24,7 @@ public abstract class BaseTreeViewHost<TView, TAdapter> : RelativeLayout, IAndro
   public Func<View, object?, PopupWindow?> ItemMenuFactory { get; }
   public event EventHandler<bool>? HostIsVisibleChangedEvent;
 
-  protected BaseTreeViewHost(Context context, TView dataContext, Func<View, object?, PopupWindow?> itemMenuFactory) : base(context) {
+  protected TreeViewHostBase(Context context, TView dataContext, Func<View, object?, PopupWindow?> itemMenuFactory) : base(context) {
     DataContext = dataContext;
     ItemMenuFactory = itemMenuFactory;
     SetBackgroundResource(Resource.Color.c_static_ba);

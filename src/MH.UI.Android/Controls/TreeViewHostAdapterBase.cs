@@ -12,12 +12,12 @@ using System.Linq;
 
 namespace MH.UI.Android.Controls;
 
-public abstract class BaseTreeViewHostAdapter : RecyclerView.Adapter {
+public abstract class TreeViewHostAdapterBase : RecyclerView.Adapter {
   protected readonly Context _context;
   protected readonly ObservableCollection<ITreeItem> _rootHolder;
   protected FlatTreeItem[] _items = [];
 
-  protected BaseTreeViewHostAdapter(Context context, ObservableCollection<ITreeItem> rootHolder) {
+  protected TreeViewHostAdapterBase(Context context, ObservableCollection<ITreeItem> rootHolder) {
     _context = context;
     _rootHolder = rootHolder;
     rootHolder.CollectionChanged += _onTreeItemsChanged;

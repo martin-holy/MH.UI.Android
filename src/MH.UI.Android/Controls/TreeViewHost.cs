@@ -6,7 +6,7 @@ using System;
 
 namespace MH.UI.Android.Controls;
 
-public class TreeViewHost : BaseTreeViewHost<TreeView, TreeViewHostAdapter>, ITreeViewHost {
+public class TreeViewHost : TreeViewHostBase<TreeView, TreeViewHostAdapter>, ITreeViewHost {
   public TreeViewHost(Context context, TreeView dataContext, Func<View, object?, PopupWindow?> itemMenuFactory)
     : base(context, dataContext, itemMenuFactory) {
     DataContext.Host = this;
