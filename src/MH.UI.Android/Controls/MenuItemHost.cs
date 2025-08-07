@@ -10,11 +10,12 @@ namespace MH.UI.Android.Controls;
 public class MenuItemHost : LinearLayout {
   private readonly ImageView _icon;
   private readonly TextView _text;
+  private readonly ImageView _arrow;
 
-  public MenuItem DataContext { get; }
+  public MenuItem? DataContext { get; private set; }
+  public PopupWindow? SubMenu { get; set; }
 
-  public MenuItemHost(Context context, MenuItem item) : base(context) {
-    DataContext = item;
+  public MenuItemHost(Context context) : base(context) {
     LayoutParameters = new ViewGroup.LayoutParams(
       ViewGroup.LayoutParams.MatchParent,
       context.Resources!.GetDimensionPixelSize(Resource.Dimension.menu_item_height));
@@ -23,14 +24,29 @@ public class MenuItemHost : LinearLayout {
     SetGravity(GravityFlags.CenterVertical);
 
     _icon = _createIconView(context);
-    _icon.SetImageDrawable(Icons.GetIcon(Context, item.Icon));
     _text = _createTextView(context);
-    _text.SetText(item.Text, TextView.BufferType.Normal);
+    _arrow = _createSubMenuItemArrow(context);
+
     AddView(_icon);
     AddView(_text);
+  }
 
-    if (item.Items.Count > 0)
-      AddView(_createSubMenuItemArrow(context));
+  public void Bind(MenuItem item) {
+    DataContext = item;
+    _icon.SetImageDrawable(Icons.GetIcon(Context, item.Icon));
+    _text.SetText(item.Text, TextView.BufferType.Normal);
+
+    if (item.Items.Count > 0 && _arrow.Parent == null) AddView(_arrow);
+    else if (item.Items.Count == 0 && _arrow.Parent != null) RemoveView(_arrow);
+  }
+
+  protected override void Dispose(bool disposing) {
+    if (disposing) {
+      SubMenu?.Dismiss();
+      SubMenu = null;
+      DataContext = null;
+    }
+    base.Dispose(disposing);
   }
 
   private static ImageView _createIconView(Context context) =>
