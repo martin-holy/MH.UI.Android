@@ -45,10 +45,21 @@ public static class MenuFactory {
 }
 
 internal class MenuAdapter(Context context, List<MenuItem> _items, View _parent) : ArrayAdapter<MenuItem>(context, 0, _items) {
+  private readonly Dictionary<int, WeakReference<PopupWindow>> _subMenus = [];
+
   public override View GetView(int position, View? convertView, ViewGroup parent) {
     var item = _items[position];
-    var view = new MenuItemHost(Context, item);
+
+    if (convertView is MenuItemHost view)
+      view.Click -= _onMenuItemClick;
+    else
+      view = new MenuItemHost(Context);
+
+    view.Bind(item);
     view.Click += _onMenuItemClick;
+    view.SubMenu = _subMenus.TryGetValue(item.GetHashCode(), out var weakRef) && weakRef.TryGetTarget(out var subMenu)
+      ? subMenu
+      : null;
 
     return view;
   }
@@ -63,11 +74,27 @@ internal class MenuAdapter(Context context, List<MenuItem> _items, View _parent)
       return;
     }
 
-    var subPopup = MenuFactory.CreateMenu(Context!, _parent, item);
+    if (!_subMenus.TryGetValue(item.GetHashCode(), out var weakRef) || !weakRef.TryGetTarget(out var subMenu)) {
+      subMenu = MenuFactory.CreateMenu(Context!, _parent, item);
+      _subMenus[item.GetHashCode()] = new WeakReference<PopupWindow>(subMenu);
+      host.SubMenu = subMenu;
+    }
+
     var location = new int[2];
     host.GetLocationOnScreen(location);
     int x = location[0] + DisplayU.DpToPx(40);
     int y = location[1] + Context.Resources!.GetDimensionPixelSize(Resource.Dimension.menu_item_height);
-    subPopup.ShowAtLocation(_parent, GravityFlags.NoGravity, x, y);
+    subMenu.ShowAtLocation(_parent, GravityFlags.NoGravity, x, y);
+  }
+
+  protected override void Dispose(bool disposing) {
+    if (disposing) {
+      foreach (var kvp in _subMenus)
+        if (kvp.Value.TryGetTarget(out var popup))
+          popup.Dismiss();
+
+      _subMenus.Clear();
+    }
+    base.Dispose(disposing);
   }
 }
