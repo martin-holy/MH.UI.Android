@@ -1,4 +1,5 @@
 ﻿using Android.OS;
+using MH.UI.Android.Controls;
 
 namespace MH.UI.Android.Utils;
 
@@ -16,8 +17,7 @@ public static class Init {
     //MH.Utils.Imaging.GetBitmapHashPixels = Imaging.GetBitmapHashPixels;
     //MH.Utils.Imaging.ResizeJpg = Imaging.ResizeJpg;
 
-    //MH.UI.Controls.Dialog.SetShowImplementation(DialogHost.Show);
-    //MH.UI.Controls.Dialog.SetShowAsyncImplementation(DialogHost.ShowAsync);
+    MH.UI.Controls.Dialog.SetShowAsyncImplementation(DialogHost.ShowAsync);
 
     _handler = new(Looper.MainLooper!);
     MH.Utils.Tasks.Dispatch = action => _handler.Post(action);
