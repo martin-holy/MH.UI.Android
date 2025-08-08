@@ -121,7 +121,7 @@ public class DialogHost : DialogFragment {
 
   private static IconButton _createTitleCloseBtnView(Context context, Dialog dataContext) {
     var view = new IconButton(context); // todo command bind
-    view.SetImageDrawable(Icons.GetIcon(context, dataContext.Icon)); // todo X icon
+    view.SetImageResource(Resource.Drawable.icon_x_close);
 
     return view;
   }
