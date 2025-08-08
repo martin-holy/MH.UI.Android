@@ -30,5 +30,7 @@
   <style name="mh_IconButton" parent="mh_ImageButton">
     <item name="android:layout_width">@dimen/icon_button_size</item>
     <item name="android:layout_height">@dimen/icon_button_size</item>
+    <item name="android:minWidth">@dimen/icon_button_size</item>
+    <item name="android:minHeight">@dimen/icon_button_size</item>
   </style>
 </resources>
