@@ -8,7 +8,7 @@
   </item>
   <item>
     <shape>
-      <solid a:color="@color/c_static_ba"/>
+      <solid a:color="@android:color/transparent"/>
     </shape>
   </item>
 </selector>
