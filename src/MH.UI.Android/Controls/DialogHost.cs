@@ -4,19 +4,28 @@ using Android.OS;
 using Android.Views;
 using Android.Widget;
 using AndroidX.Fragment.App;
+using MH.UI.Android.Dialogs;
 using MH.UI.Android.Extensions;
 using MH.UI.Android.Utils;
+using MH.UI.Dialogs;
 using MH.Utils.BaseClasses;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Color = Android.Graphics.Color;
 using Dialog = MH.UI.Controls.Dialog;
 
 namespace MH.UI.Android.Controls;
 
+public interface IDialogHostContent {
+  public View Bind(Dialog dataContext);
+}
+
 public class DialogHost : DialogFragment {
   private static FragmentActivity? _currentActivity;
   private static Func<Context, Dialog, View?>? _contentViewFactory;
+  private static LinearLayout? _notImplementedDialog;
+  private static readonly Dictionary<Type, IDialogHostContent> _dialogs = [];
   private readonly Dialog _dataContext;
 
   public DialogHost(Dialog dataContext) {
@@ -38,6 +47,24 @@ public class DialogHost : DialogFragment {
     });
 
     return dataContext.TaskCompletionSource.Task;
+  }
+
+  private static View? _getDialog(Context context, Dialog dataContext) {
+    var type = dataContext.GetType();
+    if (_dialogs.TryGetValue(type, out var dialog))
+      return dialog.Bind(dataContext);
+
+    View? host = dataContext switch {
+      InputDialog => new InputDialogHost(context),
+      _ => null
+    };
+
+    host ??= _contentViewFactory?.Invoke(context, dataContext);
+    dialog = host as IDialogHostContent;
+    if (dialog == null) return _getNotImplementedDialog(context, dataContext);
+    _dialogs.Add(type, dialog);
+
+    return dialog.Bind(dataContext);
   }
 
   public override void OnDismiss(IDialogInterface dialog) {
@@ -67,7 +94,7 @@ public class DialogHost : DialogFragment {
     titleBar.AddView(_createTitleCloseBtnView(context, _dataContext));
     rootView.AddView(titleBar);
 
-    if (_contentViewFactory?.Invoke(context, _dataContext) is { } contentView)
+    if (_getDialog(context, _dataContext) is { } contentView)
       rootView.AddView(contentView);
 
     rootView.AddView(_createButtonsView(context, _dataContext));
@@ -140,6 +167,30 @@ public class DialogHost : DialogFragment {
       btn.Click += (s, e) => button.Command?.Execute(dataContext);
       view.AddView(btn);
     }
+
+    return view;
+  }
+
+  private static LinearLayout _getNotImplementedDialog(Context context, Dialog dataContext) {
+    _notImplementedDialog ??= _createNotImplementedDialog(context);
+    if (_notImplementedDialog.GetChildAt(0) is TextView text)
+      text.SetText($"Dialog {dataContext.GetType()} not implemented", TextView.BufferType.Normal);
+
+    return _notImplementedDialog;
+  }
+
+  private static LinearLayout _createNotImplementedDialog(Context context) {
+    var view = new LinearLayout(context) {
+      Orientation = Orientation.Vertical,
+      LayoutParameters = new ViewGroup.LayoutParams(
+        ViewGroup.LayoutParams.MatchParent,
+        ViewGroup.LayoutParams.WrapContent)
+    };
+
+    var textView = new TextView(context) {
+      Gravity = GravityFlags.Center
+    };
+    view.AddView(textView);
 
     return view;
   }
