@@ -13,7 +13,7 @@ using System.ComponentModel;
 
 namespace MH.UI.Android.Dialogs;
 
-public class InputDialogHost : GridLayout, IDialogHostContent {
+public class InputDialogV : GridLayout, IDialogHostContent {
   private readonly ImageView _icon;
   private readonly TextView _message;
   private readonly EditText _answer;
@@ -21,7 +21,7 @@ public class InputDialogHost : GridLayout, IDialogHostContent {
 
   public InputDialog? DataContext { get; private set; }
 
-  public InputDialogHost(Context context) : base(context) {
+  public InputDialogV(Context context) : base(context) {
     LayoutParameters = new ViewGroup.LayoutParams(
       ViewGroup.LayoutParams.MatchParent,
       ViewGroup.LayoutParams.WrapContent);

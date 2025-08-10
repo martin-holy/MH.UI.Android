@@ -55,7 +55,7 @@ public class DialogHost : DialogFragment {
       return dialog.Bind(dataContext);
 
     View? host = dataContext switch {
-      InputDialog => new InputDialogHost(context),
+      InputDialog => new InputDialogV(context),
       _ => null
     };
 
