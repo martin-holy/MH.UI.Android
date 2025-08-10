@@ -1,11 +1,21 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?> 
 <resources>
   <style name="MHAppTheme" parent="android:Theme.NoTitleBar">
-    <item name="android:windowBackground">@color/c_static_ba</item>
+    <item name="android:windowBackground">@color/c_static_ba</item>    
+    <item name="android:editTextStyle">@style/mh_EditText</item>    
     <item name="android:imageButtonStyle">@style/mh_ImageButton</item>
     <item name="android:progressBarStyle">@style/mh_ProgressBar</item>
     <item name="android:textViewStyle">@style/mh_TextView</item>
     <item name="iconButtonStyle">@style/mh_IconButton</item>
+  </style>
+  
+  <style name="mh_EditText" parent="android:Widget.EditText">
+    <item name="android:background">@drawable/view_border</item>
+    <item name="android:paddingStart">@dimen/general_padding</item>
+    <item name="android:paddingTop">@dimen/general_padding</item>
+    <item name="android:paddingEnd">@dimen/general_padding</item>
+    <item name="android:paddingBottom">@dimen/general_padding</item>
+    <item name="android:textColor">@color/c_static_fo</item>
   </style>
   
   <style name="mh_ImageButton" parent="android:Widget.ImageButton">
