@@ -4,6 +4,7 @@ using Android.Text;
 using Android.Views;
 using Android.Widget;
 using MH.UI.Android.Controls;
+using MH.UI.Android.Extensions;
 using MH.UI.Android.Utils;
 using MH.UI.Controls;
 using MH.UI.Dialogs;
@@ -22,16 +23,7 @@ public class InputDialogV : GridLayout, IDialogContentV {
   public InputDialog? DataContext { get; private set; }
 
   public InputDialogV(Context context) : base(context) {
-    LayoutParameters = new ViewGroup.LayoutParams(
-      ViewGroup.LayoutParams.MatchParent,
-      ViewGroup.LayoutParams.WrapContent);
-    ColumnCount = 2;
-    RowCount = 2;
-
-    SetForegroundGravity(GravityFlags.Center);
-    SetMinimumWidth(DisplayU.DpToPx(300));
-    SetPadding(0, DisplayU.DpToPx(10), 0, DisplayU.DpToPx(10));
-
+    _createThisView();
     _icon = _createIconView(context);
     _message = _createMessageView(context);
     _answer = _createAnswerView(context);
@@ -61,7 +53,7 @@ public class InputDialogV : GridLayout, IDialogContentV {
   private void _onDataContextPropertyChanged(object? sender, PropertyChangedEventArgs e) {
     if (e.Is(nameof(InputDialog.Error)) && _answer.Background != null) {
       if (DataContext!.Error)
-        _answer.Background.SetColorFilter(new Color(0x7F, 0xFF, 0x00, 0x00), PorterDuff.Mode.SrcAtop);
+        _answer.Background.SetColorFilter(new Color(0x7F, 0xFF, 0x00, 0x00), PorterDuff.Mode.SrcAtop); // TODO get color from resources
       else
         _answer.Background.ClearColorFilter();
     }
@@ -82,46 +74,47 @@ public class InputDialogV : GridLayout, IDialogContentV {
     base.Dispose(disposing);
   }
 
-  private static ImageView _createIconView(Context context) {
-    var view = new ImageView(context) {
-      LayoutParameters = new GridLayout.LayoutParams(
-        rowSpec: GridLayout.InvokeSpec(0, 2),
-        columnSpec: GridLayout.InvokeSpec(0)) {
-        Width = DisplayU.DpToPx(32),
-        Height = DisplayU.DpToPx(32),
-        RightMargin = DisplayU.DpToPx(10)
-      }
-    };
-    view.SetForegroundGravity(GravityFlags.Center);
+  private void _createThisView() {
+    LayoutParameters = new ViewGroup.LayoutParams(
+      ViewGroup.LayoutParams.MatchParent,
+      ViewGroup.LayoutParams.WrapContent);
+    ColumnCount = 2;
+    RowCount = 2;
+    
+    SetMinimumWidth(DisplayU.DpToPx(300));
+    SetPadding(0, DisplayU.DpToPx(10), 0, DisplayU.DpToPx(10));
+  }
 
-    return view;
+  private static ImageView _createIconView(Context context) {
+    var lp = new LayoutParams(
+      rowSpec: InvokeSpec(0, 2),
+      columnSpec: InvokeSpec(0)) {
+      Width = DisplayU.DpToPx(32),
+      Height = DisplayU.DpToPx(32)
+    };
+    lp.SetGravity(GravityFlags.Center);
+    lp.SetMargin(DisplayU.DpToPx(10));
+
+    return new ImageView(context) { LayoutParameters = lp };
   }
 
   private static TextView _createMessageView(Context context) {
-    var view = new TextView(context) {
-      LayoutParameters = new GridLayout.LayoutParams(
-        rowSpec: GridLayout.InvokeSpec(0),
-        columnSpec: GridLayout.InvokeSpec(1)) {
-        LeftMargin = DisplayU.DpToPx(5)
-      }
-    };
-    view.SetForegroundGravity(GravityFlags.CenterVertical);
+    var lp = new LayoutParams(rowSpec: InvokeSpec(0), columnSpec: InvokeSpec(1, 1f));
+    lp.SetGravity(GravityFlags.CenterVertical);
+    lp.SetMargin(DisplayU.DpToPx(5));
 
-    return view;
+    return new TextView(context) { LayoutParameters = lp };
   }
 
-  private static EditText _createAnswerView(Context context) {
-    var view = new EditText(context) {
-      LayoutParameters = new GridLayout.LayoutParams(
-        rowSpec: GridLayout.InvokeSpec(1),
-        columnSpec: GridLayout.InvokeSpec(1)) {
+  private static EditText _createAnswerView(Context context) =>
+    new(context) {
+      LayoutParameters = new LayoutParams(
+          rowSpec: InvokeSpec(1),
+          columnSpec: InvokeSpec(1, 1f)) {
         LeftMargin = DisplayU.DpToPx(5),
         RightMargin = DisplayU.DpToPx(10),
         TopMargin = DisplayU.DpToPx(5),
         BottomMargin = DisplayU.DpToPx(5)
       }
     };
-
-    return view;
-  }
 }
