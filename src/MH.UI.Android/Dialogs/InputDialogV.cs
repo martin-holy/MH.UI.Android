@@ -13,7 +13,7 @@ using System.ComponentModel;
 
 namespace MH.UI.Android.Dialogs;
 
-public class InputDialogV : GridLayout, IDialogHostContent {
+public class InputDialogV : GridLayout, IDialogContentV {
   private readonly ImageView _icon;
   private readonly TextView _message;
   private readonly EditText _answer;
@@ -42,12 +42,12 @@ public class InputDialogV : GridLayout, IDialogHostContent {
   }
 
   public View Bind(Dialog dataContext) {
-    if (dataContext is not InputDialog dc) throw new InvalidOperationException();
-    _setDataContext(DataContext, dc);
-    _icon.SetImageDrawable(Icons.GetIcon(Context, dc.Icon));
-    _message.SetText(dc.Message, TextView.BufferType.Normal);
-    _answer.SetText(dc.Answer, TextView.BufferType.Normal);
-    _answer.Hint = dc.ErrorMessage;
+    if (dataContext is not InputDialog vm) throw new InvalidOperationException();
+    _setDataContext(DataContext, vm);
+    _icon.SetImageDrawable(Icons.GetIcon(Context, vm.Icon));
+    _message.SetText(vm.Message, TextView.BufferType.Normal);
+    _answer.SetText(vm.Answer, TextView.BufferType.Normal);
+    _answer.Hint = vm.ErrorMessage;
     _answer.RequestFocus();
     return this;
   }

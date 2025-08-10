@@ -17,7 +17,7 @@ using Dialog = MH.UI.Controls.Dialog;
 
 namespace MH.UI.Android.Controls;
 
-public interface IDialogHostContent {
+public interface IDialogContentV {
   public View Bind(Dialog dataContext);
 }
 
@@ -25,7 +25,7 @@ public class DialogHost : DialogFragment {
   private static FragmentActivity? _currentActivity;
   private static Func<Context, Dialog, View?>? _contentViewFactory;
   private static LinearLayout? _notImplementedDialog;
-  private static readonly Dictionary<Type, IDialogHostContent> _dialogs = [];
+  private static readonly Dictionary<Type, IDialogContentV> _dialogs = [];
   private readonly Dialog _dataContext;
 
   public DialogHost(Dialog dataContext) {
@@ -54,13 +54,13 @@ public class DialogHost : DialogFragment {
     if (_dialogs.TryGetValue(type, out var dialog))
       return dialog.Bind(dataContext);
 
-    View? host = dataContext switch {
+    View? view = dataContext switch {
       InputDialog => new InputDialogV(context),
       _ => null
     };
 
-    host ??= _contentViewFactory?.Invoke(context, dataContext);
-    dialog = host as IDialogHostContent;
+    view ??= _contentViewFactory?.Invoke(context, dataContext);
+    dialog = view as IDialogContentV;
     if (dialog == null) return _getNotImplementedDialog(context, dataContext);
     _dialogs.Add(type, dialog);
 
