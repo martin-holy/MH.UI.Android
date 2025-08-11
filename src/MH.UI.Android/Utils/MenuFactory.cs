@@ -10,6 +10,7 @@ using System.Linq;
 
 namespace MH.UI.Android.Utils;
 
+// TODO try to create it as TreeView in PopupWindow instead of PopupWindow with PopupWindow's
 public static class MenuFactory {
   public static PopupWindow CreateMenu(Context context, View parent, MenuItem root) {
     var listView = new ListView(context) {
