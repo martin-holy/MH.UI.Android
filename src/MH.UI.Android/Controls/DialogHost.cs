@@ -112,6 +112,7 @@ public class DialogHost : DialogFragment {
     return view;
   }
 
+  // TODO BUG background overlaps dialog border
   private static LinearLayout _createTitleBarView(Context context) {
     var view = new LinearLayout(context) {
       LayoutParameters = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.WrapContent),
@@ -154,6 +155,9 @@ public class DialogHost : DialogFragment {
   }
 
   private static LinearLayout _createButtonsView(Context context, Dialog dataContext) {
+    var padding = context.Resources!.GetDimensionPixelSize(Resource.Dimension.general_padding);
+    var margin = padding * 2;
+    var textColor = new Color(context.Resources!.GetColor(Resource.Color.c_static_fo, context.Theme));
     var view = new LinearLayout(context) {
       Orientation = Orientation.Horizontal
     };
@@ -162,8 +166,14 @@ public class DialogHost : DialogFragment {
     // todo bind commands
     foreach (var button in dataContext.Buttons) {
       var btn = new Button(context) {
+        LayoutParameters = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WrapContent, DisplayU.DpToPx(32)),
         Text = ((RelayCommandBase)button.Command).Text
       };
+      btn.SetBackgroundResource(Resource.Drawable.button_background);
+      btn.SetMargin(0, margin, margin, margin);
+      btn.SetMinWidth(DisplayU.DpToPx(48));
+      btn.SetPadding(padding);
+      btn.SetTextColor(textColor);
       btn.Click += (s, e) => button.Command?.Execute(dataContext);
       view.AddView(btn);
     }
