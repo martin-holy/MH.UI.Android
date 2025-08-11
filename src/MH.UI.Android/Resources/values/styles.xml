@@ -19,7 +19,7 @@
   </style>
   
   <style name="mh_ImageButton" parent="android:Widget.ImageButton">
-    <item name="android:background">@drawable/button_background</item>
+    <item name="android:background">@drawable/image_button_background</item>
     <item name="android:padding">@dimen/general_padding</item>
     <item name="android:gravity">center</item>
   </style>
