@@ -29,7 +29,7 @@ public class DialogHost : DialogFragment {
   private static LinearLayout? _notImplementedDialog;
   private static readonly Dictionary<Type, IDialogContentV> _dialogs = [];
   private readonly Dialog _dataContext;
-  private CommandBinding? _closeCommandBinding;
+  private readonly List<CommandBinding> _commandBindings = [];
   private bool _disposed;
 
   public DialogHost(Dialog dataContext) {
@@ -94,7 +94,7 @@ public class DialogHost : DialogFragment {
     if (_disposed) return;
     if (disposing) {
       _dataContext.PropertyChanged -= _onDataContextPropertyChanged;
-      _closeCommandBinding?.Dispose();
+      foreach (var cb in _commandBindings) cb.Dispose();
     }
     _disposed = true;
     base.Dispose(disposing);
@@ -174,12 +174,12 @@ public class DialogHost : DialogFragment {
   private IconButton _createTitleCloseBtnView(Context context, Dialog dataContext) {
     var view = new IconButton(context);
     view.SetImageResource(Resource.Drawable.icon_x_close);
-    _closeCommandBinding = new(view, MH.UI.Controls.Dialog.CloseCommand) { Parameter = dataContext };
+    _commandBindings.Add(new(view, MH.UI.Controls.Dialog.CloseCommand) { Parameter = dataContext });
 
     return view;
   }
 
-  private static LinearLayout _createButtonsView(Context context, Dialog dataContext) {
+  private LinearLayout _createButtonsView(Context context, Dialog dataContext) {
     var padding = context.Resources!.GetDimensionPixelSize(Resource.Dimension.general_padding);
     var margin = padding * 2;
     var textColor = new Color(context.Resources!.GetColor(Resource.Color.c_static_fo, context.Theme));
@@ -188,7 +188,6 @@ public class DialogHost : DialogFragment {
     };
     view.SetGravity(GravityFlags.End);
 
-    // todo bind commands
     foreach (var button in dataContext.Buttons) {
       var btn = new Button(context) {
         LayoutParameters = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WrapContent, DisplayU.DpToPx(32)),
@@ -199,7 +198,7 @@ public class DialogHost : DialogFragment {
       btn.SetMinWidth(DisplayU.DpToPx(48));
       btn.SetPadding(padding);
       btn.SetTextColor(textColor);
-      btn.Click += (s, e) => button.Command?.Execute(dataContext);
+      _commandBindings.Add(new(view, button.Command) { Parameter = dataContext });
       view.AddView(btn);
     }
 
