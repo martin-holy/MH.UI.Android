@@ -9,8 +9,10 @@ using MH.UI.Android.Extensions;
 using MH.UI.Android.Utils;
 using MH.UI.Dialogs;
 using MH.Utils.BaseClasses;
+using MH.Utils.Extensions;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Threading.Tasks;
 using Color = Android.Graphics.Color;
 using Dialog = MH.UI.Controls.Dialog;
@@ -32,6 +34,7 @@ public class DialogHost : DialogFragment {
 
   public DialogHost(Dialog dataContext) {
     _dataContext = dataContext;
+    dataContext.PropertyChanged += _onDataContextPropertyChanged;
   }
 
   public static void Initialize(FragmentActivity activity, Func<Context, Dialog, View?> contentViewFactory) {
@@ -89,10 +92,15 @@ public class DialogHost : DialogFragment {
   protected override void Dispose(bool disposing) {
     if (_disposed) return;
     if (disposing) {
+      _dataContext.PropertyChanged -= _onDataContextPropertyChanged;
       _closeCommandBinding?.Dispose();
     }
     _disposed = true;
     base.Dispose(disposing);
+  }
+
+  private void _onDataContextPropertyChanged(object? sender, PropertyChangedEventArgs e) {
+    if (e.Is(nameof(MH.UI.Controls.Dialog.Result))) Dismiss();
   }
 
   public override View OnCreateView(LayoutInflater? inflater, ViewGroup? container, Bundle? savedInstanceState) {
