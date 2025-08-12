@@ -94,8 +94,12 @@ public class DialogHost : DialogFragment {
     titleBar.AddView(_createTitleCloseBtnView(context, _dataContext));
     view.AddView(titleBar);
 
-    if (_getDialog(context, _dataContext) is { } contentView)
+    if (_getDialog(context, _dataContext) is { } contentView) {
+      if (contentView.Parent is ViewGroup oldParent)
+        oldParent.RemoveView(contentView);
+
       view.AddView(contentView);
+    }
 
     view.AddView(_createButtonsView(context, _dataContext));
 
