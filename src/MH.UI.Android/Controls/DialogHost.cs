@@ -35,6 +35,7 @@ public class DialogHost : DialogFragment {
   public DialogHost(Dialog dataContext) {
     _dataContext = dataContext;
     dataContext.PropertyChanged += _onDataContextPropertyChanged;
+    Cancelable = false;
   }
 
   public static void Initialize(FragmentActivity activity, Func<Context, Dialog, View?> contentViewFactory) {
