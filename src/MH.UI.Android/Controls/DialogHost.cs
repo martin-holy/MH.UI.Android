@@ -27,6 +27,8 @@ public class DialogHost : DialogFragment {
   private static LinearLayout? _notImplementedDialog;
   private static readonly Dictionary<Type, IDialogContentV> _dialogs = [];
   private readonly Dialog _dataContext;
+  private CommandBinding? _closeCommandBinding;
+  private bool _disposed;
 
   public DialogHost(Dialog dataContext) {
     _dataContext = dataContext;
@@ -82,6 +84,15 @@ public class DialogHost : DialogFragment {
     }
 
     return dialog;
+  }
+
+  protected override void Dispose(bool disposing) {
+    if (_disposed) return;
+    if (disposing) {
+      _closeCommandBinding?.Dispose();
+    }
+    _disposed = true;
+    base.Dispose(disposing);
   }
 
   public override View OnCreateView(LayoutInflater? inflater, ViewGroup? container, Bundle? savedInstanceState) {
@@ -151,9 +162,10 @@ public class DialogHost : DialogFragment {
     return view;
   }
 
-  private static IconButton _createTitleCloseBtnView(Context context, Dialog dataContext) {
-    var view = new IconButton(context); // todo command bind
+  private IconButton _createTitleCloseBtnView(Context context, Dialog dataContext) {
+    var view = new IconButton(context);
     view.SetImageResource(Resource.Drawable.icon_x_close);
+    _closeCommandBinding = new(view, MH.UI.Controls.Dialog.CloseCommand) { Parameter = dataContext };
 
     return view;
   }
