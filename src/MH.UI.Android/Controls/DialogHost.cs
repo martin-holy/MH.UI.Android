@@ -86,33 +86,33 @@ public class DialogHost : DialogFragment {
 
   public override View OnCreateView(LayoutInflater? inflater, ViewGroup? container, Bundle? savedInstanceState) {
     var context = container?.Context ?? Activity!;
-    var rootView = _createRootView(context);
+    var view = _createThisView(context);
 
     var titleBar = _createTitleBarView(context);
     titleBar.AddView(_createTitleIconView(context, _dataContext));
     titleBar.AddView(_createTitleTextView(context, _dataContext));
     titleBar.AddView(_createTitleCloseBtnView(context, _dataContext));
-    rootView.AddView(titleBar);
+    view.AddView(titleBar);
 
     if (_getDialog(context, _dataContext) is { } contentView)
-      rootView.AddView(contentView);
+      view.AddView(contentView);
 
-    rootView.AddView(_createButtonsView(context, _dataContext));
+    view.AddView(_createButtonsView(context, _dataContext));
 
-    return rootView;
+    return view;
   }
 
-  private static LinearLayout _createRootView(Context context) {
+  private static LinearLayout _createThisView(Context context) {
     var view = new LinearLayout(context) {
       LayoutParameters = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.WrapContent),
       Orientation = Orientation.Vertical
     };
     view.SetBackgroundResource(Resource.Drawable.dialog_background);
+    view.SetPadding(DisplayU.DpToPx(1));
 
     return view;
   }
 
-  // TODO BUG background overlaps dialog border
   private static LinearLayout _createTitleBarView(Context context) {
     var view = new LinearLayout(context) {
       LayoutParameters = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.WrapContent),
