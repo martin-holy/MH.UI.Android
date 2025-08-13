@@ -73,11 +73,6 @@ public class DialogHost : DialogFragment {
     return dialog.Bind(dataContext);
   }
 
-  public override void OnDismiss(IDialogInterface dialog) {
-    base.OnDismiss(dialog);
-    _dataContext.TaskCompletionSource.TrySetResult(_dataContext.Result);
-  }
-
   public override global::Android.App.Dialog OnCreateDialog(Bundle? savedInstanceState) {
     var dialog = base.OnCreateDialog(savedInstanceState);
 
@@ -95,6 +90,7 @@ public class DialogHost : DialogFragment {
     if (disposing) {
       _dataContext.PropertyChanged -= _onDataContextPropertyChanged;
       foreach (var cb in _commandBindings) cb.Dispose();
+      _commandBindings.Clear();
     }
     _disposed = true;
     base.Dispose(disposing);
