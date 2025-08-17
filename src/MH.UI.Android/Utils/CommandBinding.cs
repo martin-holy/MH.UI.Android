@@ -26,6 +26,10 @@ public sealed class CommandBinding : IDisposable {
     _updateEnabledState();
   }
 
+  public CommandBinding(View view, ICommand command, object? parameter) : this(view, command) {
+    _parameter = parameter;
+  }
+
   private void _onClick(object? sender, EventArgs e) =>
     _command.ExecuteIfCan(_parameter);
 
