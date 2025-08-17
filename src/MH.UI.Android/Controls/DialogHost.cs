@@ -170,7 +170,7 @@ public class DialogHost : DialogFragment {
   private IconButton _createTitleCloseBtnView(Context context, Dialog dataContext) {
     var view = new IconButton(context);
     view.SetImageResource(Resource.Drawable.icon_x_close);
-    _commandBindings.Add(new(view, MH.UI.Controls.Dialog.CloseCommand) { Parameter = dataContext });
+    _commandBindings.Add(new(view, MH.UI.Controls.Dialog.CloseCommand, dataContext));
 
     return view;
   }
@@ -194,7 +194,7 @@ public class DialogHost : DialogFragment {
       btn.SetMinWidth(DisplayU.DpToPx(48));
       btn.SetPadding(padding);
       btn.SetTextColor(textColor);
-      _commandBindings.Add(new(view, button.Command) { Parameter = dataContext });
+      _commandBindings.Add(new(view, button.Command, dataContext));
       view.AddView(btn);
     }
 
