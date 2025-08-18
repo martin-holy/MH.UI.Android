@@ -63,7 +63,7 @@ public abstract class FlatTreeItemViewHolderBase : RecyclerView.ViewHolder {
   }
 
   private void _onIconClick(object? sender, EventArgs e) {
-    if (_treeViewHost.ItemMenuFactory(_icon, DataContext?.TreeItem) is not { } menu) return;
+    if (_treeViewHost.ItemMenuFactory?.Invoke(_icon, DataContext?.TreeItem) is not { } menu) return;
     menu.ShowAsDropDown(_icon);
   }
 

@@ -10,7 +10,7 @@ using System;
 namespace MH.UI.Android.Controls;
 
 public interface IAndroidTreeViewHost : ITreeViewHost {
-  public Func<View, object?, PopupWindow?> ItemMenuFactory { get; }
+  public Func<View, object?, PopupWindow?>? ItemMenuFactory { get; }
 }
 
 public abstract class TreeViewHostBase<TView, TAdapter> : RelativeLayout, IAndroidTreeViewHost
@@ -21,9 +21,10 @@ public abstract class TreeViewHostBase<TView, TAdapter> : RelativeLayout, IAndro
 
   public TView DataContext { get; }
   public TAdapter? Adapter { get; set; }
+  public Func<View, object?, PopupWindow?>? ItemMenuFactory { get; }
   public event EventHandler<bool>? HostIsVisibleChangedEvent;
 
-  protected TreeViewHostBase(Context context, TView dataContext, Func<View, object?, PopupWindow?> itemMenuFactory) : base(context) {
+  protected TreeViewHostBase(Context context, TView dataContext, Func<View, object?, PopupWindow?>? itemMenuFactory) : base(context) {
     DataContext = dataContext;
     ItemMenuFactory = itemMenuFactory;
     SetBackgroundResource(Resource.Color.c_static_ba);
