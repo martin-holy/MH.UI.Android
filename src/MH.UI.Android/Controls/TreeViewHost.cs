@@ -10,7 +10,7 @@ public class TreeViewHost : TreeViewHostBase<TreeView, TreeViewHostAdapter>, ITr
   public TreeViewHost(Context context, TreeView dataContext, Func<View, object?, PopupWindow?> itemMenuFactory)
     : base(context, dataContext, itemMenuFactory) {
     DataContext.Host = this;
-    _adapter = new TreeViewHostAdapter(context, this);
-    _recyclerView.SetAdapter(_adapter);
+    Adapter = new TreeViewHostAdapter(context, this);
+    _recyclerView.SetAdapter(Adapter);
   }
 }

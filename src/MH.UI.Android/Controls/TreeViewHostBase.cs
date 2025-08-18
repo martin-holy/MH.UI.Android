@@ -17,11 +17,10 @@ public abstract class TreeViewHostBase<TView, TAdapter> : RelativeLayout, IAndro
     where TView : TreeView
     where TAdapter : TreeViewHostAdapterBase {
   protected readonly RecyclerView _recyclerView;
-  protected TAdapter? _adapter;
   protected bool _disposed;
 
   public TView DataContext { get; }
-  public Func<View, object?, PopupWindow?> ItemMenuFactory { get; }
+  public TAdapter? Adapter { get; set; }
   public event EventHandler<bool>? HostIsVisibleChangedEvent;
 
   protected TreeViewHostBase(Context context, TView dataContext, Func<View, object?, PopupWindow?> itemMenuFactory) : base(context) {
@@ -41,7 +40,7 @@ public abstract class TreeViewHostBase<TView, TAdapter> : RelativeLayout, IAndro
     if (disposing) {
       HostIsVisibleChangedEvent = null;
       DataContext.Host = null;
-      _adapter?.Dispose();
+      Adapter?.Dispose();
       _recyclerView.Dispose();
     }
     _disposed = true;

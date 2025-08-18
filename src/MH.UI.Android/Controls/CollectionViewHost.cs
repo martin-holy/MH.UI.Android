@@ -21,8 +21,8 @@ public class CollectionViewHost : TreeViewHostBase<CollectionView, CollectionVie
     GetItemView = getItemView;
     DataContext.Host = this;
     ((TreeView)DataContext).Host = this;
-    _adapter = new CollectionViewHostAdapter(context, this);
-    _recyclerView.SetAdapter(_adapter);
+    Adapter = new CollectionViewHostAdapter(context, this);
+    _recyclerView.SetAdapter(Adapter);
   }
 
   protected override void Dispose(bool disposing) {
@@ -36,7 +36,7 @@ public class CollectionViewHost : TreeViewHostBase<CollectionView, CollectionVie
 
     if (Visibility == ViewStates.Visible && DataContext?.RootHolder is [ICollectionViewGroup { Width: 0 } group]) {
       group.Width = w;
-      _adapter?.SetItemsSource();
+      Adapter?.SetItemsSource();
     }
   }
 
