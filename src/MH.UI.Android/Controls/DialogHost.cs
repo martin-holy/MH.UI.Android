@@ -194,7 +194,7 @@ public class DialogHost : DialogFragment {
       btn.SetMinWidth(DisplayU.DpToPx(48));
       btn.SetPadding(padding);
       btn.SetTextColor(textColor);
-      _commandBindings.Add(new(view, button.Command, dataContext));
+      _commandBindings.Add(new(btn, button.Command, dataContext));
       view.AddView(btn);
     }
 
