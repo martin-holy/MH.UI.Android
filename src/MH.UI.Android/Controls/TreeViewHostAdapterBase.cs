@@ -20,7 +20,6 @@ public abstract class TreeViewHostAdapterBase : RecyclerView.Adapter {
   protected TreeViewHostAdapterBase(Context context, ObservableCollection<ITreeItem> rootHolder) {
     _context = context;
     _rootHolder = rootHolder;
-    rootHolder.CollectionChanged += _onTreeItemsChanged;
     SetItemsSource();
   }
 
@@ -40,11 +39,15 @@ public abstract class TreeViewHostAdapterBase : RecyclerView.Adapter {
     var o = oldItems.Except(newItems).ToArray();
     var n = newItems.Except(oldItems).ToArray();
 
-    foreach (var item in o)
+    foreach (var item in o) {
       item.TreeItem.PropertyChanged -= _onTreeItemPropertyChanged;
+      item.TreeItem.Items.CollectionChanged -= _onTreeItemsChanged;
+    }
 
-    foreach (var item in n)
+    foreach (var item in n) {
       item.TreeItem.PropertyChanged += _onTreeItemPropertyChanged;
+      item.TreeItem.Items.CollectionChanged += _onTreeItemsChanged;
+    }
   }
 
   protected void _onTreeItemPropertyChanged(object? sender, PropertyChangedEventArgs e) {
