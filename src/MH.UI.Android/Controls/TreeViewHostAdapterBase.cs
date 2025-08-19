@@ -17,13 +17,14 @@ public abstract class TreeViewHostAdapterBase : RecyclerView.Adapter {
   protected readonly ObservableCollection<ITreeItem> _rootHolder;
   protected FlatTreeItem[] _items = [];
 
+  public override int ItemCount => _items.Length;
+  public IReadOnlyList<FlatTreeItem> Items => _items;
+
   protected TreeViewHostAdapterBase(Context context, ObservableCollection<ITreeItem> rootHolder) {
     _context = context;
     _rootHolder = rootHolder;
     SetItemsSource();
   }
-
-  public override int ItemCount => _items.Length;
 
   internal void SetItemsSource() {
     var newFlatItems = Tree.ToFlatTreeItems(_rootHolder);
