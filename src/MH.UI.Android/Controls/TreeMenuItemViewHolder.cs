@@ -39,12 +39,16 @@ public class TreeMenuItemViewHolder : RecyclerView.ViewHolder {
     base.Dispose(disposing);
   }
 
-  public virtual void Bind(FlatTreeItem? item) {
+  public void Bind(FlatTreeItem? item) {
     DataContext = item;
     if (item == null || item.TreeItem is not MenuItem menuItem) return;
 
     int indent = item.Level * ItemView.Resources!.GetDimensionPixelSize(Resource.Dimension.flat_tree_item_indent_size);
     ItemView.SetPadding(indent, ItemView.PaddingTop, ItemView.PaddingRight, ItemView.PaddingBottom);
+
+    ItemView.Enabled =
+      menuItem.Items.Count > 0 ||
+      menuItem.Command?.CanExecute(menuItem.CommandParameter) == true;
 
     _icon.SetImageDrawable(Icons.GetIcon(ItemView.Context, menuItem.Icon));
 
