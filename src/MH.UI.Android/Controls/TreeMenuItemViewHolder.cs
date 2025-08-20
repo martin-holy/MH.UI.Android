@@ -1,6 +1,7 @@
 ﻿using Android.Content;
 using Android.Views;
 using Android.Widget;
+using AndroidX.Core.Content;
 using AndroidX.RecyclerView.Widget;
 using MH.UI.Android.Extensions;
 using MH.UI.Android.Utils;
@@ -49,7 +50,10 @@ public class TreeMenuItemViewHolder : RecyclerView.ViewHolder {
       menuItem.Items.Count > 0 ||
       menuItem.Command?.CanExecute(menuItem.CommandParameter) == true;
 
-    _icon.SetImageDrawable(Icons.GetIcon(ItemView.Context, menuItem.Icon));
+    var icon = Icons.GetIcon(ItemView.Context, menuItem.Icon);
+    if (!ItemView.Enabled && icon != null)
+      icon.SetTint(ContextCompat.GetColor(ItemView.Context, Resource.Color.c_disabled_fo));
+    _icon.SetImageDrawable(icon);    
 
     _name.SetText(menuItem.Text, TextView.BufferType.Normal);
     _name.Enabled = ItemView.Enabled;
