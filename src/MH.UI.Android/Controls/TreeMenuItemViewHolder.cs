@@ -1,5 +1,4 @@
 ﻿using Android.Content;
-using Android.Graphics;
 using Android.Views;
 using Android.Widget;
 using AndroidX.RecyclerView.Widget;
@@ -53,6 +52,7 @@ public class TreeMenuItemViewHolder : RecyclerView.ViewHolder {
     _icon.SetImageDrawable(Icons.GetIcon(ItemView.Context, menuItem.Icon));
 
     _name.SetText(menuItem.Text, TextView.BufferType.Normal);
+    _name.Enabled = ItemView.Enabled;
 
     _expandedIcon.Visibility = menuItem.Items.Count > 0 ? ViewStates.Visible : ViewStates.Invisible;
     _expandedIcon.Selected = menuItem.IsExpanded;
@@ -104,7 +104,6 @@ public class TreeMenuItemViewHolder : RecyclerView.ViewHolder {
     var textView = new TextView(context) {
       LayoutParameters = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WrapContent, 1f)
     };
-    textView.SetTextColor(new Color(context.Resources!.GetColor(Resource.Color.c_static_fo, context.Theme)));
     textView.SetSingleLine(true);
 
     return textView;
