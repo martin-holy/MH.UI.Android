@@ -33,7 +33,7 @@
   <style name="mh_TextView" parent="android:Widget.TextView">
     <item name="android:layout_width">wrap_content</item>
     <item name="android:layout_height">wrap_content</item>
-    <item name="android:textColor">@color/c_static_fo</item>
+    <item name="android:textColor">@drawable/color_foreground</item>
     <item name="android:padding">@dimen/general_padding</item>
   </style>
   
