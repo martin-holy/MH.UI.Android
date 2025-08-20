@@ -1,27 +1,29 @@
 ﻿using Android.Content;
 using Android.Widget;
 using MH.UI.Android.Utils;
-using MH.Utils.BaseClasses;
+using MH.UI.Controls;
 
 namespace MH.UI.Android.Controls;
 
 public class ButtonMenu : IconButton {
-  private PopupWindow? _rootMenu;
-  private readonly MenuItem _rootItem;
+  private PopupWindow? _menu;
 
-  public ButtonMenu(Context context, MenuItem root) : base(context) {
-    _rootItem = root;
-    SetImageDrawable(Icons.GetIcon(Context, root.Icon));
+  public ButtonMenu(Context context, TreeView dataContext, string? iconName) : base(context) {
+    SetImageDrawable(Icons.GetIcon(Context, iconName));
     Click += (_, _) => {
-      _rootMenu ??= MenuFactory.CreateMenu(Context!, this, _rootItem);
-      _rootMenu.ShowAsDropDown(this);
+      if (_menu == null)
+        _menu = TreeMenuFactory.CreateMenu(Context!, dataContext, this);
+      else if (_menu.ContentView is TreeMenuHost { Adapter: { } adapter })
+        _menu.ContentView.Post(adapter.NotifyDataSetChanged);
+
+      _menu.ShowAsDropDown(this);
     };
   }
 
   protected override void Dispose(bool disposing) {
     if (disposing) {
-      _rootMenu?.Dismiss();
-      _rootMenu = null;
+      _menu?.Dismiss();
+      _menu = null;
     }
     base.Dispose(disposing);
   }
