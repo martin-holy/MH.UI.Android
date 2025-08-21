@@ -25,10 +25,10 @@ public abstract class TreeViewHostBase<TView, TAdapter> : RelativeLayout, IAndro
 
   public TView DataContext { get; }
   public TAdapter? Adapter { get; set; }
-  public Func<object?, IEnumerable<MenuItem>?>? ItemMenuFactory { get; }
+  public Func<object, IEnumerable<MenuItem>?>? ItemMenuFactory { get; }
   public event EventHandler<bool>? HostIsVisibleChangedEvent;
 
-  protected TreeViewHostBase(Context context, TView dataContext, Func<object?, IEnumerable<MenuItem>?>? itemMenuFactory) : base(context) {
+  protected TreeViewHostBase(Context context, TView dataContext, Func<object, IEnumerable<MenuItem>?>? itemMenuFactory) : base(context) {
     DataContext = dataContext;
     ItemMenuFactory = itemMenuFactory;
     SetBackgroundResource(Resource.Color.c_static_ba);
@@ -58,6 +58,7 @@ public abstract class TreeViewHostBase<TView, TAdapter> : RelativeLayout, IAndro
   }
 
   public void ShowItemMenu(View anchor, object? item) {
+    if (item == null) return;
     if (_itemMenuVM == null) {
       _itemMenuVM = new();
       _itemMenuV = new TreeMenuHost(Context!, _itemMenuVM, anchor);

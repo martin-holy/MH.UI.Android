@@ -16,7 +16,7 @@ public class CollectionViewHost : TreeViewHostBase<CollectionView, CollectionVie
   public CollectionViewHost(
     Context context,
     CollectionView dataContext,
-    Func<object?, IEnumerable<MenuItem>?> itemMenuFactory,
+    Func<object, IEnumerable<MenuItem>?> itemMenuFactory,
     Func<LinearLayout, ICollectionViewGroup, object?, View?> getItemView) :
     base(context, dataContext, itemMenuFactory) {
 
