@@ -31,9 +31,6 @@ public class TreeMenuHostSizeObserver(Context context, TreeMenuHost treeMenu, Po
     var currentWidth = treeMenu.Width > 0 ? treeMenu.Width : targetWidth;
     var currentHeight = treeMenu.Height > 0 ? treeMenu.Height : targetHeight;
 
-    if (currentWidth == targetWidth && currentHeight == targetHeight)
-      return;
-
     var lp = treeMenu.LayoutParameters;
     if (lp == null) {
       lp = new ViewGroup.LayoutParams(currentWidth, currentHeight);
