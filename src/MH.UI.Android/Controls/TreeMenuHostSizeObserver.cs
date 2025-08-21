@@ -20,6 +20,7 @@ public class TreeMenuHostSizeObserver(Context context, TreeMenuHost treeMenu, Po
   }
 
   public void UpdatePopupSize() {
+    if (!popup.IsShowing) return;
     var totalWidth = _getTreeMenuWidth(context.Resources!, context, treeMenu.Adapter!.Items);
     var totalHeight = treeMenu.Adapter!.ItemCount * context.Resources!.GetDimensionPixelSize(Resource.Dimension.menu_item_height);
     var maxWidth = DisplayU.Metrics.WidthPixels;
