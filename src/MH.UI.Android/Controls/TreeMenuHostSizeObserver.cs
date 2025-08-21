@@ -1,4 +1,5 @@
-﻿using Android.Content;
+﻿using Android.Animation;
+using Android.Content;
 using Android.Content.Res;
 using Android.Graphics;
 using Android.Views;
@@ -12,15 +13,10 @@ using System.Collections.Generic;
 namespace MH.UI.Android.Controls;
 
 public class TreeMenuHostSizeObserver(Context context, TreeMenuHost treeMenu, PopupWindow popup, View anchor) : RecyclerView.AdapterDataObserver {
-  private int _measuredWidth;
 
   public override void OnChanged() {
     base.OnChanged();
     UpdatePopupSize();
-  }
-
-  public void ResetMeasuredWidth() {
-    _measuredWidth = 0;
   }
 
   public void UpdatePopupSize() {
@@ -29,13 +25,36 @@ public class TreeMenuHostSizeObserver(Context context, TreeMenuHost treeMenu, Po
     var maxWidth = DisplayU.Metrics.WidthPixels;
     var maxHeight = _getTreeMenuHeight(anchor);
 
-    // only grow width during lifetime of popup
-    if (totalWidth > _measuredWidth)
-      _measuredWidth = Math.Min(totalWidth, maxWidth);
-    else if (_measuredWidth == 0)
-      _measuredWidth = Math.Min(totalWidth, maxWidth);
+    var targetWidth = Math.Min(totalWidth, maxWidth);
+    var targetHeight = Math.Min(totalHeight, maxHeight);
 
-   popup.Update(_measuredWidth, Math.Min(totalHeight, maxHeight));
+    var currentWidth = treeMenu.Width > 0 ? treeMenu.Width : targetWidth;
+    var currentHeight = treeMenu.Height > 0 ? treeMenu.Height : targetHeight;
+
+    if (currentWidth == targetWidth && currentHeight == targetHeight)
+      return;
+
+    var lp = treeMenu.LayoutParameters;
+    if (lp == null) {
+      lp = new ViewGroup.LayoutParams(currentWidth, currentHeight);
+      treeMenu.LayoutParameters = lp;
+    }
+
+    if (ValueAnimator.OfFloat(0f, 1f) is not { } animator) return;
+    animator.SetDuration(150);
+    animator.Update += (s, e) => {
+      float fraction = (e.Animation.AnimatedValue as Java.Lang.Float)?.FloatValue() ?? 0f;
+      lp.Width = (int)(currentWidth + (targetWidth - currentWidth) * fraction);
+      lp.Height = (int)(currentHeight + (targetHeight - currentHeight) * fraction);
+      treeMenu.LayoutParameters = lp;
+      treeMenu.RequestLayout();
+    };
+
+    animator.AnimationEnd += (s, e) => {
+      popup.Update(targetWidth, targetHeight);
+    };
+
+    animator.Start();
   }
 
   private static int _getTreeMenuWidth(Resources res, Context context, IEnumerable<FlatTreeItem> items) {

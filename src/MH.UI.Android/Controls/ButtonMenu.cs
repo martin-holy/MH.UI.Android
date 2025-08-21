@@ -17,10 +17,8 @@ public class ButtonMenu : IconButton {
   private void _onClick(object? sender, System.EventArgs e) {
     if (_treeMenuHost == null)
       _treeMenuHost = new TreeMenuHost(Context!, _dataContext, this);
-    else {
-      _treeMenuHost.Observer.ResetMeasuredWidth();
+    else
       _treeMenuHost.RefreshMenu();
-    }
 
     _treeMenuHost.Popup.ShowAsDropDown(this);
   }
