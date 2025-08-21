@@ -62,6 +62,7 @@ public class DialogHost : DialogFragment {
 
     View? view = dataContext switch {
       InputDialog => new InputDialogV(context),
+      MessageDialog => new MessageDialogV(context),
       _ => null
     };
 
