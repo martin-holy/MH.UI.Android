@@ -16,10 +16,12 @@ public class TreeMenuItemViewHolder : RecyclerView.ViewHolder {
   private readonly ImageView _icon;
   private readonly TextView _name;
   protected bool _disposed;
+  private readonly Action _closePopup;
 
   public FlatTreeItem? DataContext { get; private set; }
 
-  public TreeMenuItemViewHolder(Context context) : base(_createContainerView(context)) {
+  public TreeMenuItemViewHolder(Context context, Action closePopup) : base(_createContainerView(context)) {
+    _closePopup = closePopup;
     _icon = _createIconView(context);
     _name = _createTextView(context);
     _expandedIcon = _createTreeItemExpandIconView(context);
@@ -68,6 +70,8 @@ public class TreeMenuItemViewHolder : RecyclerView.ViewHolder {
     if (item.Items.Count == 0) {
       if (item.Command?.CanExecute(item.CommandParameter) == true)
         item.Command.Execute(item.CommandParameter);
+
+      _closePopup();
 
       return;
     }

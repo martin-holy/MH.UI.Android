@@ -8,7 +8,7 @@ public class TreeMenuHostAdapter(Context _context, TreeMenuHost _host)
   : TreeViewHostAdapterBase(_context, _host.DataContext.RootHolder) {
 
   public override RecyclerView.ViewHolder OnCreateViewHolder(ViewGroup parent, int viewType) =>
-    new TreeMenuItemViewHolder(parent.Context!);
+    new TreeMenuItemViewHolder(parent.Context!, _host.Close);
 
   public override void OnBindViewHolder(RecyclerView.ViewHolder holder, int position) =>
     ((TreeMenuItemViewHolder)holder).Bind(_items[position]);

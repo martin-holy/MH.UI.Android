@@ -25,4 +25,6 @@ public class TreeMenuHost : TreeViewHostBase<TreeView, TreeViewHostAdapterBase> 
   public void RefreshMenu() {
     Post(() => Adapter?.NotifyDataSetChanged());
   }
+
+  public void Close() => Popup.Dismiss();
 }
