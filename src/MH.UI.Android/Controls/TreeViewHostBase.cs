@@ -69,6 +69,7 @@ public abstract class TreeViewHostBase<TView, TAdapter> : RelativeLayout, IAndro
     foreach (var menuItem in menuItems)
       _itemMenuVM.RootHolder.Add(menuItem);
 
+    if (_itemMenuVM.RootHolder.Count == 0) return;
     _itemMenuV!.Adapter!.SetItemsSource();
     _itemMenuV!.Popup.ShowAsDropDown(anchor);
   }
