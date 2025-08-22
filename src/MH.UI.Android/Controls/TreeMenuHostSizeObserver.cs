@@ -40,7 +40,7 @@ public class TreeMenuHostSizeObserver(Context context, TreeMenuHost treeMenu, Po
 
     if (ValueAnimator.OfFloat(0f, 1f) is not { } animator) return;
     animator.SetDuration(150);
-    animator.Update += (s, e) => {
+    animator.Update += (_, e) => {
       float fraction = (e.Animation.AnimatedValue as Java.Lang.Float)?.FloatValue() ?? 0f;
       lp.Width = (int)(currentWidth + (targetWidth - currentWidth) * fraction);
       lp.Height = (int)(currentHeight + (targetHeight - currentHeight) * fraction);
@@ -48,8 +48,9 @@ public class TreeMenuHostSizeObserver(Context context, TreeMenuHost treeMenu, Po
       treeMenu.RequestLayout();
     };
 
-    animator.AnimationEnd += (s, e) => {
-      popup.Update(targetWidth, targetHeight);
+    animator.AnimationEnd += (_, _) => {
+      if (popup.IsShowing)
+        popup.Update(targetWidth, targetHeight);
     };
 
     animator.Start();
