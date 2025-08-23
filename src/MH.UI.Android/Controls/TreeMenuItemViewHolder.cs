@@ -1,10 +1,8 @@
 ﻿using Android.Content;
 using Android.Views;
 using Android.Widget;
-using AndroidX.Core.Content;
 using AndroidX.RecyclerView.Widget;
 using MH.UI.Android.Extensions;
-using MH.UI.Android.Utils;
 using MH.Utils.BaseClasses;
 using System;
 
@@ -13,7 +11,7 @@ namespace MH.UI.Android.Controls;
 public class TreeMenuItemViewHolder : RecyclerView.ViewHolder {
   protected readonly LinearLayout _container;
   private readonly ImageView _expandedIcon;
-  private readonly ImageView _icon;
+  private readonly IconView _icon;
   private readonly TextView _name;
   protected bool _disposed;
   private readonly Action _closePopup;
@@ -21,8 +19,10 @@ public class TreeMenuItemViewHolder : RecyclerView.ViewHolder {
   public FlatTreeItem? DataContext { get; private set; }
 
   public TreeMenuItemViewHolder(Context context, Action closePopup) : base(_createContainerView(context)) {
+    var generalPadding = context.Resources!.GetDimensionPixelSize(Resource.Dimension.general_padding);
+
     _closePopup = closePopup;
-    _icon = _createIconView(context);
+    _icon = new IconView(context).SetMargin(generalPadding, 0, generalPadding, 0);
     _name = _createTextView(context);
     _expandedIcon = _createTreeItemExpandIconView(context);
     _container = (LinearLayout)ItemView;
@@ -52,10 +52,8 @@ public class TreeMenuItemViewHolder : RecyclerView.ViewHolder {
       menuItem.Items.Count > 0 ||
       menuItem.Command?.CanExecute(menuItem.CommandParameter) == true;
 
-    var icon = Icons.GetIcon(ItemView.Context, menuItem.Icon);
-    if (!ItemView.Enabled && icon != null)
-      icon.SetTint(ContextCompat.GetColor(ItemView.Context, Resource.Color.c_disabled_fo));
-    _icon.SetImageDrawable(icon);    
+    _icon.Enabled = ItemView.Enabled;
+    _icon.Bind(menuItem.Icon);
 
     _name.SetText(menuItem.Text, TextView.BufferType.Normal);
     _name.Enabled = ItemView.Enabled;
@@ -93,19 +91,6 @@ public class TreeMenuItemViewHolder : RecyclerView.ViewHolder {
     container.SetBackgroundResource(Resource.Color.c_static_ba);
 
     return container;
-  }
-
-  private static ImageView _createIconView(Context context) {
-    var size = context.Resources!.GetDimensionPixelSize(Resource.Dimension.icon_size);
-    var generalPadding = context.Resources!.GetDimensionPixelSize(Resource.Dimension.general_padding);
-    var view = new ImageView(context) {
-      LayoutParameters = new LinearLayout.LayoutParams(size, size) {
-        MarginStart = generalPadding,
-        MarginEnd = generalPadding
-      },
-    };
-
-    return view;
   }
 
   private static TextView _createTextView(Context context) {
