@@ -24,14 +24,20 @@ public class InputDialogV : GridLayout, IDialogContentV {
 
   public InputDialogV(Context context) : base(context) {
     _createThisView();
+
     _icon = new IconView(context, DisplayU.DpToPx(32))
       .SetGridPosition(InvokeSpec(0, 2), InvokeSpec(0), GravityFlags.Center)
       .SetMargin(DisplayU.DpToPx(10));
+
     _message = new TextView(context)
       .SetGridPosition(InvokeSpec(0), InvokeSpec(1, 1f), GravityFlags.CenterVertical)
       .SetMargin(DisplayU.DpToPx(5));
-    _answer = _createAnswerView(context);
+
+    _answer = new EditText(context)
+      .SetGridPosition(InvokeSpec(1), InvokeSpec(1, 1f))
+      .SetMargin(DisplayU.DpToPx(5), DisplayU.DpToPx(5), DisplayU.DpToPx(10), DisplayU.DpToPx(5));
     _answer.TextChanged += _onAnswerChanged;
+
     AddView(_icon);
     AddView(_message);
     AddView(_answer);
@@ -88,16 +94,4 @@ public class InputDialogV : GridLayout, IDialogContentV {
     SetMinimumWidth(DisplayU.DpToPx(300));
     SetPadding(0, DisplayU.DpToPx(10), 0, DisplayU.DpToPx(10));
   }
-
-  private static EditText _createAnswerView(Context context) =>
-    new(context) {
-      LayoutParameters = new LayoutParams(
-          rowSpec: InvokeSpec(1),
-          columnSpec: InvokeSpec(1, 1f)) {
-        LeftMargin = DisplayU.DpToPx(5),
-        RightMargin = DisplayU.DpToPx(10),
-        TopMargin = DisplayU.DpToPx(5),
-        BottomMargin = DisplayU.DpToPx(5)
-      }
-    };
 }
