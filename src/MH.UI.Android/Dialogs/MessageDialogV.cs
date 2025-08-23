@@ -16,7 +16,7 @@ public class MessageDialogV : LinearLayout, IDialogContentV {
 
   public MessageDialogV(Context context) : base(context) {
     _createThisView();
-    _icon = new IconView(context).SetMargin(DisplayU.DpToPx(10));
+    _icon = new IconView(context, DisplayU.DpToPx(32)).SetMargin(DisplayU.DpToPx(10));
     _message = _createMessageView(context);
     AddView(_icon);
     AddView(_message);
