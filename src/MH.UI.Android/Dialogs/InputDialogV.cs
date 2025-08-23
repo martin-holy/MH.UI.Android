@@ -25,9 +25,11 @@ public class InputDialogV : GridLayout, IDialogContentV {
   public InputDialogV(Context context) : base(context) {
     _createThisView();
     _icon = new IconView(context, DisplayU.DpToPx(32))
-      .SetMargin(DisplayU.DpToPx(10))
-      .SetGridPosition(InvokeSpec(0, 2), InvokeSpec(0), GravityFlags.Center);
-    _message = _createMessageView(context);
+      .SetGridPosition(InvokeSpec(0, 2), InvokeSpec(0), GravityFlags.Center)
+      .SetMargin(DisplayU.DpToPx(10));
+    _message = new TextView(context)
+      .SetGridPosition(InvokeSpec(0), InvokeSpec(1, 1f), GravityFlags.CenterVertical)
+      .SetMargin(DisplayU.DpToPx(5));
     _answer = _createAnswerView(context);
     _answer.TextChanged += _onAnswerChanged;
     AddView(_icon);
@@ -85,14 +87,6 @@ public class InputDialogV : GridLayout, IDialogContentV {
     
     SetMinimumWidth(DisplayU.DpToPx(300));
     SetPadding(0, DisplayU.DpToPx(10), 0, DisplayU.DpToPx(10));
-  }
-
-  private static TextView _createMessageView(Context context) {
-    var lp = new LayoutParams(rowSpec: InvokeSpec(0), columnSpec: InvokeSpec(1, 1f));
-    lp.SetGravity(GravityFlags.CenterVertical);
-    lp.SetMargin(DisplayU.DpToPx(5));
-
-    return new TextView(context) { LayoutParameters = lp };
   }
 
   private static EditText _createAnswerView(Context context) =>
