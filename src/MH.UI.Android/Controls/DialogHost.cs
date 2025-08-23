@@ -106,7 +106,7 @@ public class DialogHost : DialogFragment {
     var view = _createThisView(context);
 
     var titleBar = _createTitleBarView(context);
-    titleBar.AddView(_createTitleIconView(context, _dataContext));
+    titleBar.AddView(new IconView(context).Bind(_dataContext.Icon));
     titleBar.AddView(_createTitleTextView(context, _dataContext));
     titleBar.AddView(_createTitleCloseBtnView(context, _dataContext));
     view.AddView(titleBar);
@@ -142,16 +142,6 @@ public class DialogHost : DialogFragment {
     view.SetGravity(GravityFlags.CenterVertical);
     view.SetBackgroundResource(Resource.Color.c_black2);
     view.SetPadding(context.Resources!.GetDimensionPixelSize(Resource.Dimension.general_padding));
-
-    return view;
-  }
-
-  private static ImageView _createTitleIconView(Context context, Dialog dataContext) {
-    var size = context.Resources!.GetDimensionPixelSize(Resource.Dimension.icon_size);
-    var view = new ImageView(context) {
-      LayoutParameters = new ViewGroup.LayoutParams(size, size)
-    };
-    view.SetImageDrawable(Icons.GetIcon(context, dataContext.Icon));
 
     return view;
   }
