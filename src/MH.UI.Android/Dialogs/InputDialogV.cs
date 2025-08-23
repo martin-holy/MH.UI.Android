@@ -15,7 +15,7 @@ using System.ComponentModel;
 namespace MH.UI.Android.Dialogs;
 
 public class InputDialogV : GridLayout, IDialogContentV {
-  private readonly ImageView _icon;
+  private readonly IconView _icon;
   private readonly TextView _message;
   private readonly EditText _answer;
   private bool _disposed;
@@ -24,7 +24,9 @@ public class InputDialogV : GridLayout, IDialogContentV {
 
   public InputDialogV(Context context) : base(context) {
     _createThisView();
-    _icon = _createIconView(context);
+    _icon = new IconView(context, DisplayU.DpToPx(32))
+      .SetMargin(DisplayU.DpToPx(10))
+      .SetGridPosition(InvokeSpec(0, 2), InvokeSpec(0), GravityFlags.Center);
     _message = _createMessageView(context);
     _answer = _createAnswerView(context);
     _answer.TextChanged += _onAnswerChanged;
@@ -36,7 +38,7 @@ public class InputDialogV : GridLayout, IDialogContentV {
   public View Bind(Dialog dataContext) {
     if (dataContext is not InputDialog vm) throw new InvalidOperationException();
     _setDataContext(DataContext, vm);
-    _icon.SetImageDrawable(Icons.GetIcon(Context, vm.Icon));
+    _icon.Bind(vm.Icon);
     _message.SetText(vm.Message, TextView.BufferType.Normal);
     _answer.SetText(vm.Answer, TextView.BufferType.Normal);
     _answer.Hint = vm.ErrorMessage;
@@ -83,19 +85,6 @@ public class InputDialogV : GridLayout, IDialogContentV {
     
     SetMinimumWidth(DisplayU.DpToPx(300));
     SetPadding(0, DisplayU.DpToPx(10), 0, DisplayU.DpToPx(10));
-  }
-
-  private static ImageView _createIconView(Context context) {
-    var lp = new LayoutParams(
-      rowSpec: InvokeSpec(0, 2),
-      columnSpec: InvokeSpec(0)) {
-      Width = DisplayU.DpToPx(32),
-      Height = DisplayU.DpToPx(32)
-    };
-    lp.SetGravity(GravityFlags.Center);
-    lp.SetMargin(DisplayU.DpToPx(10));
-
-    return new ImageView(context) { LayoutParameters = lp };
   }
 
   private static TextView _createMessageView(Context context) {
