@@ -20,9 +20,14 @@ public class IconView : ImageView {
     _setDrawable(ContextCompat.GetDrawable(Context, drawableId), colorId);
 
   private IconView _setDrawable(Drawable? drawable, int? colorId) {
-    if (drawable != null && colorId != null) {
+    if (drawable != null) {
       drawable.Mutate();
-      drawable.SetTint(ContextCompat.GetColor(Context, (int)colorId));
+
+      int tintColor = Enabled
+        ? (colorId != null ? ContextCompat.GetColor(Context, (int)colorId) : 0)
+        : ContextCompat.GetColor(Context, Resource.Color.c_disabled_fo);
+
+      if (tintColor != 0) drawable.SetTint(tintColor);
     }
 
     SetImageDrawable(drawable);
