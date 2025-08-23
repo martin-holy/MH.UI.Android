@@ -20,4 +20,14 @@ public static class ViewExtensions {
 
   public static void SetPadding(this View view, int value) =>
     view.SetPadding(value, value, value, value);
+
+  public static bool SetVisibleIf(this View view, bool value, ViewStates ifNot = ViewStates.Gone) {
+    if (value) {
+      view.Visibility = ViewStates.Visible;
+      return true;
+    }
+
+    view.Visibility = ifNot;
+    return false;
+  }
 }
