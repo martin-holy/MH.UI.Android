@@ -3,6 +3,7 @@ using Android.Graphics;
 using Android.Text;
 using Android.Views;
 using Android.Widget;
+using AndroidX.Core.Content;
 using MH.UI.Android.Controls;
 using MH.UI.Android.Extensions;
 using MH.UI.Android.Utils;
@@ -63,9 +64,11 @@ public class InputDialogV : GridLayout, IDialogContentV {
   private void _onDataContextPropertyChanged(object? sender, PropertyChangedEventArgs e) {
     if (e.Is(nameof(InputDialog.Error)) && _answer.Background != null) {
       if (DataContext!.Error)
-        _answer.Background.SetColorFilter(new Color(0x7F, 0xFF, 0x00, 0x00), PorterDuff.Mode.SrcAtop); // TODO get color from resources
+        _answer.Background!.SetColorFilter(new PorterDuffColorFilter(
+          new Color(ContextCompat.GetColor(Context, Resource.Color.c_input_error)),
+          PorterDuff.Mode.SrcAtop!));
       else
-        _answer.Background.ClearColorFilter();
+        _answer.Background!.ClearColorFilter();
     }
   }
 
@@ -90,7 +93,7 @@ public class InputDialogV : GridLayout, IDialogContentV {
       ViewGroup.LayoutParams.WrapContent);
     ColumnCount = 2;
     RowCount = 2;
-    
+
     SetMinimumWidth(DisplayU.DpToPx(300));
     SetPadding(0, DisplayU.DpToPx(10), 0, DisplayU.DpToPx(10));
   }
