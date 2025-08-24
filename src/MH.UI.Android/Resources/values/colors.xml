@@ -51,6 +51,8 @@
   <color name="c_disabled_bo">#5F5F5F</color>
   <color name="c_disabled_fo">#7F7F7F</color>
   <color name="c_disabled_accent">#7F7F7F</color>
+  
+  <color name="c_input_error">#7FFF0000</color>
 
   <color name="icon_default">#EEEEEE</color>
 </resources>
