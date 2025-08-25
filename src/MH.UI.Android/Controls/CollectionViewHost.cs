@@ -5,7 +5,6 @@ using MH.UI.Controls;
 using MH.UI.Interfaces;
 using MH.Utils.BaseClasses;
 using System;
-using System.Collections.Generic;
 
 namespace MH.UI.Android.Controls;
 
@@ -16,9 +15,8 @@ public class CollectionViewHost : TreeViewHostBase<CollectionView, CollectionVie
   public CollectionViewHost(
     Context context,
     CollectionView dataContext,
-    Func<object, IEnumerable<MenuItem>?> itemMenuFactory,
     Func<LinearLayout, ICollectionViewGroup, object?, View?> getItemView) :
-    base(context, dataContext, itemMenuFactory) {
+    base(context, dataContext, dataContext.GetMenu) {
 
     GetItemView = getItemView;
     DataContext.Host = this;
