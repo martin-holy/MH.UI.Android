@@ -43,11 +43,15 @@ public abstract class TreeViewHostAdapterBase : RecyclerView.Adapter {
     foreach (var item in o) {
       item.TreeItem.PropertyChanged -= _onTreeItemPropertyChanged;
       item.TreeItem.Items.CollectionChanged -= _onTreeItemsChanged;
+      if (item.TreeItem is ILeafyTreeItem { Leaves: INotifyCollectionChanged leaves })
+        leaves.CollectionChanged -= _onTreeItemsChanged;
     }
 
     foreach (var item in n) {
       item.TreeItem.PropertyChanged += _onTreeItemPropertyChanged;
       item.TreeItem.Items.CollectionChanged += _onTreeItemsChanged;
+      if (item.TreeItem is ILeafyTreeItem { Leaves: INotifyCollectionChanged leaves })
+        leaves.CollectionChanged += _onTreeItemsChanged;
     }
   }
 
