@@ -61,6 +61,7 @@ public class DialogHost : DialogFragment {
       return dialog.Bind(dataContext);
 
     View? view = dataContext switch {
+      GroupByDialog => new GroupByDialogV(context, (GroupByDialog)dataContext),
       InputDialog => new InputDialogV(context),
       MessageDialog => new MessageDialogV(context),
       ToggleDialog => new ToggleDialogV(context),
