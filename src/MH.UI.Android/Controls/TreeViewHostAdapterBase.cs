@@ -16,6 +16,7 @@ public abstract class TreeViewHostAdapterBase : RecyclerView.Adapter {
   protected readonly Context _context;
   protected readonly ObservableCollection<ITreeItem> _rootHolder;
   protected FlatTreeItem[] _items = [];
+  private bool _disposed;
 
   public override int ItemCount => _items.Length;
   public IReadOnlyList<FlatTreeItem> Items => _items;
@@ -23,6 +24,7 @@ public abstract class TreeViewHostAdapterBase : RecyclerView.Adapter {
   protected TreeViewHostAdapterBase(Context context, ObservableCollection<ITreeItem> rootHolder) {
     _context = context;
     _rootHolder = rootHolder;
+    _rootHolder.CollectionChanged += _onRootHolderCollectionChanged;
     SetItemsSource();
   }
 
@@ -58,5 +60,17 @@ public abstract class TreeViewHostAdapterBase : RecyclerView.Adapter {
   protected void _onTreeItemPropertyChanged(object? sender, PropertyChangedEventArgs e) {
     if (e.Is(nameof(TreeItem.IsExpanded)))
       SetItemsSource();
+  }
+
+  private void _onRootHolderCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e) =>
+    SetItemsSource();
+
+  protected override void Dispose(bool disposing) {
+    if (_disposed) return;
+    if (disposing) {
+      _rootHolder.CollectionChanged -= _onRootHolderCollectionChanged;
+    }
+    _disposed = true;
+    base.Dispose(disposing);
   }
 }
