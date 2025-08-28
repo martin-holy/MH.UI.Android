@@ -8,6 +8,7 @@ using MH.Utils.BaseClasses;
 using MH.Utils.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace MH.UI.Android.Controls;
 
@@ -78,5 +79,14 @@ public abstract class TreeViewHostBase<TView, TAdapter> : RelativeLayout, IAndro
 
   public virtual void ScrollToTop() { /* TODO PORT */ }
 
-  public virtual void ScrollToItems(object[] items, bool exactly) { /* TODO PORT */ }
+  public virtual void ScrollToItems(object[] items, bool exactly) {
+    var item = items[^1];
+    if (Adapter?.Items.SingleOrDefault(x => ReferenceEquals(x.TreeItem, item)) is not { } flatItem) return;
+    var position = Adapter.Items.ToList().IndexOf(flatItem);
+
+    if (exactly && _recyclerView.GetLayoutManager() is LinearLayoutManager layoutManager)
+      layoutManager.ScrollToPositionWithOffset(position, 0);
+    else
+      _recyclerView.ScrollToPosition(position);
+  }
 }
