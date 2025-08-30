@@ -16,14 +16,24 @@ public static class BackgroundFactory {
       var fill = new Color(ContextCompat.GetColor(Application.Context, fillResId));
       var stroke = new Color(ContextCompat.GetColor(Application.Context, strokeColorResId));
       var strokeWidth = (int)Application.Context.Resources.GetDimension(strokeWidthResId);
-      var cornerRadius = Application.Context.Resources.GetDimension(cornerRadiusResId);
+
       var shape = new GradientDrawable();
       shape.SetColor(fill);
       shape.SetStroke(strokeWidth, stroke);
-      shape.SetCornerRadius(cornerRadius);
+
+      if (cornerRadiusResId > 0)
+        shape.SetCornerRadius(Application.Context.Resources.GetDimension(cornerRadiusResId));
+
       return shape;
     });
   }
+
+  public static GradientDrawable Dark() =>
+    Create(
+      Resource.Color.c_black5,
+      Resource.Color.c_black,
+      Resource.Dimension.border_stroke_width,
+      -1);
 
   public static GradientDrawable RoundDark() =>
     Create(
