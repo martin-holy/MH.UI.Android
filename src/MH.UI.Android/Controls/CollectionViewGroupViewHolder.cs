@@ -13,9 +13,7 @@ public class CollectionViewGroupViewHolder : FlatTreeItemViewHolderBase {
   public CollectionViewGroupViewHolder(Context context, IAndroidTreeViewHost treeViewHost) : base(context, treeViewHost) {
     _sourceCount = new TextView(context);
     _container.AddView(_sourceCount);
-
-    var gp = context.Resources!.GetDimensionPixelSize(Resource.Dimension.general_padding);
-    _container.SetMargin(gp, gp, gp, 0);
+    _container.SetMargin(DisplayU.DpToPx(2));
     _container.Background = BackgroundFactory.Dark();
   }
 
