@@ -66,7 +66,7 @@ public class CollectionViewRowViewHolder : RecyclerView.ViewHolder, IDisposable 
       Orientation = Orientation.Horizontal
     };
     container.SetGravity(GravityFlags.CenterVertical);
-    container.SetPadding(context.Resources!.GetDimensionPixelSize(Resource.Dimension.general_padding));
+    container.SetPadding(0);
 
     return container;
   }
