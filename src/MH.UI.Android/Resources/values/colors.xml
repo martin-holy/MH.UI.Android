@@ -52,6 +52,14 @@
   <color name="c_disabled_fo">#7F7F7F</color>
   <color name="c_disabled_accent">#7F7F7F</color>
   
+  <!-- Item -->
+  <color name="c_i_hover_ba">#332A748F</color>
+  <color name="c_i_hover_bo">#E52A748F</color>
+  <color name="c_i_selected_ba">#184152</color>
+  <color name="c_i_selected_bo">#184152</color>
+  <color name="c_i_selected_hover_ba">#B22A748F</color>
+  <color name="c_i_selected_hover_bo">#E52A748F</color>
+  
   <color name="c_input_error">#7FFF0000</color>
 
   <color name="icon_default">#EEEEEE</color>
