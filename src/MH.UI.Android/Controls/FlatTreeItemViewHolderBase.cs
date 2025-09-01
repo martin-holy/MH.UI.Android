@@ -50,7 +50,7 @@ public abstract class FlatTreeItemViewHolderBase : RecyclerView.ViewHolder {
     ItemView.SetPadding(indent, ItemView.PaddingTop, ItemView.PaddingRight, ItemView.PaddingBottom);
 
     _expandedIcon.Visibility = item.TreeItem.Items.Count > 0 ? ViewStates.Visible : ViewStates.Invisible;
-    _expandedIcon.Selected = item.TreeItem.IsExpanded;
+    _expandedIcon.Activated = item.TreeItem.IsExpanded;
 
     _icon.SetImageDrawable(Icons.GetIcon(ItemView.Context, item.TreeItem.Icon));
 
