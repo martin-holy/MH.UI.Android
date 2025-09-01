@@ -8,6 +8,7 @@ public class FlatTreeItemViewHolder : FlatTreeItemViewHolderBase {
   private readonly CommandBinding _selectItemCommandBinding;
 
   public FlatTreeItemViewHolder(Context context, TreeViewHost treeViewHost) : base(context, treeViewHost) {
+    _container.SetBackgroundResource(Resource.Drawable.selectable_item);
     _selectItemCommandBinding = new CommandBinding(_container, treeViewHost.DataContext.SelectItemCommand);
   }
 
@@ -21,6 +22,11 @@ public class FlatTreeItemViewHolder : FlatTreeItemViewHolderBase {
 
   public override void Bind(FlatTreeItem? item) {
     base.Bind(item);
-    _selectItemCommandBinding.Parameter = item?.TreeItem;
+    if (item == null) return;
+    _selectItemCommandBinding.Parameter = item.TreeItem;    
+    _container.Selected = item.TreeItem.IsSelected;
   }
+
+  public void UpdateSelection(bool selected) =>
+    _container.Selected = selected;
 }

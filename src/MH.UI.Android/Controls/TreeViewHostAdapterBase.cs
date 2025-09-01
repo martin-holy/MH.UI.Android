@@ -57,7 +57,7 @@ public abstract class TreeViewHostAdapterBase : RecyclerView.Adapter {
     }
   }
 
-  protected void _onTreeItemPropertyChanged(object? sender, PropertyChangedEventArgs e) {
+  protected virtual void _onTreeItemPropertyChanged(object? sender, PropertyChangedEventArgs e) {
     if (e.Is(nameof(TreeItem.IsExpanded)))
       SetItemsSource();
   }
@@ -72,5 +72,13 @@ public abstract class TreeViewHostAdapterBase : RecyclerView.Adapter {
     }
     _disposed = true;
     base.Dispose(disposing);
+  }
+
+  protected int _findIndexOfTreeItem(ITreeItem treeItem) {
+    for (var i = 0; i < _items.Length; i++)
+      if (ReferenceEquals(_items[i].TreeItem, treeItem))
+        return i;
+
+    return -1;
   }
 }
