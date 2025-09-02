@@ -38,7 +38,7 @@ public class TreeViewHostAdapter(Context _context, TreeViewHost _host)
     var index = _findIndexOfTreeItem(treeItem);
     if (index == -1) return;
 
-    if (e.Is(nameof(ISelectable.IsSelected)))
+    if (_host.DataContext.ShowTreeItemSelection && e.Is(nameof(ISelectable.IsSelected)))
       NotifyItemChanged(index, nameof(ITreeItem.IsSelected));
   }
 }

@@ -23,10 +23,12 @@ public class FlatTreeItemViewHolder : FlatTreeItemViewHolderBase {
   public override void Bind(FlatTreeItem? item) {
     base.Bind(item);
     if (item == null) return;
-    _selectItemCommandBinding.Parameter = item.TreeItem;    
-    _container.Selected = item.TreeItem.IsSelected;
+    _selectItemCommandBinding.Parameter = item.TreeItem;
+    UpdateSelection(item.TreeItem.IsSelected);
   }
 
-  public void UpdateSelection(bool selected) =>
-    _container.Selected = selected;
+  public void UpdateSelection(bool selected) {
+    if (_treeViewHost.DataContext.ShowTreeItemSelection)
+      _container.Selected = selected;
+  }
 }

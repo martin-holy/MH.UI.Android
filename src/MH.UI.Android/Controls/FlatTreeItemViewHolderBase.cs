@@ -10,7 +10,7 @@ using System;
 namespace MH.UI.Android.Controls;
 
 public abstract class FlatTreeItemViewHolderBase : RecyclerView.ViewHolder {
-  private readonly IAndroidTreeViewHost _treeViewHost;
+  protected readonly IAndroidTreeViewHost _treeViewHost;
   protected readonly LinearLayout _container;
   private readonly ImageView _expandedIcon;
   private readonly ImageView _icon;
