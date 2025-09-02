@@ -13,6 +13,7 @@ using System.Linq;
 namespace MH.UI.Android.Controls;
 
 public interface IAndroidTreeViewHost : ITreeViewHost {
+  public TreeView DataContext { get; }
   public void ShowItemMenu(View anchor, object? item);
 }
 
@@ -28,6 +29,7 @@ public abstract class TreeViewHostBase<TView, TAdapter> : RelativeLayout, IAndro
   public TAdapter? Adapter { get; set; }
   public Func<object, IEnumerable<MenuItem>>? ItemMenuFactory { get; }
   public event EventHandler<bool>? HostIsVisibleChangedEvent;
+  TreeView IAndroidTreeViewHost.DataContext => DataContext;
 
   protected TreeViewHostBase(Context context, TView dataContext, Func<object, IEnumerable<MenuItem>>? itemMenuFactory) : base(context) {
     DataContext = dataContext;
