@@ -20,6 +20,7 @@ public class GroupByDialogV : LinearLayout, IDialogContentV {
 
   public GroupByDialogV(Context context, GroupByDialog dataContext) : base(context) {
     DataContext = dataContext;
+    dataContext.TreeView.MultiSelect = true;
     _createThisView();
 
     _treeViewHost = new(context, dataContext.TreeView, null) {
