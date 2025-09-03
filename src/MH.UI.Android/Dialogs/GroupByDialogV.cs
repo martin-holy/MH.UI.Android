@@ -60,7 +60,7 @@ public class GroupByDialogV : LinearLayout, IDialogContentV {
     Orientation = Orientation.Vertical;
     LayoutParameters = new LayoutParams(LayoutParams.MatchParent, LayoutParams.WrapContent);
 
-    SetPadding(0, DisplayU.DpToPx(10), 0, DisplayU.DpToPx(10));
+    SetPadding(0, 0, 0, DisplayU.DpToPx(10));
     SetGravity(GravityFlags.CenterVertical);
   }
 
