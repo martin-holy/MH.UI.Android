@@ -6,10 +6,11 @@ using MH.UI.Android.Utils;
 using MH.UI.Controls;
 using MH.UI.Dialogs;
 using System;
+using MH.UI.Android.Extensions;
 
 namespace MH.UI.Android.Dialogs;
 
-public class GroupByDialogV : LinearLayout, IDialogContentV {
+public sealed class GroupByDialogV : LinearLayout, IDialogContentV {
   private readonly TreeViewHost _treeViewHost;
   private readonly RadioButton _isGroupBy;
   private readonly RadioButton _isThenBy;
@@ -32,10 +33,14 @@ public class GroupByDialogV : LinearLayout, IDialogContentV {
 
     _isThenBy = new(context) { Text = "Group by - Then by" };
     _isThenBy.CheckedChange += _isThenByCheckedChange;
-
-    var groupMode = new LinearLayout(context) {
+    
+    var groupMode = new RadioGroup(context) {
       Orientation = Orientation.Horizontal,
+      LayoutParameters = new(
+        ViewGroup.LayoutParams.WrapContent,
+        ViewGroup.LayoutParams.WrapContent)
     };
+    groupMode.SetPadding(context.Resources!.GetDimensionPixelSize(Resource.Dimension.general_padding));
     groupMode.AddView(_isGroupBy);
     groupMode.AddView(_isThenBy);
 
