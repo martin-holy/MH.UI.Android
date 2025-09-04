@@ -30,7 +30,7 @@
     <layer-list>
       <item>
         <shape a:shape="rectangle">
-          <stroke a:width="1dp" a:color="@a:color/transparent" />
+          <stroke a:width="1dp" a:color="@android:color/transparent" />
         </shape>
       </item>
 
