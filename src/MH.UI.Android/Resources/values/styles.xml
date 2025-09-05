@@ -6,6 +6,7 @@
     <item name="android:imageButtonStyle">@style/mh_ImageButton</item>
     <item name="android:progressBarStyle">@style/mh_ProgressBar</item>
     <item name="android:textViewStyle">@style/mh_TextView</item>
+    <item name="android:checkboxStyle">@style/mh_CheckBox</item>
     <item name="android:radioButtonStyle">@style/mh_RadioButton</item>
     <item name="iconButtonStyle">@style/mh_IconButton</item>
   </style>
@@ -36,6 +37,11 @@
     <item name="android:layout_height">wrap_content</item>
     <item name="android:textColor">@drawable/color_foreground</item>
     <item name="android:padding">@dimen/general_padding</item>
+  </style>
+  
+  <style name="mh_CheckBox" parent="android:Widget.CompoundButton.CheckBox">
+    <item name="android:button">@drawable/check_box_selector</item>
+    <item name="android:background">@null</item>
   </style>
 
   <style name="mh_RadioButton" parent="android:Widget.CompoundButton.RadioButton">
