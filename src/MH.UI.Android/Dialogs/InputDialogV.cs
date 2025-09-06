@@ -15,7 +15,7 @@ using System.ComponentModel;
 
 namespace MH.UI.Android.Dialogs;
 
-public class InputDialogV : GridLayout, IDialogContentV {
+public sealed class InputDialogV : LinearLayout, IDialogContentV {
   private readonly IconView _icon;
   private readonly TextView _message;
   private readonly EditText _answer;
@@ -27,21 +27,27 @@ public class InputDialogV : GridLayout, IDialogContentV {
     _createThisView();
 
     _icon = new IconView(context, DisplayU.DpToPx(32))
-      .SetGridPosition(InvokeSpec(0, 2), InvokeSpec(0), GravityFlags.Center)
       .SetMargin(DisplayU.DpToPx(10));
 
     _message = new TextView(context)
-      .SetGridPosition(InvokeSpec(0), InvokeSpec(1, 1f), GravityFlags.CenterVertical)
       .SetMargin(DisplayU.DpToPx(5));
 
-    _answer = new EditText(context)
-      .SetGridPosition(InvokeSpec(1), InvokeSpec(1, 1f))
-      .SetMargin(DisplayU.DpToPx(5), DisplayU.DpToPx(5), DisplayU.DpToPx(10), DisplayU.DpToPx(5));
+    _answer = new EditText(context) {
+      LayoutParameters = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.WrapContent)
+    };
+    _answer.SetMargin(DisplayU.DpToPx(5), DisplayU.DpToPx(5), DisplayU.DpToPx(10), DisplayU.DpToPx(5));
     _answer.TextChanged += _onAnswerChanged;
 
+    var messageAndAnswer = new LinearLayout(context) {
+      Orientation = Orientation.Vertical,
+      LayoutParameters = new LayoutParams(ViewGroup.LayoutParams.WrapContent, ViewGroup.LayoutParams.WrapContent, 1f)
+    };
+
+    messageAndAnswer.AddView(_message);
+    messageAndAnswer.AddView(_answer);
+
     AddView(_icon);
-    AddView(_message);
-    AddView(_answer);
+    AddView(messageAndAnswer);
   }
 
   public View Bind(Dialog dataContext) {
@@ -88,13 +94,11 @@ public class InputDialogV : GridLayout, IDialogContentV {
   }
 
   private void _createThisView() {
-    LayoutParameters = new ViewGroup.LayoutParams(
-      ViewGroup.LayoutParams.MatchParent,
-      ViewGroup.LayoutParams.WrapContent);
-    ColumnCount = 2;
-    RowCount = 2;
+    Orientation = Orientation.Horizontal;
+    LayoutParameters = new LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.WrapContent);
 
     SetMinimumWidth(DisplayU.DpToPx(300));
     SetPadding(0, DisplayU.DpToPx(10), 0, DisplayU.DpToPx(10));
+    SetGravity(GravityFlags.CenterVertical);
   }
 }
