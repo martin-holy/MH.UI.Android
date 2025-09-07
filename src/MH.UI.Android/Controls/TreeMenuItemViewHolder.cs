@@ -59,7 +59,7 @@ public class TreeMenuItemViewHolder : RecyclerView.ViewHolder {
     _name.Enabled = ItemView.Enabled;
 
     _expandedIcon.Visibility = menuItem.Items.Count > 0 ? ViewStates.Visible : ViewStates.Invisible;
-    _expandedIcon.Selected = menuItem.IsExpanded;
+    _expandedIcon.Activated = menuItem.IsExpanded;
   }
 
   private void _onContainerClick(object? sender, EventArgs e) {
