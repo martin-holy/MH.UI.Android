@@ -1,5 +1,6 @@
 ﻿using Android.Content;
 using Android.Graphics;
+using Android.OS;
 using Android.Provider;
 
 namespace MH.UI.Android.Utils;
@@ -7,10 +8,35 @@ namespace MH.UI.Android.Utils;
 public static class MediaStoreU {
   public static Bitmap? GetThumbnailBitmap(string imagePath, Context context) {
     var imageId = GetImageId(imagePath, context);
-    if (imageId == -1) return null;
 
-    return MediaStore.Images.Thumbnails.GetThumbnail(
-      context.ContentResolver, imageId, ThumbnailKind.MiniKind, new() { InSampleSize = 1 });
+    if (Build.VERSION.SdkInt >= BuildVersionCodes.Q) {
+      try {
+        // Try to resolve MediaStore content:// URI fallback to file:// URI (slower, but works)
+        var uri = imageId != -1
+          ? ContentUris.WithAppendedId(MediaStore.Images.Media.ExternalContentUri!, imageId)
+          : global::Android.Net.Uri.FromFile(new Java.IO.File(imagePath));
+        var size = new global::Android.Util.Size(512, 512);
+        return context.ContentResolver?.LoadThumbnail(uri, size, null);
+      }
+      catch { }
+    }
+    else {
+      // --- Legacy API (before 29) ---
+      if (imageId != -1) {
+        try {
+          return MediaStore.Images.Thumbnails.GetThumbnail(
+            context.ContentResolver!, imageId, ThumbnailKind.MiniKind, new() { InSampleSize = 1 });
+        }
+        catch { }
+      }
+    }
+
+    return GetThumbnailBitmapFromCustomCache(imagePath, context);
+  }
+
+  // TODO Fallback to custom cache
+  public static Bitmap? GetThumbnailBitmapFromCustomCache(string filePath, Context context) {
+    return null;
   }
 
   public static long GetImageId(string filePath, Context context) {
