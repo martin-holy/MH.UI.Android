@@ -1,62 +1,199 @@
 ﻿using Android.Content;
 using Android.Graphics;
+using Android.Media;
 using Android.OS;
 using Android.Provider;
+using Android.Util;
+using Android.Webkit;
+using System;
+using System.IO;
+using System.Threading.Tasks;
+using Path = System.IO.Path;
 
 namespace MH.UI.Android.Utils;
 
 public static class MediaStoreU {
-  public static Bitmap? GetThumbnailBitmap(string imagePath, Context context) {
-    var imageId = GetImageId(imagePath, context);
+  const string TAG = "MediaStoreU";
 
-    if (Build.VERSION.SdkInt >= BuildVersionCodes.Q) {
-      try {
-        // Try to resolve MediaStore content:// URI fallback to file:// URI (slower, but works)
-        var uri = imageId != -1
-          ? ContentUris.WithAppendedId(MediaStore.Images.Media.ExternalContentUri!, imageId)
-          : global::Android.Net.Uri.FromFile(new Java.IO.File(imagePath));
-        var size = new global::Android.Util.Size(512, 512);
-        return context.ContentResolver?.LoadThumbnail(uri, size, null);
-      }
-      catch { }
-    }
-    else {
-      // --- Legacy API (before 29) ---
-      if (imageId != -1) {
+  public static async Task<Bitmap?> GetThumbnailBitmapAsync(string filePath, Context context, int targetSize = 512) {
+    try {
+      var imageId = _getImageId(filePath, context);
+
+      // API 29+ path
+      if (Build.VERSION.SdkInt >= BuildVersionCodes.Q) {
+        var size = new global::Android.Util.Size(targetSize, targetSize);
+        var uri = imageId == -1
+          ? global::Android.Net.Uri.FromFile(new Java.IO.File(filePath))
+          : ContentUris.WithAppendedId(MediaStore.Images.Media.ExternalContentUri!, imageId);
+
         try {
-          return MediaStore.Images.Thumbnails.GetThumbnail(
-            context.ContentResolver!, imageId, ThumbnailKind.MiniKind, new() { InSampleSize = 1 });
+          if (context.ContentResolver?.LoadThumbnail(uri, size, null) is { } bmp)
+            return bmp;
         }
-        catch { }
+        catch (Exception ex) {
+          Log.Debug(TAG, $"LoadThumbnail uri failed: {ex.Message}");
+        }
+
+        try {
+          if (await ScanFileAsync(context, filePath) is { } scanUri
+            && context.ContentResolver?.LoadThumbnail(scanUri, size, null) is { } bmp)
+            return bmp;
+        }
+        catch (Exception ex) {
+          Log.Warn(TAG, $"ScanFile failed: {ex.Message}");
+        }
+      }
+      else {
+        // API < 29 - legacy flow
+        if (imageId == -1) {
+          var values = _buildMediaStoreContentValuesForLegacyInsert(filePath);
+          try {
+            context.ContentResolver?.Insert(MediaStore.Images.Media.ExternalContentUri!, values);
+          }
+          catch (Exception insEx) {
+            Log.Warn(TAG, $"Insert into MediaStore (legacy) failed: {insEx.Message}");
+          }
+
+          imageId = _getImageId(filePath, context);
+        }
+
+        if (imageId != -1) {
+          try {
+            return MediaStore.Images.Thumbnails.GetThumbnail(
+              context.ContentResolver!, imageId, ThumbnailKind.MiniKind, new() { InSampleSize = 1 });
+          }
+          catch (Exception ex) {
+            Log.Warn(TAG, $"GetThumbnail (legacy) failed: {ex.Message}");
+          }
+        }
       }
     }
+    catch (Exception ex) {
+      Log.Warn(TAG, $"GetThumbnailBitmap error: {ex}");
+    }
 
-    return GetThumbnailBitmapFromCustomCache(imagePath, context);
+    // Fallback
+    return _getThumbnailBitmapFromCustomCache(filePath, context, targetSize);
   }
 
-  // TODO Fallback to custom cache
-  public static Bitmap? GetThumbnailBitmapFromCustomCache(string filePath, Context context) {
+  public static Task<global::Android.Net.Uri?> ScanFileAsync(Context context, string filePath) {
+    var tcs = new TaskCompletionSource<global::Android.Net.Uri?>();
+
+    MediaScannerConnection.ScanFile(
+      context,
+      [filePath],
+      null,
+      new ScanFileCompletedListener(uri => tcs.TrySetResult(uri))
+    );
+
+    return tcs.Task;
+  }
+
+  private static ContentValues _buildMediaStoreContentValuesForLegacyInsert(string filePath) {
+    var values = new ContentValues();
+    values.Put(MediaStore.Images.Media.InterfaceConsts.Data, filePath);
+    values.Put(MediaStore.Images.Media.InterfaceConsts.MimeType, _getMimeType(filePath));
+    var dt = _getDateTakenMillisSafe(filePath);
+    if (dt.HasValue) values.Put(MediaStore.Images.Media.InterfaceConsts.DateTaken, dt.Value);
+    var fi = new FileInfo(filePath);
+    values.Put(MediaStore.Images.Media.InterfaceConsts.DateModified, (long)(fi.LastWriteTimeUtc.Subtract(new DateTime(1970, 1, 1)).TotalSeconds));
+    values.Put(MediaStore.Images.Media.InterfaceConsts.Size, fi.Exists ? fi.Length : 0);
+    values.Put(MediaStore.Images.Media.InterfaceConsts.DisplayName, Path.GetFileName(filePath));
+    return values;
+  }
+
+  private static long _getImageId(string filePath, Context context) {
+    if (context.ContentResolver is not { } resolver || MediaStore.Images.Media.ExternalContentUri is not { } uri) return -1;
+
+    try {
+      // 1) try DATA (works pre-29 and often on 29 if provider exposes it)
+      using var dataCursor = resolver.Query(
+        uri,
+        [MediaStore.Images.Media.InterfaceConsts.Id],
+        $"{MediaStore.Images.Media.InterfaceConsts.Data}=?",
+        [filePath],
+        null);
+      if (dataCursor != null && dataCursor.MoveToFirst())
+        return dataCursor.GetLong(0);
+
+      // 2) Try by DISPLAY_NAME + RELATIVE_PATH on API29+ (only possible if file is in shared storage)
+      if (Build.VERSION.SdkInt >= BuildVersionCodes.Q) {
+        if (_computeRelativePathUnderExternalStorage(filePath) is { } relativePath) {
+          using var pathCursor = resolver.Query(
+            uri,
+            [MediaStore.Images.Media.InterfaceConsts.Id],
+            $"{MediaStore.Images.Media.InterfaceConsts.DisplayName}=? AND {MediaStore.Images.Media.InterfaceConsts.RelativePath}=?",
+            [Path.GetFileName(filePath), relativePath],
+            null);
+          if (pathCursor != null && pathCursor.MoveToFirst())
+            return pathCursor.GetLong(0);
+        }
+      }
+    }
+    catch (Exception ex) {
+      Log.Warn(TAG, $"GetImageId query failed: {ex.Message}");
+    }
+
+    return -1;
+  }
+
+  private static string? _computeRelativePathUnderExternalStorage(string filePath) {
+    try {
+      var extRoot = global::Android.OS.Environment.ExternalStorageDirectory!.AbsolutePath.TrimEnd(Path.DirectorySeparatorChar);
+      var normalized = Path.GetFullPath(filePath).Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
+      if (!normalized.StartsWith(extRoot, StringComparison.OrdinalIgnoreCase)) return null;
+
+      var relative = normalized[extRoot.Length..].TrimStart(Path.DirectorySeparatorChar);
+      if (string.IsNullOrEmpty(relative)) return null;
+
+      var dir = Path.GetDirectoryName(relative)?.Replace(Path.DirectorySeparatorChar, '/');
+      if (string.IsNullOrEmpty(dir)) return null;
+      if (!dir.EndsWith('/')) dir += "/";
+      return dir;
+    }
+    catch {
+      return null;
+    }
+  }
+
+  private static string _getMimeType(string filePath) =>
+    MimeTypeMap.Singleton?.GetMimeTypeFromExtension(Path.GetExtension(filePath)?.TrimStart('.').ToLowerInvariant())
+    ?? "image/*";
+
+  private static long? _getDateTakenMillisSafe(string filePath) {
+    try {
+      // prefer EXIF DateTimeOriginal if image file supports it
+      try {
+        var exif = new ExifInterface(filePath);
+        var dtStr = exif.GetAttribute(ExifInterface.TagDatetimeOriginal) ??
+                    exif.GetAttribute(ExifInterface.TagDatetime);
+        if (!string.IsNullOrEmpty(dtStr)) {
+          // EXIF format: "yyyy:MM:dd HH:mm:ss"
+          if (DateTime.TryParseExact(dtStr, ["yyyy:MM:dd HH:mm:ss", "yyyy:MM:dd"], null, System.Globalization.DateTimeStyles.AssumeLocal, out var dt))
+            return (long)(dt.ToUniversalTime() - new DateTime(1970, 1, 1)).TotalMilliseconds;
+        }
+      }
+      catch (Exception exifEx) {
+        // ignore exif errors and fallback to file times
+        Log.Debug(TAG, $"Exif read failed: {exifEx.Message}");
+      }
+
+      var fi = new FileInfo(filePath);
+      if (fi.Exists)
+        return (long)(fi.CreationTimeUtc - new DateTime(1970, 1, 1)).TotalMilliseconds;
+    }
+    catch (Exception ex) {
+      Log.Warn(TAG, $"GetDateTakenMillisSafe error: {ex}");
+    }
+
     return null;
   }
 
-  public static long GetImageId(string filePath, Context context) {
-    if (MediaStore.Images.Media.ExternalContentUri is not { } uri) return -1;
+  // TODO
+  private static Bitmap? _getThumbnailBitmapFromCustomCache(string filePath, Context context, int targetSize) => null;
+}
 
-    var cursor = context.ContentResolver?.Query(
-      uri,
-      [MediaStore.Images.Media.InterfaceConsts.Id],
-      $"{MediaStore.Images.Media.InterfaceConsts.Data}=?",
-      [filePath],
-      null);
-
-    if (cursor?.MoveToFirst() != true) {
-      cursor?.Close();
-      return -1;
-    }
-
-    var id = cursor.GetLong(0);
-    cursor.Close();
-
-    return id;
-  }
+public class ScanFileCompletedListener(Action<global::Android.Net.Uri?> onCompleted) : Java.Lang.Object, MediaScannerConnection.IOnScanCompletedListener {
+  public void OnScanCompleted(string? path, global::Android.Net.Uri? uri) =>
+    onCompleted?.Invoke(uri);
 }
