@@ -72,8 +72,7 @@ public static class MediaStoreU {
       Log.Warn(TAG, $"GetThumbnailBitmap error: {ex}");
     }
 
-    // Fallback
-    return _getThumbnailBitmapFromCustomCache(filePath, context, targetSize);
+    return null;
   }
 
   public static Task<global::Android.Net.Uri?> ScanFileAsync(Context context, string filePath) {
@@ -188,9 +187,6 @@ public static class MediaStoreU {
 
     return null;
   }
-
-  // TODO
-  private static Bitmap? _getThumbnailBitmapFromCustomCache(string filePath, Context context, int targetSize) => null;
 }
 
 public class ScanFileCompletedListener(Action<global::Android.Net.Uri?> onCompleted) : Java.Lang.Object, MediaScannerConnection.IOnScanCompletedListener {
