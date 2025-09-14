@@ -1,5 +1,4 @@
-﻿using Android.Animation;
-using Android.Content;
+﻿using Android.Content;
 using Android.Content.Res;
 using Android.Graphics;
 using Android.Views;
@@ -12,48 +11,43 @@ using System.Collections.Generic;
 
 namespace MH.UI.Android.Controls;
 
-public class TreeMenuHostSizeObserver(Context context, TreeMenuHost treeMenu, PopupWindow popup, View anchor) : RecyclerView.AdapterDataObserver {
+public class TreeMenuHostSizeObserver(Context _context, TreeMenuHost _treeMenu, PopupWindow _popup, View _anchor) : RecyclerView.AdapterDataObserver {
 
   public override void OnChanged() {
     base.OnChanged();
-    UpdatePopupSize();
+    _updatePopupSize();
   }
 
-  public void UpdatePopupSize() {
-    if (!popup.IsShowing) return;
-    var totalWidth = _getTreeMenuWidth(context.Resources!, context, treeMenu.Adapter!.Items);
-    var totalHeight = treeMenu.Adapter!.ItemCount * context.Resources!.GetDimensionPixelSize(Resource.Dimension.menu_item_height);
+  private void _updatePopupSize() {
+    if (!_popup.IsShowing) return;
+    var totalWidth = _getTreeMenuWidth(_context.Resources!, _context, _treeMenu.Adapter!.Items);
+    var totalHeight = _treeMenu.Adapter!.ItemCount * _context.Resources!.GetDimensionPixelSize(Resource.Dimension.menu_item_height);
     var maxWidth = DisplayU.Metrics.WidthPixels;
-    var maxHeight = _getTreeMenuHeight(anchor);
-
+    var maxHeight = _getTreeMenuHeight(_anchor);
     var targetWidth = Math.Min(totalWidth, maxWidth);
     var targetHeight = Math.Min(totalHeight, maxHeight);
 
-    var currentWidth = treeMenu.Width > 0 ? treeMenu.Width : targetWidth;
-    var currentHeight = treeMenu.Height > 0 ? treeMenu.Height : targetHeight;
+    if (targetWidth >= _treeMenu.Width && targetHeight >= _treeMenu.Height) {
+      _setTreeMenuSize(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.MatchParent);
+      _popup.Update(targetWidth, targetHeight);
+    }
+    else {
+      _setTreeMenuSize(targetWidth, targetHeight);
+      _treeMenu.Post(() => _popup.Update(targetWidth, targetHeight));
+    }
+  }
 
-    var lp = treeMenu.LayoutParameters;
+  private void _setTreeMenuSize(int width, int height) {
+    var lp = _treeMenu.LayoutParameters;
     if (lp == null) {
-      lp = new ViewGroup.LayoutParams(currentWidth, currentHeight);
-      treeMenu.LayoutParameters = lp;
+      lp = new ViewGroup.LayoutParams(width, height);
+    }
+    else {
+      lp.Width = width;
+      lp.Height = height;
     }
 
-    if (ValueAnimator.OfFloat(0f, 1f) is not { } animator) return;
-    animator.SetDuration(150);
-    animator.Update += (_, e) => {
-      float fraction = (e.Animation.AnimatedValue as Java.Lang.Float)?.FloatValue() ?? 0f;
-      lp.Width = (int)(currentWidth + (targetWidth - currentWidth) * fraction);
-      lp.Height = (int)(currentHeight + (targetHeight - currentHeight) * fraction);
-      treeMenu.LayoutParameters = lp;
-      treeMenu.RequestLayout();
-    };
-
-    animator.AnimationEnd += (_, _) => {
-      if (popup.IsShowing)
-        popup.Update(targetWidth, targetHeight);
-    };
-
-    animator.Start();
+    _treeMenu.LayoutParameters = lp;
   }
 
   private static int _getTreeMenuWidth(Resources res, Context context, IEnumerable<FlatTreeItem> items) {
