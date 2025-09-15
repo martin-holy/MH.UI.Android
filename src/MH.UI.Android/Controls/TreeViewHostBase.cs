@@ -64,7 +64,7 @@ public abstract class TreeViewHostBase<TView, TAdapter> : RelativeLayout, IAndro
     if (item == null) return;
     if (_itemMenuVM == null) {
       _itemMenuVM = new();
-      _itemMenuV = new TreeMenuHost(Context!, _itemMenuVM, anchor);
+      _itemMenuV = new TreeMenuHost(Context!, _itemMenuVM);
     }
 
     if (ItemMenuFactory?.Invoke(item) is not { } menuItems) return;
@@ -72,9 +72,10 @@ public abstract class TreeViewHostBase<TView, TAdapter> : RelativeLayout, IAndro
     foreach (var menuItem in menuItems)
       _itemMenuVM.RootHolder.Add(menuItem);
 
-    if (_itemMenuVM.RootHolder.Count == 0) return;
-    _itemMenuV!.Adapter!.SetItemsSource();
-    _itemMenuV!.Popup.ShowAsDropDown(anchor);
+    if (_itemMenuV == null || _itemMenuVM.RootHolder.Count == 0) return;
+    _itemMenuV.Observer.MenuAnchor = anchor;
+    _itemMenuV.Adapter!.SetItemsSource();
+    _itemMenuV.Popup.ShowAsDropDown(anchor);
   }
 
   public virtual void ExpandRootWhenReady(ITreeItem root) => root.IsExpanded = true;

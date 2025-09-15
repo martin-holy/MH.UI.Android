@@ -15,8 +15,10 @@ public class ButtonMenu : IconButton {
   }
 
   private void _onClick(object? sender, System.EventArgs e) {
-    if (_treeMenuHost == null)
-      _treeMenuHost = new TreeMenuHost(Context!, _dataContext, this);
+    if (_treeMenuHost == null) {
+      _treeMenuHost = new TreeMenuHost(Context!, _dataContext);
+      _treeMenuHost.Observer.MenuAnchor = this;
+    }
     else
       _treeMenuHost.RefreshMenu();
 

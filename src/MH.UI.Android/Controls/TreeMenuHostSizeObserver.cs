@@ -11,21 +11,32 @@ using System.Collections.Generic;
 
 namespace MH.UI.Android.Controls;
 
-public class TreeMenuHostSizeObserver(Context _context, TreeMenuHost _treeMenu, PopupWindow _popup, View _anchor) : RecyclerView.AdapterDataObserver {
+public class TreeMenuHostSizeObserver(Context _context, TreeMenuHost _treeMenu, PopupWindow _popup) : RecyclerView.AdapterDataObserver {
+  private int _lastItemsCount;
+
+  public View? MenuAnchor { get; set; }
 
   public override void OnChanged() {
     base.OnChanged();
-    _updatePopupSize();
+
+    var itemsCount = _treeMenu.Adapter!.Items.Count;
+    if (_lastItemsCount != itemsCount) {
+      _lastItemsCount = itemsCount;
+      _updatePopupSize();
+    }
   }
 
   private void _updatePopupSize() {
+    if (MenuAnchor == null) throw new ArgumentNullException(nameof(MenuAnchor));
     if (!_popup.IsShowing) return;
+    var itemHeight = _context.Resources!.GetDimensionPixelSize(Resource.Dimension.menu_item_height);
+    var minHeight = itemHeight * 5;
     var totalWidth = _getTreeMenuWidth(_context.Resources!, _context, _treeMenu.Adapter!.Items);
-    var totalHeight = _treeMenu.Adapter!.ItemCount * _context.Resources!.GetDimensionPixelSize(Resource.Dimension.menu_item_height);
+    var totalHeight = _treeMenu.Adapter!.ItemCount * itemHeight;
     var maxWidth = DisplayU.Metrics.WidthPixels;
-    var maxHeight = _getTreeMenuHeight(_anchor);
+    var maxHeight = _getTreeMenuHeight(MenuAnchor);
     var targetWidth = Math.Min(totalWidth, maxWidth);
-    var targetHeight = Math.Min(totalHeight, maxHeight);
+    var targetHeight = Math.Min(totalHeight, maxHeight >= minHeight ? maxHeight : minHeight);
 
     if (targetWidth >= _treeMenu.Width && targetHeight >= _treeMenu.Height) {
       _setTreeMenuSize(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.MatchParent);
