@@ -30,6 +30,7 @@ public abstract class TreeViewHostBase<TView, TAdapter> : RelativeLayout, IAndro
   public Func<object, IEnumerable<MenuItem>>? ItemMenuFactory { get; }
   public event EventHandler<bool>? HostIsVisibleChangedEvent;
   TreeView IAndroidTreeViewHost.DataContext => DataContext;
+  double ITreeViewHost.Width => Width;
 
   protected TreeViewHostBase(Context context, TView dataContext, Func<object, IEnumerable<MenuItem>>? itemMenuFactory) : base(context) {
     DataContext = dataContext;
