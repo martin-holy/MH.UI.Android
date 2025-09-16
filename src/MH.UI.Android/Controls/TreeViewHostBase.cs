@@ -68,13 +68,16 @@ public abstract class TreeViewHostBase<TView, TAdapter> : RelativeLayout, IAndro
     }
 
     if (ItemMenuFactory?.Invoke(item) is not { } menuItems) return;
-    _itemMenuVM.RootHolder.Clear();
-    foreach (var menuItem in menuItems)
-      _itemMenuVM.RootHolder.Add(menuItem);
+
+    _itemMenuVM.RootHolder.Execute(items => {
+      items.Clear();
+      foreach (var menuItem in menuItems)
+        items.Add(menuItem);
+    });
 
     if (_itemMenuV == null || _itemMenuVM.RootHolder.Count == 0) return;
     _itemMenuV.Observer.MenuAnchor = anchor;
-    _itemMenuV.Adapter!.SetItemsSource();
+    _itemMenuV.Observer.UpdatePopupSize();
     _itemMenuV.Popup.ShowAsDropDown(anchor);
   }
 
