@@ -1,6 +1,4 @@
 ﻿using Android.Content;
-using Android.Runtime;
-using Android.Util;
 using Android.Views;
 using Android.Widget;
 using AndroidX.RecyclerView.Widget;
@@ -10,40 +8,35 @@ using System;
 namespace MH.UI.Android.Controls;
 
 public class SlidePanelsGridHost : LinearLayout {
-  private ViewPager2 _viewPager = null!;
-  private LinearLayout _topPanel = null!;
-  private LinearLayout _bottomPanel = null!;
-  private Func<int, View>? _panelFactory;
+  private readonly ViewPager2 _viewPager;
+  private readonly LinearLayout _topPanel;
+  private readonly LinearLayout _bottomPanel;
+  private readonly Func<int, View> _panelFactory;
 
   public ViewPager2 ViewPager { get => _viewPager; }
 
-  public SlidePanelsGridHost(Context context) : base(context) => _initialize(context);
-  public SlidePanelsGridHost(Context context, IAttributeSet attrs) : base(context, attrs) => _initialize(context);
-  protected SlidePanelsGridHost(nint javaReference, JniHandleOwnership transfer) : base(javaReference, transfer) => _initialize(Context!);
-
-  private void _initialize(Context context) {
+  public SlidePanelsGridHost(Context context, Func<int, View> panelFactory) : base(context) {
+    _panelFactory = panelFactory;
     Orientation = Orientation.Vertical;
     SetBackgroundResource(Resource.Color.c_static_ba);
 
-    _topPanel = new(context) { LayoutParameters = new LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.WrapContent) };
-    AddView(_topPanel);
+    _topPanel = new(context) {
+      LayoutParameters = new LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.WrapContent)
+    };
 
     _viewPager = new(context) {
       LayoutParameters = new LayoutParams(ViewGroup.LayoutParams.MatchParent, 0, 1f),
       Adapter = new PanelAdapter(this)
     };
-    AddView(_viewPager);
 
     _bottomPanel = new(context) {
       LayoutParameters = new LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.WrapContent),
       Visibility = ViewStates.Gone
     };
-    AddView(_bottomPanel);
-  }
 
-  public void SetPanelFactory(Func<int, View> panelFactory) {
-    _panelFactory = panelFactory ?? throw new ArgumentNullException(nameof(panelFactory));
-    _viewPager.Adapter?.NotifyDataSetChanged();
+    AddView(_topPanel);
+    AddView(_viewPager);
+    AddView(_bottomPanel);
   }
 
   public void SetTopPanel(View view) {
@@ -57,13 +50,11 @@ public class SlidePanelsGridHost : LinearLayout {
     _bottomPanel.Visibility = isVisible ? ViewStates.Visible : ViewStates.Gone;
   }
 
-  private class PanelAdapter(SlidePanelsGridHost host) : RecyclerView.Adapter {
-    private readonly SlidePanelsGridHost _host = host;
-
+  private class PanelAdapter(SlidePanelsGridHost _host) : RecyclerView.Adapter {
     public override int ItemCount => 3; // Left, Middle, Right
 
     public override RecyclerView.ViewHolder OnCreateViewHolder(ViewGroup parent, int viewType) {
-      var view = _host._panelFactory?.Invoke(viewType) ?? throw new InvalidOperationException("Panel factory not set");
+      var view = _host._panelFactory(viewType);
       view.LayoutParameters = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.MatchParent);
       return new PanelViewHolder(view);
     }
