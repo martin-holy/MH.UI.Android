@@ -55,8 +55,10 @@ public class TabControlHost : LinearLayout {
       DataContext.Tabs.CollectionChanged -= _onTabsChanged;
       DataContext.PropertyChanged -= _onDataContextPropertyChanged;
 
-      foreach (var view in _contentViews.Values)
+      foreach (var view in _contentViews.Values) {
         _tabContent.RemoveView(view);
+        view.Dispose();
+      }
       _contentViews.Clear();
 
       _adapter.Dispose();
@@ -70,8 +72,10 @@ public class TabControlHost : LinearLayout {
   private void _onTabsChanged(object? sender, NotifyCollectionChangedEventArgs e) {
     if (e.Action is NotifyCollectionChangedAction.Remove or NotifyCollectionChangedAction.Reset)
       foreach (var item in e.OldItems?.Cast<IListItem>() ?? [])
-        if (_contentViews.Remove(item, out var view))
+        if (_contentViews.Remove(item, out var view)) {
           _tabContent.RemoveView(view);
+          view.Dispose();
+        }
 
     _updateContent();
   }
