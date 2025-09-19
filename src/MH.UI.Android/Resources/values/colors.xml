@@ -63,4 +63,8 @@
   <color name="c_input_error">#7FFF0000</color>
 
   <color name="icon_default">#EEEEEE</color>
+
+	<color name="c_log_info">#FF1A98FF</color>
+	<color name="c_log_warning">#FFFFC01A</color>
+	<color name="c_log_error">#FFDE573A</color>
 </resources>
