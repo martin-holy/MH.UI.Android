@@ -40,7 +40,7 @@ public class CollectionViewRowViewHolder : RecyclerView.ViewHolder, IDisposable 
         var itemView = new CollectionViewItem(_container.Context!).Bind(rowItem, view, itemWidth, itemHeight);
         itemView.Click += _onItemClick;
         itemView.LongClick += _onItemLongClick;
-        _container.AddView(itemView);
+        _container.AddView(itemView, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WrapContent, ViewGroup.LayoutParams.WrapContent));
       }
   }
 

@@ -17,11 +17,10 @@ public class CollectionViewItem : FrameLayout {
   public ISelectable DataContext { get => _dataContext ?? throw new NotImplementedException(); }
 
   public CollectionViewItem(Context context) : base(context) {
-    LayoutParameters = new LayoutParams(ViewGroup.LayoutParams.WrapContent, ViewGroup.LayoutParams.WrapContent);
     Clickable = true;
     Focusable = true;
 
-    _border = new View(context);
+    _border = new(context);
     _border.SetBackgroundResource(Resource.Drawable.collection_view_item_selector);
   }
 
@@ -30,15 +29,11 @@ public class CollectionViewItem : FrameLayout {
     _dataContext = dataContext;
     RemoveAllViews();
 
-    itemView.LayoutParameters = new MarginLayoutParams(itemWidth, itemHeight);
-    itemView.SetMargin(CollectionView.ItemBorderSize);
-
-    _border.LayoutParameters = new LayoutParams(
+    AddView(itemView, new LayoutParams(itemWidth, itemHeight).WithMargin(CollectionView.ItemBorderSize));
+    AddView(_border, new LayoutParams(
       itemWidth + (CollectionView.ItemBorderSize * 2),
-      itemHeight + (CollectionView.ItemBorderSize * 2));
+      itemHeight + (CollectionView.ItemBorderSize * 2)));
 
-    AddView(itemView);
-    AddView(_border);
     return this;
   }
 
