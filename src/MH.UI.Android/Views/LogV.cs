@@ -4,52 +4,102 @@ using Android.Widget;
 using AndroidX.RecyclerView.Widget;
 using MH.UI.Android.Extensions;
 using MH.UI.Android.Utils;
+using MH.UI.ViewModels;
 using MH.Utils;
 using MH.Utils.BaseClasses;
+using System;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 
 namespace MH.UI.Android.Views;
 public class LogV : LinearLayout {
-  private readonly ObservableCollection<LogItem> _items;
-  private readonly RecyclerView _recyclerView;
-  private readonly LogAdapter _adapter;  
+  private readonly LogVM _dataContext;
+  private readonly RecyclerView _list;
+  private readonly LogAdapter _adapter;
+  private readonly EditText _detail;
+  private readonly CheckBox _wrapText;
+  private readonly Button _clearBtn;
+  private readonly CommandBinding _clearCommandBinding;
   private bool _disposed;
 
-  public LogV(Context context, ObservableCollection<LogItem> items) : base(context) {
-    _items = items;
-    _adapter = new LogAdapter(items);
-    _recyclerView = new(context) {
-      LayoutParameters = new LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.MatchParent),
+  // TODO clear button to the right
+  // clear detail as well
+  // set no border when detail is empty
+  // problem with horizontal scroll
+
+  public LogV(Context context, LogVM dataContext) : base(context) {
+    _dataContext = dataContext;
+    _adapter = new(dataContext.Items, this);
+    Orientation = global::Android.Widget.Orientation.Vertical;
+    LayoutParameters = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.MatchParent);
+
+    _list = new(context) {
+      LayoutParameters = new LayoutParams(ViewGroup.LayoutParams.MatchParent, 0, 0.4f)
     };
-    _recyclerView.SetLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.Vertical, false));
-    _recyclerView.SetAdapter(_adapter);
-    AddView(_recyclerView);
+    _list.SetLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.Vertical, false));
+    _list.SetAdapter(_adapter);
 
-    // TODO LogItem detail
+    _detail = new(context) {
+      LayoutParameters = new LayoutParams(ViewGroup.LayoutParams.MatchParent, 0, 1f),
+      TextSize = 14,
+      Gravity = GravityFlags.Top | GravityFlags.Start,
+      KeyListener = null
+    };
+    _detail.SetTextIsSelectable(true);
+    _detail.SetMargin(context.Resources!.GetDimensionPixelSize(Resource.Dimension.general_padding));
 
-    _items.CollectionChanged += _onItemsCollectionChanged;
+    _wrapText = new(context) { Checked = true, Text = "Wrap text" };
+    _wrapText.CheckedChange += _wrapTextCheckedChange;
+
+    _clearBtn = new(new ContextThemeWrapper(context, Resource.Style.mh_DialogButton), null, 0) {
+      LayoutParameters = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WrapContent, DisplayU.DpToPx(32)),
+      Text = dataContext.ClearCommand.Text
+    };
+    _clearCommandBinding = new(_clearBtn, dataContext.ClearCommand);
+
+    var footer = new LinearLayout(context) {
+      LayoutParameters = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.WrapContent),
+      Orientation = global::Android.Widget.Orientation.Horizontal
+    };
+    footer.AddView(_wrapText);
+    footer.AddView(_clearBtn);
+
+    AddView(_list);
+    AddView(_detail);
+    AddView(footer);
+
+    _dataContext.Items.CollectionChanged += _onItemsCollectionChanged;
   }
 
   private void _onItemsCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e) =>
     Tasks.Dispatch(_adapter.NotifyDataSetChanged);
 
+  internal void HandleItemClick(LogItem? item) {
+    _detail.Text = item?.Detail;
+  }
+
+  private void _wrapTextCheckedChange(object? sender, CompoundButton.CheckedChangeEventArgs e) {
+    _detail.SetSingleLine(!e.IsChecked);
+    _detail.SetHorizontallyScrolling(!e.IsChecked);
+  }
+
   protected override void Dispose(bool disposing) {
     if (_disposed) return;
     if (disposing) {
       _adapter.Dispose();
-      _recyclerView.Dispose();
-      _items.CollectionChanged -= _onItemsCollectionChanged;
+      _list.Dispose();
+      _clearCommandBinding.Dispose();
+      _dataContext.Items.CollectionChanged -= _onItemsCollectionChanged;
     }
     _disposed = true;
     base.Dispose(disposing);
   }
 
-  private class LogAdapter(ObservableCollection<LogItem> _items) : RecyclerView.Adapter {
+  private class LogAdapter(ObservableCollection<LogItem> _items, LogV _logV) : RecyclerView.Adapter {
     public override int ItemCount => _items.Count;
 
     public override RecyclerView.ViewHolder OnCreateViewHolder(ViewGroup parent, int viewType) =>
-      new LogItemViewHolder(parent.Context!);
+      new LogItemViewHolder(parent.Context!, _logV);
 
     public override void OnBindViewHolder(RecyclerView.ViewHolder holder, int position) =>
       ((LogItemViewHolder)holder).Bind(_items[position]);
@@ -62,14 +112,15 @@ public class LogV : LinearLayout {
 
     public LogItem? DataContext { get; private set; }
 
-    public LogItemViewHolder(Context context) : base(_createContainerView(context)) {
+    public LogItemViewHolder(Context context, LogV logV) : base(_createContainerView(context)) {
       _level = new View(context) {
-        LayoutParameters = new ViewGroup.LayoutParams(DisplayU.DpToPx(10), DisplayU.DpToPx(20))
+        LayoutParameters = new ViewGroup.LayoutParams(DisplayU.DpToPx(10), ViewGroup.LayoutParams.MatchParent)
       };
       _text = new TextView(context);
       _container = (LinearLayout)ItemView;
       _container.AddView(_level);
       _container.AddView(_text);
+      _container.Click += (_, _) => logV.HandleItemClick(DataContext);
     }
 
     public void Bind(LogItem? item) {
@@ -79,7 +130,8 @@ public class LogV : LinearLayout {
       _level.SetBackgroundResource(item.Level switch {
         LogLevel.Info => Resource.Color.c_log_info,
         LogLevel.Warning => Resource.Color.c_log_warning,
-        LogLevel.Error => Resource.Color.c_log_error
+        LogLevel.Error => Resource.Color.c_log_error,
+        _ => throw new ArgumentOutOfRangeException()
       });
 
       _text.SetText(item.Title, TextView.BufferType.Normal);
