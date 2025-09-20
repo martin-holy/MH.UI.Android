@@ -61,10 +61,7 @@ public class CollectionViewRowViewHolder : RecyclerView.ViewHolder, IDisposable 
     _cvHost.HandleItemLongClick(_dataContext!, sender as CollectionViewItem);
 
   private static LinearLayout _createContainerView(Context context) {
-    var container = new LinearLayout(context) {
-      LayoutParameters = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.WrapContent),
-      Orientation = Orientation.Horizontal
-    };
+    var container = new LinearLayout(context) { Orientation = Orientation.Horizontal };
     container.SetGravity(GravityFlags.CenterVertical);
     container.SetPadding(0);
 
