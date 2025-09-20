@@ -10,8 +10,10 @@ using MH.Utils.BaseClasses;
 using System;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using Orientation = Android.Widget.Orientation;
 
 namespace MH.UI.Android.Views;
+
 public class LogV : LinearLayout {
   private readonly LogVM _dataContext;
   private readonly RecyclerView _list;
@@ -22,60 +24,59 @@ public class LogV : LinearLayout {
   private readonly CommandBinding _clearCommandBinding;
   private bool _disposed;
 
-  // TODO clear button to the right
-  // clear detail as well
-  // set no border when detail is empty
-  // problem with horizontal scroll
-
   public LogV(Context context, LogVM dataContext) : base(context) {
     _dataContext = dataContext;
     _adapter = new(dataContext.Items, this);
-    Orientation = global::Android.Widget.Orientation.Vertical;
-    LayoutParameters = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.MatchParent);
+    Orientation = Orientation.Vertical;
 
-    _list = new(context) {
-      LayoutParameters = new LayoutParams(ViewGroup.LayoutParams.MatchParent, 0, 0.4f)
-    };
+    _list = new(context);
     _list.SetLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.Vertical, false));
     _list.SetAdapter(_adapter);
 
     _detail = new(context) {
-      LayoutParameters = new LayoutParams(ViewGroup.LayoutParams.MatchParent, 0, 1f),
+      Background = null,
       TextSize = 14,
       Gravity = GravityFlags.Top | GravityFlags.Start,
       KeyListener = null
     };
     _detail.SetTextIsSelectable(true);
-    _detail.SetMargin(context.Resources!.GetDimensionPixelSize(Resource.Dimension.general_padding));
 
     _wrapText = new(context) { Checked = true, Text = "Wrap text" };
     _wrapText.CheckedChange += _wrapTextCheckedChange;
 
     _clearBtn = new(new ContextThemeWrapper(context, Resource.Style.mh_DialogButton), null, 0) {
-      LayoutParameters = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WrapContent, DisplayU.DpToPx(32)),
       Text = dataContext.ClearCommand.Text
     };
     _clearCommandBinding = new(_clearBtn, dataContext.ClearCommand);
 
-    var footer = new LinearLayout(context) {
-      LayoutParameters = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.WrapContent),
-      Orientation = global::Android.Widget.Orientation.Horizontal
-    };
-    footer.AddView(_wrapText);
-    footer.AddView(_clearBtn);
+    var margin = context.Resources!.GetDimensionPixelSize(Resource.Dimension.general_padding);
 
-    AddView(_list);
-    AddView(_detail);
-    AddView(footer);
+    var footer = new LinearLayout(context) { Orientation = Orientation.Horizontal };
+    footer.AddView(_wrapText, new LayoutParams(0, ViewGroup.LayoutParams.WrapContent, 1f));
+    footer.AddView(_clearBtn, new LayoutParams(ViewGroup.LayoutParams.WrapContent, DisplayU.DpToPx(32)).WithMargin(margin));
+
+    AddView(_list, new LayoutParams(ViewGroup.LayoutParams.MatchParent, 0, 0.4f));
+    AddView(_detail, new LayoutParams(ViewGroup.LayoutParams.MatchParent, 0, 1f).WithMargin(margin));
+    AddView(footer, new LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.WrapContent));
 
     _dataContext.Items.CollectionChanged += _onItemsCollectionChanged;
   }
 
-  private void _onItemsCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e) =>
+  private void _onItemsCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e) {
     Tasks.Dispatch(_adapter.NotifyDataSetChanged);
+    _setDetailText(null);
+  }
 
-  internal void HandleItemClick(LogItem? item) {
-    _detail.Text = item?.Detail;
+  internal void HandleItemClick(LogItem? item) =>
+    _setDetailText(item?.Detail);
+
+  private void _setDetailText(string? text) {
+    _detail.Text = text;
+
+    if (string.IsNullOrEmpty(text))
+      _detail.Background = null;
+    else
+      _detail.SetBackgroundResource(Resource.Drawable.view_border);
   }
 
   private void _wrapTextCheckedChange(object? sender, CompoundButton.CheckedChangeEventArgs e) {
@@ -113,12 +114,10 @@ public class LogV : LinearLayout {
     public LogItem? DataContext { get; private set; }
 
     public LogItemViewHolder(Context context, LogV logV) : base(_createContainerView(context)) {
-      _level = new View(context) {
-        LayoutParameters = new ViewGroup.LayoutParams(DisplayU.DpToPx(10), ViewGroup.LayoutParams.MatchParent)
-      };
+      _level = new View(context);
       _text = new TextView(context);
       _container = (LinearLayout)ItemView;
-      _container.AddView(_level);
+      _container.AddView(_level, new LayoutParams(DisplayU.DpToPx(10), ViewGroup.LayoutParams.MatchParent));
       _container.AddView(_text);
       _container.Click += (_, _) => logV.HandleItemClick(DataContext);
     }
@@ -139,13 +138,11 @@ public class LogV : LinearLayout {
 
     private static LinearLayout _createContainerView(Context context) {
       var container = new LinearLayout(context) {
-        LayoutParameters = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.WrapContent),
-        Orientation = global::Android.Widget.Orientation.Horizontal,
+        Orientation = Orientation.Horizontal,
         Clickable = true,
         Focusable = true
       };
       container.SetGravity(GravityFlags.CenterVertical);
-      container.SetPadding(context.Resources!.GetDimensionPixelSize(Resource.Dimension.general_padding));
       container.SetBackgroundResource(Resource.Color.c_static_ba);
 
       return container;
