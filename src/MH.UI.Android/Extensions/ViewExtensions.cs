@@ -13,9 +13,6 @@ public static class ViewExtensions {
     return view;
   }
 
-  public static void SetMargin(this ViewGroup.MarginLayoutParams layoutParams, int value) =>
-    layoutParams.SetMargins(value, value, value, value);
-
   public static T SetMargin<T>(this T view, int value) where T : View =>
     view.SetMargin(value, value, value, value);
 
