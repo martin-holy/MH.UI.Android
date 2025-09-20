@@ -169,24 +169,18 @@ public class DialogHost : DialogFragment {
   }
 
   private LinearLayout _createButtonsView(Context context, Dialog dataContext) {
-    var padding = context.Resources!.GetDimensionPixelSize(Resource.Dimension.general_padding);
-    var margin = padding * 2;
-    var textColor = new Color(context.Resources!.GetColor(Resource.Color.c_static_fo, context.Theme));
+    var margin = context.Resources!.GetDimensionPixelSize(Resource.Dimension.general_padding) * 2;
     var view = new LinearLayout(context) {
       Orientation = Orientation.Horizontal
     };
     view.SetGravity(GravityFlags.End);
 
     foreach (var button in dataContext.Buttons) {
-      var btn = new Button(context) {
+      var btn = new Button(new ContextThemeWrapper(context, Resource.Style.mh_DialogButton), null, 0) {
         LayoutParameters = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WrapContent, DisplayU.DpToPx(32)),
         Text = ((RelayCommandBase)button.Command).Text
       };
-      btn.SetBackgroundResource(Resource.Drawable.button_background);
       btn.SetMargin(0, margin, margin, margin);
-      btn.SetMinWidth(DisplayU.DpToPx(48));
-      btn.SetPadding(padding);
-      btn.SetTextColor(textColor);
       _commandBindings.Add(new(btn, button.Command, dataContext));
       view.AddView(btn);
     }
