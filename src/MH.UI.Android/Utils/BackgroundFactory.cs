@@ -48,4 +48,11 @@ public static class BackgroundFactory {
       Resource.Color.c_black,
       Resource.Dimension.border_stroke_width,
       Resource.Dimension.border_corner_radius);
+
+  public static GradientDrawable RoundSolidDark() =>
+    Create(
+      Resource.Color.gray1,
+      Resource.Color.c_black,
+      Resource.Dimension.border_stroke_width,
+      Resource.Dimension.border_corner_radius);
 }
