@@ -20,23 +20,13 @@ public class SlidePanelsGridHost : LinearLayout {
     Orientation = Orientation.Vertical;
     SetBackgroundResource(Resource.Color.c_static_ba);
 
-    _topPanel = new(context) {
-      LayoutParameters = new LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.WrapContent)
-    };
+    _topPanel = new(context);
+    _viewPager = new(context) { Adapter = new PanelAdapter(this) };
+    _bottomPanel = new(context) { Visibility = ViewStates.Gone };
 
-    _viewPager = new(context) {
-      LayoutParameters = new LayoutParams(ViewGroup.LayoutParams.MatchParent, 0, 1f),
-      Adapter = new PanelAdapter(this)
-    };
-
-    _bottomPanel = new(context) {
-      LayoutParameters = new LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.WrapContent),
-      Visibility = ViewStates.Gone
-    };
-
-    AddView(_topPanel);
-    AddView(_viewPager);
-    AddView(_bottomPanel);
+    AddView(_topPanel, new LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.WrapContent));
+    AddView(_viewPager, new LayoutParams(ViewGroup.LayoutParams.MatchParent, 0, 1f));
+    AddView(_bottomPanel, new LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.WrapContent));
   }
 
   public void SetTopPanel(View view) {
@@ -55,7 +45,7 @@ public class SlidePanelsGridHost : LinearLayout {
 
     public override RecyclerView.ViewHolder OnCreateViewHolder(ViewGroup parent, int viewType) {
       var view = _host._panelFactory(viewType);
-      view.LayoutParameters = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.MatchParent);
+      view.LayoutParameters = new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.MatchParent);
       return new PanelViewHolder(view);
     }
 
