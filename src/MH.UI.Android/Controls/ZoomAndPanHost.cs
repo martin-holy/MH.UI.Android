@@ -37,13 +37,11 @@ public class ZoomAndPanHost : FrameLayout, IZoomAndPanHost, IDisposable {
   protected ZoomAndPanHost(nint javaReference, JniHandleOwnership transfer) : base(javaReference, transfer) => _initialize(Context!);
 
   private void _initialize(Context context) {
-    _imageView = new ImageView(context) {
-      LayoutParameters = new LayoutParams(LayoutParams.MatchParent, LayoutParams.MatchParent)
-    };
+    _imageView = new ImageView(context);
     _imageView.SetScaleType(ImageView.ScaleType.Matrix);
     _scaleDetector = new ScaleGestureDetector(context, new ScaleListener(this));
     _gestureDetector = new GestureDetector(context, new GestureListener(this));
-    AddView(_imageView);
+    AddView(_imageView, new LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.MatchParent));
   }
 
   public ZoomAndPanHost Bind(ZoomAndPan? dataContext) {
