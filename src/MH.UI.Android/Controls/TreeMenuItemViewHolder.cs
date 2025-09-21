@@ -19,16 +19,24 @@ public class TreeMenuItemViewHolder : RecyclerView.ViewHolder {
   public FlatTreeItem? DataContext { get; private set; }
 
   public TreeMenuItemViewHolder(Context context, Action closePopup) : base(_createContainerView(context)) {
-    var generalPadding = context.Resources!.GetDimensionPixelSize(Resource.Dimension.general_padding);
+    var iconSize = context.Resources!.GetDimensionPixelSize(Resource.Dimension.icon_size);
+    var iconBtnSize = context.Resources!.GetDimensionPixelSize(Resource.Dimension.icon_button_size);
+    var gp = context.Resources!.GetDimensionPixelSize(Resource.Dimension.general_padding);
 
     _closePopup = closePopup;
-    _icon = new IconView(context).SetMargin(generalPadding, 0, generalPadding, 0);
-    _name = _createTextView(context);
-    _expandedIcon = _createTreeItemExpandIconView(context);
+    _icon = new IconView(context);
+
+    _name = new TextView(context);
+    _name.SetSingleLine(true);
+
+    _expandedIcon = new ImageView(context) { Focusable = true };
+    _expandedIcon.SetScaleType(ImageView.ScaleType.Center);
+    _expandedIcon.SetImageResource(Resource.Drawable.tree_item_expanded_selector);
+
     _container = (LinearLayout)ItemView;
-    _container.AddView(_icon);
-    _container.AddView(_name);
-    _container.AddView(_expandedIcon);
+    _container.AddView(_icon, new LinearLayout.LayoutParams(iconSize, iconSize).WithMargin(gp, 0, gp, 0));
+    _container.AddView(_name, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WrapContent, 1f));
+    _container.AddView(_expandedIcon, new LinearLayout.LayoutParams(iconBtnSize, iconBtnSize));
     _container.Click += _onContainerClick;
   }
 
@@ -55,7 +63,7 @@ public class TreeMenuItemViewHolder : RecyclerView.ViewHolder {
     _icon.Enabled = ItemView.Enabled;
     _icon.Bind(menuItem.Icon);
 
-    _name.SetText(menuItem.Text, TextView.BufferType.Normal);
+    _name.Text = menuItem.Text;
     _name.Enabled = ItemView.Enabled;
 
     _expandedIcon.Visibility = menuItem.Items.Count > 0 ? ViewStates.Visible : ViewStates.Invisible;
@@ -91,26 +99,5 @@ public class TreeMenuItemViewHolder : RecyclerView.ViewHolder {
     container.SetBackgroundResource(Resource.Color.c_static_ba);
 
     return container;
-  }
-
-  private static TextView _createTextView(Context context) {
-    var textView = new TextView(context) {
-      LayoutParameters = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WrapContent, 1f)
-    };
-    textView.SetSingleLine(true);
-
-    return textView;
-  }
-
-  private static ImageView _createTreeItemExpandIconView(Context context) {
-    var size = context.Resources!.GetDimensionPixelSize(Resource.Dimension.icon_button_size);
-    var icon = new ImageView(context) {
-      Focusable = true,
-      LayoutParameters = new LinearLayout.LayoutParams(size, size)
-    };
-    icon.SetScaleType(ImageView.ScaleType.Center);
-    icon.SetImageResource(Resource.Drawable.tree_item_expanded_selector);
-
-    return icon;
   }
 }
