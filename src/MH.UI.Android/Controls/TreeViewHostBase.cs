@@ -37,11 +37,9 @@ public abstract class TreeViewHostBase<TView, TAdapter> : RelativeLayout, IAndro
     ItemMenuFactory = itemMenuFactory;
     SetBackgroundResource(Resource.Color.c_static_ba);
 
-    _recyclerView = new(context) {
-      LayoutParameters = new LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.MatchParent),
-    };
+    _recyclerView = new(context);
     _recyclerView.SetLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.Vertical, false));
-    AddView(_recyclerView);
+    AddView(_recyclerView, new LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.MatchParent));
   }
 
   protected override void Dispose(bool disposing) {
