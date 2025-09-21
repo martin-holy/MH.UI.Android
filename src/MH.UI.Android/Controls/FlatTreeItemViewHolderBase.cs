@@ -15,11 +15,14 @@ public abstract class FlatTreeItemViewHolderBase : RecyclerView.ViewHolder {
   private readonly ImageView _expandedIcon;
   private readonly ImageView _icon;
   private readonly TextView _name;
-  protected bool _disposed;  
+  protected bool _disposed;
 
   public FlatTreeItem? DataContext { get; private set; }
 
   public FlatTreeItemViewHolderBase(Context context, IAndroidTreeViewHost treeViewHost) : base(_createContainerView(context)) {
+    var iconBtnSize = context.Resources!.GetDimensionPixelSize(Resource.Dimension.icon_button_size);
+    var gp = context.Resources!.GetDimensionPixelSize(Resource.Dimension.general_padding);
+
     _treeViewHost = treeViewHost;
     _expandedIcon = _createTreeItemExpandIconView(context);
     _expandedIcon.Click += _onExpandedChanged;
@@ -27,7 +30,7 @@ public abstract class FlatTreeItemViewHolderBase : RecyclerView.ViewHolder {
     _icon.Click += _onIconClick;
     _name = new TextView(context);
     _container = (LinearLayout)ItemView;
-    _container.AddView(_expandedIcon);
+    _container.AddView(_expandedIcon, new LinearLayout.LayoutParams(iconBtnSize, iconBtnSize).WithMargin(gp, 0, gp, 0));
     _container.AddView(_icon);
     _container.AddView(_name);
   }
@@ -68,8 +71,8 @@ public abstract class FlatTreeItemViewHolderBase : RecyclerView.ViewHolder {
 
   private static LinearLayout _createContainerView(Context context) {
     var container = new LinearLayout(context) {
-      LayoutParameters = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.WrapContent),
       Orientation = Orientation.Horizontal,
+      LayoutParameters = new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.WrapContent),
       Clickable = true,
       Focusable = true
     };
@@ -81,15 +84,9 @@ public abstract class FlatTreeItemViewHolderBase : RecyclerView.ViewHolder {
   }
 
   private static ImageView _createTreeItemExpandIconView(Context context) {
-    var size = context.Resources!.GetDimensionPixelSize(Resource.Dimension.icon_button_size);
-    var generalPadding = context.Resources!.GetDimensionPixelSize(Resource.Dimension.general_padding);
     var icon = new ImageView(context) {
       Clickable = true,
-      Focusable = true,
-      LayoutParameters = new LinearLayout.LayoutParams(size, size) {
-        MarginStart = generalPadding,
-        MarginEnd = generalPadding
-      }
+      Focusable = true
     };
     icon.SetScaleType(ImageView.ScaleType.Center);
     icon.SetImageResource(Resource.Drawable.tree_item_expanded_selector);
