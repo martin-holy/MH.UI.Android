@@ -1,7 +1,6 @@
 ﻿using Android.Content;
 using Android.Views;
 using Android.Widget;
-using MH.UI.Android.Extensions;
 using MH.UI.Android.Utils;
 using MH.Utils;
 using MH.Utils.Interfaces;
@@ -26,15 +25,11 @@ public class SelectionBar : LinearLayout {
     _clearSelectionBtn.Click += _onClearSelectionBtnClick;
 
     var gp = context.Resources!.GetDimensionPixelSize(Resource.Dimension.general_padding);
-    var lp = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WrapContent, ViewGroup.LayoutParams.WrapContent);
-    lp.AddRule(LayoutRules.AlignParentRight);
-    LayoutParameters = lp;
     Orientation = global::Android.Widget.Orientation.Horizontal;
     Visibility = ViewStates.Gone;
-    Background = BackgroundFactory.RoundDarker();
+    Background = BackgroundFactory.RoundSolidDark();
     SetGravity(GravityFlags.CenterVertical);
     SetPadding(gp, 0, gp, 0);
-    this.SetMargin(0, gp, gp, 0);
     AddView(_selectedCount);
     AddView(_clearSelectionBtn);
   }
