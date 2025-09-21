@@ -2,12 +2,14 @@
 
 ## Layout Parameters Rule
 
-Always use the layout parameters (`LayoutParams`) type defined by the **parent container** when adding child views. Each `ViewGroup` subclass has its own `LayoutParams` type, which may extend `ViewGroup.LayoutParams` with additional properties (e.g., margins, weights).
+Always use the layout parameters (`LayoutParams`) type defined by the **parent container** when adding child views.
+Each `ViewGroup` subclass has its own `LayoutParams` type, which may extend `ViewGroup.LayoutParams` with additional properties (e.g., margins, weights).
 
 * **Parent decides layout**: Child views don’t decide their own layout. The parent container interprets its own `LayoutParams` type.
 * **Correct subclass**: Always provide the parent’s `LayoutParams` (e.g., `LinearLayout.LayoutParams` when inside a `LinearLayout`).
 * **Shorthand in code**: Inside the context of a container class (e.g., `LinearLayout`), you can usually just write `LayoutParams`, and the IDE will resolve it to the correct subclass (`LinearLayout.LayoutParams`).
 * **Be explicit if unclear**: If there is any ambiguity, explicitly specify the full type (`LinearLayout.LayoutParams`).
+* **RecyclerView.ViewHolder**: Set RecyclerView.LayoutParams to ItemView. Default is WrapContent, WrapContent.
 
 ### Common LayoutParams Types
 
@@ -41,7 +43,3 @@ container.AddView(
     ViewGroup.LayoutParams.MatchParent,
     ViewGroup.LayoutParams.MatchParent));
 ```
-
-✅ Always match `LayoutParams` type to the parent container.
-⚠️ Don’t use `ViewGroup.LayoutParams` unless you’re working with a very generic `ViewGroup` and no parent-specific subclass is available.
-⚠️ Don’t assign LayoutParams in RecyclerView.ViewHolder root views — RecyclerView will enforce MATCH_PARENT width and WRAP_CONTENT height automatically.
