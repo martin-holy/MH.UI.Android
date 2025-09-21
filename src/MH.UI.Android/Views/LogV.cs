@@ -55,7 +55,7 @@ public class LogV : LinearLayout {
     footer.AddView(_wrapText, new LayoutParams(0, ViewGroup.LayoutParams.WrapContent, 1f));
     footer.AddView(_clearBtn, new LayoutParams(ViewGroup.LayoutParams.WrapContent, DisplayU.DpToPx(32)).WithMargin(margin));
 
-    AddView(_list, new LayoutParams(ViewGroup.LayoutParams.MatchParent, 0, 0.4f));
+    AddView(_list, new LayoutParams(ViewGroup.LayoutParams.MatchParent, 0, 0.4f).WithMargin(margin));
     AddView(_detail, new LayoutParams(ViewGroup.LayoutParams.MatchParent, 0, 1f).WithMargin(margin));
     AddView(footer, new LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.WrapContent));
 
@@ -133,12 +133,13 @@ public class LogV : LinearLayout {
         _ => throw new ArgumentOutOfRangeException()
       });
 
-      _text.SetText(item.Title, TextView.BufferType.Normal);
+      _text.Text = item.Title;
     }
 
     private static LinearLayout _createContainerView(Context context) {
       var container = new LinearLayout(context) {
         Orientation = Orientation.Horizontal,
+        LayoutParameters = new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.WrapContent),
         Clickable = true,
         Focusable = true
       };
