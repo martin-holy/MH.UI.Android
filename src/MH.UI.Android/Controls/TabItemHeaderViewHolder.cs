@@ -73,7 +73,7 @@ public class TabItemHeaderViewHolder : RecyclerView.ViewHolder {
 
   private static LinearLayout _createContainerView(Context context) {
     var container = new LinearLayout(context) {
-      LayoutParameters = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WrapContent, ViewGroup.LayoutParams.WrapContent),
+      LayoutParameters = new RecyclerView.LayoutParams(ViewGroup.LayoutParams.WrapContent, ViewGroup.LayoutParams.WrapContent),
       Orientation = Orientation.Horizontal,
       Clickable = true,
       Focusable = true
