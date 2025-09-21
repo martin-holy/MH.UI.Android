@@ -1,4 +1,5 @@
 ﻿using Android.Views;
+using Android.Widget;
 
 namespace MH.UI.Android.Extensions;
 
@@ -12,6 +13,16 @@ public static class LayoutParamsExtensions {
   public static T WithMargin<T>(this T layoutParams, int all)
     where T : ViewGroup.MarginLayoutParams {
     layoutParams.SetMargins(all, all, all, all);
+    return layoutParams;
+  }
+
+  public static RelativeLayout.LayoutParams WithRule(this RelativeLayout.LayoutParams layoutParams, LayoutRules verb) {
+    layoutParams.AddRule(verb);
+    return layoutParams;
+  }
+
+  public static RelativeLayout.LayoutParams WithRule(this RelativeLayout.LayoutParams layoutParams, LayoutRules verb, int subject) {
+    layoutParams.AddRule(verb, subject);
     return layoutParams;
   }
 }
