@@ -109,27 +109,29 @@ public class DialogHost : DialogFragment {
 
     var titleBar = _createTitleBarView(context);
     titleBar.AddView(new IconView(context).Bind(_dataContext.Icon));
-    titleBar.AddView(_createTitleTextView(context, _dataContext));
+    titleBar.AddView(
+      new TextView(context) { Text = _dataContext.Title, TextSize = 18 },
+      new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WrapContent, 1f));
     titleBar.AddView(_createTitleCloseBtnView(context, _dataContext));
-    view.AddView(titleBar);
+    view.AddView(titleBar, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.WrapContent));
 
     if (_getDialog(context, _dataContext) is { } contentView) {
       if (contentView.Parent is ViewGroup oldParent)
         oldParent.RemoveView(contentView);
 
-      view.AddView(contentView);
+      view.AddView(contentView, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WrapContent, ViewGroup.LayoutParams.WrapContent));
     }
 
-    view.AddView(_createButtonsView(context, _dataContext));
+    view.AddView(_createButtonsView(context, _dataContext),
+      new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WrapContent, ViewGroup.LayoutParams.WrapContent) {
+        Gravity = GravityFlags.End
+      });
 
     return view;
   }
 
   private static LinearLayout _createThisView(Context context) {
-    var view = new LinearLayout(context) {
-      LayoutParameters = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.WrapContent),
-      Orientation = Orientation.Vertical
-    };
+    var view = new LinearLayout(context) { Orientation = Orientation.Vertical };
     view.SetBackgroundResource(Resource.Drawable.dialog_background);
     view.SetPadding(DisplayU.DpToPx(1));
 
@@ -137,25 +139,10 @@ public class DialogHost : DialogFragment {
   }
 
   private static LinearLayout _createTitleBarView(Context context) {
-    var view = new LinearLayout(context) {
-      LayoutParameters = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.WrapContent),
-      Orientation = Orientation.Horizontal
-    };
+    var view = new LinearLayout(context) { Orientation = Orientation.Horizontal };
     view.SetGravity(GravityFlags.CenterVertical);
     view.SetBackgroundResource(Resource.Color.c_black2);
     view.SetPadding(context.Resources!.GetDimensionPixelSize(Resource.Dimension.general_padding));
-
-    return view;
-  }
-
-  private static TextView _createTitleTextView(Context context, Dialog dataContext) {
-    var view = new TextView(context) {
-      LayoutParameters = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WrapContent) {
-        Weight = 1
-      },
-      Text = dataContext.Title,
-      TextSize = 18
-    };
 
     return view;
   }
@@ -170,19 +157,16 @@ public class DialogHost : DialogFragment {
 
   private LinearLayout _createButtonsView(Context context, Dialog dataContext) {
     var margin = context.Resources!.GetDimensionPixelSize(Resource.Dimension.general_padding) * 2;
-    var view = new LinearLayout(context) {
-      Orientation = Orientation.Horizontal
-    };
-    view.SetGravity(GravityFlags.End);
+    var view = new LinearLayout(context) { Orientation = Orientation.Horizontal };
 
     foreach (var button in dataContext.Buttons) {
       var btn = new Button(new ContextThemeWrapper(context, Resource.Style.mh_DialogButton), null, 0) {
-        LayoutParameters = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WrapContent, DisplayU.DpToPx(32)),
         Text = ((RelayCommandBase)button.Command).Text
       };
-      btn.SetMargin(0, margin, margin, margin);
       _commandBindings.Add(new(btn, button.Command, dataContext));
-      view.AddView(btn);
+
+      view.AddView(btn, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WrapContent, DisplayU.DpToPx(32))
+        .WithMargin(0, margin, margin, margin));
     }
 
     return view;
@@ -191,24 +175,16 @@ public class DialogHost : DialogFragment {
   private static LinearLayout _getNotImplementedDialog(Context context, Dialog dataContext) {
     _notImplementedDialog ??= _createNotImplementedDialog(context);
     if (_notImplementedDialog.GetChildAt(0) is TextView text)
-      text.SetText($"Dialog {dataContext.GetType()} not implemented", TextView.BufferType.Normal);
+      text.Text = $"Dialog {dataContext.GetType()} not implemented";
 
     return _notImplementedDialog;
   }
 
   private static LinearLayout _createNotImplementedDialog(Context context) {
-    var view = new LinearLayout(context) {
-      Orientation = Orientation.Vertical,
-      LayoutParameters = new ViewGroup.LayoutParams(
-        ViewGroup.LayoutParams.MatchParent,
-        ViewGroup.LayoutParams.WrapContent)
-    };
+    var container = new LinearLayout(context) { Orientation = Orientation.Vertical };
+    var text = new TextView(context) { Gravity = GravityFlags.Center };
+    container.AddView(text);
 
-    var textView = new TextView(context) {
-      Gravity = GravityFlags.Center
-    };
-    view.AddView(textView);
-
-    return view;
+    return container;
   }
 }
