@@ -24,7 +24,7 @@ public class IconTextView : LinearLayout {
     _text = new TextView(context);
 
     AddView(_icon, new LayoutParams(DimensU.IconSize, DimensU.IconSize)
-      .WithMargin(DimensU.GeneralPadding, 0, DimensU.GeneralPadding, 0));
+      .WithMargin(DimensU.Spacing, 0, DimensU.Spacing, 0));
     AddView(_text);
 
     _defaultTextColors = _text.TextColors;
