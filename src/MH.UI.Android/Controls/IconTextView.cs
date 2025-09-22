@@ -20,12 +20,11 @@ public class IconTextView : LinearLayout {
     Background = BackgroundFactory.RoundDark();
     SetGravity(GravityFlags.CenterVertical);
 
-    var generalPadding = context.Resources!.GetDimensionPixelSize(Resource.Dimension.general_padding);
-
-    _icon = new IconView(context).SetMargin(generalPadding, 0, generalPadding, 0);
+    _icon = new IconView(context);
     _text = new TextView(context);
 
-    AddView(_icon);
+    AddView(_icon, new LayoutParams(DimensU.IconSize, DimensU.IconSize)
+      .WithMargin(DimensU.GeneralPadding, 0, DimensU.GeneralPadding, 0));
     AddView(_text);
 
     _defaultTextColors = _text.TextColors;
