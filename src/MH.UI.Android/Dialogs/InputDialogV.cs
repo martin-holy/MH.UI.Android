@@ -36,12 +36,10 @@ public sealed class InputDialogV : LinearLayout, IDialogContentV {
 
     var messageAndAnswer = new LinearLayout(context) { Orientation = Orientation.Vertical };
 
-    messageAndAnswer.AddView(_message, new LayoutParams(LPU.Wrap, LPU.Wrap)
-      .WithMargin(DisplayU.DpToPx(5)));
-    messageAndAnswer.AddView(_answer, new LayoutParams(LPU.Match, LPU.Wrap)
-      .WithMargin(DisplayU.DpToPx(5), DisplayU.DpToPx(5), DisplayU.DpToPx(10), DisplayU.DpToPx(5)));
+    messageAndAnswer.AddView(_message, new LayoutParams(LPU.Wrap, LPU.Wrap).WithDpMargin(5));
+    messageAndAnswer.AddView(_answer, new LayoutParams(LPU.Match, LPU.Wrap).WithDpMargin(5, 5, 10, 5));
 
-    AddView(_icon, new LayoutParams(DisplayU.DpToPx(32), DisplayU.DpToPx(32)).WithMargin(DisplayU.DpToPx(10)));
+    AddView(_icon, new LayoutParams(DisplayU.DpToPx(32), DisplayU.DpToPx(32)).WithDpMargin(10));
     AddView(messageAndAnswer, new LayoutParams(LPU.Wrap, LPU.Wrap, 1f));
   }
 
@@ -49,8 +47,8 @@ public sealed class InputDialogV : LinearLayout, IDialogContentV {
     if (dataContext is not InputDialog vm) throw new InvalidOperationException();
     _setDataContext(DataContext, vm);
     _icon.Bind(vm.Icon);
-    _message.SetText(vm.Message, TextView.BufferType.Normal);
-    _answer.SetText(vm.Answer, TextView.BufferType.Normal);
+    _message.Text = vm.Message;
+    _answer.Text = vm.Answer;
     _answer.Hint = vm.ErrorMessage;
     _answer.RequestFocus();
     return this;
