@@ -32,8 +32,8 @@ public class TreeMenuItemViewHolder : RecyclerView.ViewHolder {
 
     _container = (LinearLayout)ItemView;
     _container.AddView(_icon, new LinearLayout.LayoutParams(DimensU.IconSize, DimensU.IconSize)
-      .WithMargin(DimensU.GeneralPadding, 0, DimensU.GeneralPadding, 0));
-    _container.AddView(_name, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WrapContent, 1f));
+      .WithMargin(DimensU.Spacing, 0, DimensU.Spacing, 0));
+    _container.AddView(_name, new LinearLayout.LayoutParams(0, LPU.Wrap, 1f));
     _container.AddView(_expandedIcon, new LinearLayout.LayoutParams(DimensU.IconButtonSize, DimensU.IconButtonSize));
     _container.Click += _onContainerClick;
   }
@@ -51,7 +51,7 @@ public class TreeMenuItemViewHolder : RecyclerView.ViewHolder {
     DataContext = item;
     if (item == null || item.TreeItem is not MenuItem menuItem) return;
 
-    int indent = item.Level * ItemView.Resources!.GetDimensionPixelSize(Resource.Dimension.flat_tree_item_indent_size);
+    int indent = item.Level * DimensU.FlatTreeItemIndentSize;
     ItemView.SetPadding(indent, ItemView.PaddingTop, ItemView.PaddingRight, ItemView.PaddingBottom);
 
     ItemView.Enabled =
@@ -85,9 +85,7 @@ public class TreeMenuItemViewHolder : RecyclerView.ViewHolder {
 
   private static LinearLayout _createContainerView(Context context) {
     var container = new LinearLayout(context) {
-      LayoutParameters = new ViewGroup.LayoutParams(
-        ViewGroup.LayoutParams.MatchParent,
-        context.Resources!.GetDimensionPixelSize(Resource.Dimension.menu_item_height)),
+      LayoutParameters = new ViewGroup.LayoutParams(LPU.Match, DimensU.MenuItemHeight),
       Orientation = Orientation.Horizontal,
       Clickable = true,
       Focusable = true
