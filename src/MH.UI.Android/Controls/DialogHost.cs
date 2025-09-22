@@ -105,14 +105,26 @@ public class DialogHost : DialogFragment {
 
   public override View OnCreateView(LayoutInflater? inflater, ViewGroup? container, Bundle? savedInstanceState) {
     var context = container?.Context ?? Activity!;
-    var view = _createThisView(context);
 
-    var titleBar = _createTitleBarView(context);
+    var view = new LinearLayout(context) { Orientation = Orientation.Vertical };
+    view.SetBackgroundResource(Resource.Drawable.dialog_background);
+    view.SetPadding(DisplayU.DpToPx(1));
+
+    var titleBar = new LinearLayout(context) { Orientation = Orientation.Horizontal };
+    titleBar.SetGravity(GravityFlags.CenterVertical);
+    titleBar.SetBackgroundResource(Resource.Color.c_black2);
+    titleBar.SetPadding(context.Resources!.GetDimensionPixelSize(Resource.Dimension.general_padding));
+
+    var titleCloseBtn = new IconButton(context);
+    titleCloseBtn.SetImageResource(Resource.Drawable.icon_x_close);
+    _commandBindings.Add(new(titleCloseBtn, MH.UI.Controls.Dialog.CloseCommand, _dataContext));
+
     titleBar.AddView(new IconView(context).Bind(_dataContext.Icon));
     titleBar.AddView(
       new TextView(context) { Text = _dataContext.Title, TextSize = 18 },
       new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WrapContent, 1f));
-    titleBar.AddView(_createTitleCloseBtnView(context, _dataContext));
+    titleBar.AddView(titleCloseBtn);
+
     view.AddView(titleBar, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.WrapContent));
 
     if (_getDialog(context, _dataContext) is { } contentView) {
@@ -126,31 +138,6 @@ public class DialogHost : DialogFragment {
       new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WrapContent, ViewGroup.LayoutParams.WrapContent) {
         Gravity = GravityFlags.End
       });
-
-    return view;
-  }
-
-  private static LinearLayout _createThisView(Context context) {
-    var view = new LinearLayout(context) { Orientation = Orientation.Vertical };
-    view.SetBackgroundResource(Resource.Drawable.dialog_background);
-    view.SetPadding(DisplayU.DpToPx(1));
-
-    return view;
-  }
-
-  private static LinearLayout _createTitleBarView(Context context) {
-    var view = new LinearLayout(context) { Orientation = Orientation.Horizontal };
-    view.SetGravity(GravityFlags.CenterVertical);
-    view.SetBackgroundResource(Resource.Color.c_black2);
-    view.SetPadding(context.Resources!.GetDimensionPixelSize(Resource.Dimension.general_padding));
-
-    return view;
-  }
-
-  private IconButton _createTitleCloseBtnView(Context context, Dialog dataContext) {
-    var view = new IconButton(context);
-    view.SetImageResource(Resource.Drawable.icon_x_close);
-    _commandBindings.Add(new(view, MH.UI.Controls.Dialog.CloseCommand, dataContext));
 
     return view;
   }
