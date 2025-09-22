@@ -15,35 +15,22 @@ public class MessageDialogV : LinearLayout, IDialogContentV {
   private readonly TextView _message;
 
   public MessageDialogV(Context context) : base(context) {
-    _createThisView();
-    _icon = new IconView(context, DisplayU.DpToPx(32)).SetMargin(DisplayU.DpToPx(10));
-    _message = _createMessageView(context);
-    AddView(_icon);
-    AddView(_message);
+    Orientation = Orientation.Horizontal;
+    SetMinimumWidth(DisplayU.DpToPx(300));
+    SetPadding(0, DisplayU.DpToPx(10), 0, DisplayU.DpToPx(10));
+    SetGravity(GravityFlags.CenterVertical);
+
+    _icon = new IconView(context);
+    _message = new TextView(context);
+
+    AddView(_icon, new LayoutParams(DisplayU.DpToPx(32), DisplayU.DpToPx(32)).WithMargin(DisplayU.DpToPx(10)));
+    AddView(_message, new LayoutParams(0, LPU.Wrap, 1f));
   }
 
   public View Bind(Dialog dataContext) {
     if (dataContext is not MessageDialog vm) throw new InvalidOperationException();
     _icon.Bind(vm.Icon);
-    _message.SetText(vm.Message, TextView.BufferType.Normal);
+    _message.Text = vm.Message;
     return this;
   }
-
-  private void _createThisView() {
-    LayoutParameters = new ViewGroup.LayoutParams(
-      ViewGroup.LayoutParams.MatchParent,
-      ViewGroup.LayoutParams.WrapContent);
-    Orientation = Orientation.Horizontal;
-
-    SetMinimumWidth(DisplayU.DpToPx(300));
-    SetPadding(0, DisplayU.DpToPx(10), 0, DisplayU.DpToPx(10));
-    SetGravity(GravityFlags.CenterVertical);
-  }
-
-  private static TextView _createMessageView(Context context) =>
-    new(context) {
-      LayoutParameters = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WrapContent) {
-        Weight = 1
-      }
-    };
 }
