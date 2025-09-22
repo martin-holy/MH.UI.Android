@@ -24,30 +24,25 @@ public sealed class InputDialogV : LinearLayout, IDialogContentV {
   public InputDialog? DataContext { get; private set; }
 
   public InputDialogV(Context context) : base(context) {
-    _createThisView();
+    Orientation = Orientation.Horizontal;
+    SetMinimumWidth(DisplayU.DpToPx(300));
+    SetPadding(0, DisplayU.DpToPx(10), 0, DisplayU.DpToPx(10));
+    SetGravity(GravityFlags.CenterVertical);
 
-    _icon = new IconView(context, DisplayU.DpToPx(32))
-      .SetMargin(DisplayU.DpToPx(10));
-
-    _message = new TextView(context)
-      .SetMargin(DisplayU.DpToPx(5));
-
-    _answer = new EditText(context) {
-      LayoutParameters = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.WrapContent)
-    };
-    _answer.SetMargin(DisplayU.DpToPx(5), DisplayU.DpToPx(5), DisplayU.DpToPx(10), DisplayU.DpToPx(5));
+    _icon = new IconView(context);
+    _message = new TextView(context);
+    _answer = new EditText(context);
     _answer.TextChanged += _onAnswerChanged;
 
-    var messageAndAnswer = new LinearLayout(context) {
-      Orientation = Orientation.Vertical,
-      LayoutParameters = new LayoutParams(ViewGroup.LayoutParams.WrapContent, ViewGroup.LayoutParams.WrapContent, 1f)
-    };
+    var messageAndAnswer = new LinearLayout(context) { Orientation = Orientation.Vertical };
 
-    messageAndAnswer.AddView(_message);
-    messageAndAnswer.AddView(_answer);
+    messageAndAnswer.AddView(_message, new LayoutParams(LPU.Wrap, LPU.Wrap)
+      .WithMargin(DisplayU.DpToPx(5)));
+    messageAndAnswer.AddView(_answer, new LayoutParams(LPU.Match, LPU.Wrap)
+      .WithMargin(DisplayU.DpToPx(5), DisplayU.DpToPx(5), DisplayU.DpToPx(10), DisplayU.DpToPx(5)));
 
-    AddView(_icon);
-    AddView(messageAndAnswer);
+    AddView(_icon, new LayoutParams(DisplayU.DpToPx(32), DisplayU.DpToPx(32)).WithMargin(DisplayU.DpToPx(10)));
+    AddView(messageAndAnswer, new LayoutParams(LPU.Wrap, LPU.Wrap, 1f));
   }
 
   public View Bind(Dialog dataContext) {
@@ -91,14 +86,5 @@ public sealed class InputDialogV : LinearLayout, IDialogContentV {
     }
     _disposed = true;
     base.Dispose(disposing);
-  }
-
-  private void _createThisView() {
-    Orientation = Orientation.Horizontal;
-    LayoutParameters = new LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.WrapContent);
-
-    SetMinimumWidth(DisplayU.DpToPx(300));
-    SetPadding(0, DisplayU.DpToPx(10), 0, DisplayU.DpToPx(10));
-    SetGravity(GravityFlags.CenterVertical);
   }
 }
