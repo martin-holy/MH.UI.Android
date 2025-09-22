@@ -119,7 +119,7 @@ public class DialogHost : DialogFragment {
     titleCloseBtn.SetImageResource(Resource.Drawable.icon_x_close);
     _commandBindings.Add(new(titleCloseBtn, MH.UI.Controls.Dialog.CloseCommand, _dataContext));
 
-    titleBar.AddView(new IconView(context).Bind(_dataContext.Icon));
+    titleBar.AddView(new IconView(context).Bind(_dataContext.Icon), new LinearLayout.LayoutParams(DimensU.IconSize, DimensU.IconSize));
     titleBar.AddView(
       new TextView(context) { Text = _dataContext.Title, TextSize = 18 },
       new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WrapContent, 1f));

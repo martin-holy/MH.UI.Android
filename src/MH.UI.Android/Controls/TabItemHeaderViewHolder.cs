@@ -25,7 +25,7 @@ public class TabItemHeaderViewHolder : RecyclerView.ViewHolder {
     _icon = new(context);
     _name = new(context);
     _container = (LinearLayout)ItemView;
-    _container.AddView(_icon);
+    _container.AddView(_icon, new LinearLayout.LayoutParams(DimensU.IconSize, DimensU.IconSize));
     _container.AddView(_name);
     _selectItemCommandBinding = new CommandBinding(_container, selectItemCommand);
   }
