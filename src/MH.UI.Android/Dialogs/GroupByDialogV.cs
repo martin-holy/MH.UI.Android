@@ -11,7 +11,7 @@ using MH.UI.Android.Extensions;
 namespace MH.UI.Android.Dialogs;
 
 public sealed class GroupByDialogV : LinearLayout, IDialogContentV {
-  private readonly TreeViewHost _treeViewHost;
+  private readonly TreeViewHost _groupByItems;
   private readonly RadioButton _isGroupBy;
   private readonly RadioButton _isThenBy;
   private readonly CheckBox _isRecursive;
@@ -22,36 +22,32 @@ public sealed class GroupByDialogV : LinearLayout, IDialogContentV {
   public GroupByDialogV(Context context, GroupByDialog dataContext) : base(context) {
     DataContext = dataContext;
     dataContext.TreeView.MultiSelect = true;
-    _createThisView();
 
-    _treeViewHost = new(context, dataContext.TreeView, null) {
-      LayoutParameters = new LayoutParams(ViewGroup.LayoutParams.MatchParent, DisplayU.DpToPx(300), 1f)
-    };
+    Orientation = Orientation.Vertical;
+    SetPadding(0, 0, 0, DisplayU.DpToPx(10));
+    SetGravity(GravityFlags.CenterVertical);
 
-    _isGroupBy = new(context) { Text = "Group by" };
+    _groupByItems = new TreeViewHost(context, dataContext.TreeView, null);
+
+    _isGroupBy = new RadioButton(context) { Text = "Group by" };
     _isGroupBy.CheckedChange += _isGroupByCheckedChange;
 
-    _isThenBy = new(context) { Text = "Group by - Then by" };
+    _isThenBy = new RadioButton(context) { Text = "Group by - Then by" };
     _isThenBy.CheckedChange += _isThenByCheckedChange;
-    
-    var groupMode = new RadioGroup(context) {
-      Orientation = Orientation.Horizontal,
-      LayoutParameters = new(
-        ViewGroup.LayoutParams.WrapContent,
-        ViewGroup.LayoutParams.WrapContent)
-    };
+
+    var groupMode = new RadioGroup(context) { Orientation = Orientation.Horizontal };
     groupMode.SetPadding(context.Resources!.GetDimensionPixelSize(Resource.Dimension.general_padding));
     groupMode.AddView(_isGroupBy);
     groupMode.AddView(_isThenBy);
 
-    _isRecursive = new(context) { Text = "Group recursive" };
+    _isRecursive = new CheckBox(context) { Text = "Group recursive" };
     _isRecursive.CheckedChange += _isRecursiveCheckedChange;
 
-    AddView(_treeViewHost);
-    AddView(groupMode);
+    AddView(_groupByItems, new LayoutParams(ViewGroup.LayoutParams.MatchParent, DisplayU.DpToPx(300), 1f));
+    AddView(groupMode, new LayoutParams(ViewGroup.LayoutParams.WrapContent, ViewGroup.LayoutParams.WrapContent));
     AddView(_isRecursive);
   }
-  
+
   public View Bind(Dialog dataContext) {
     if (dataContext is not GroupByDialog vm) throw new InvalidOperationException();
     DataContext = vm;
@@ -60,14 +56,6 @@ public sealed class GroupByDialogV : LinearLayout, IDialogContentV {
     _isRecursive.Checked = vm.IsRecursive;
 
     return this;
-  }
-
-  private void _createThisView() {
-    Orientation = Orientation.Vertical;
-    LayoutParameters = new LayoutParams(LayoutParams.MatchParent, LayoutParams.WrapContent);
-
-    SetPadding(0, 0, 0, DisplayU.DpToPx(10));
-    SetGravity(GravityFlags.CenterVertical);
   }
 
   protected override void Dispose(bool disposing) {
