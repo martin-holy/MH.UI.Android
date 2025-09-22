@@ -3,6 +3,7 @@ using Android.Views;
 using Android.Widget;
 using AndroidX.RecyclerView.Widget;
 using MH.UI.Android.Extensions;
+using MH.UI.Android.Utils;
 using MH.Utils.BaseClasses;
 using System;
 
@@ -19,10 +20,6 @@ public class TreeMenuItemViewHolder : RecyclerView.ViewHolder {
   public FlatTreeItem? DataContext { get; private set; }
 
   public TreeMenuItemViewHolder(Context context, Action closePopup) : base(_createContainerView(context)) {
-    var iconSize = context.Resources!.GetDimensionPixelSize(Resource.Dimension.icon_size);
-    var iconBtnSize = context.Resources!.GetDimensionPixelSize(Resource.Dimension.icon_button_size);
-    var gp = context.Resources!.GetDimensionPixelSize(Resource.Dimension.general_padding);
-
     _closePopup = closePopup;
     _icon = new IconView(context);
 
@@ -34,9 +31,10 @@ public class TreeMenuItemViewHolder : RecyclerView.ViewHolder {
     _expandedIcon.SetImageResource(Resource.Drawable.tree_item_expanded_selector);
 
     _container = (LinearLayout)ItemView;
-    _container.AddView(_icon, new LinearLayout.LayoutParams(iconSize, iconSize).WithMargin(gp, 0, gp, 0));
+    _container.AddView(_icon, new LinearLayout.LayoutParams(DimensU.IconSize, DimensU.IconSize)
+      .WithMargin(DimensU.GeneralPadding, 0, DimensU.GeneralPadding, 0));
     _container.AddView(_name, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WrapContent, 1f));
-    _container.AddView(_expandedIcon, new LinearLayout.LayoutParams(iconBtnSize, iconBtnSize));
+    _container.AddView(_expandedIcon, new LinearLayout.LayoutParams(DimensU.IconButtonSize, DimensU.IconButtonSize));
     _container.Click += _onContainerClick;
   }
 
