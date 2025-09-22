@@ -1,4 +1,5 @@
-﻿using Android.OS;
+﻿using Android.Content;
+using Android.OS;
 using MH.UI.Android.Controls;
 
 namespace MH.UI.Android.Utils;
@@ -6,6 +7,11 @@ namespace MH.UI.Android.Utils;
 // TODO PORT
 public static class Init {
   private static Handler? _handler;
+
+  public static void Utils(Context context) {
+    DimensU.Init(context);
+    DisplayU.Init(context.Resources!.DisplayMetrics!);
+  }
 
   public static void SetDelegates() {
     MH.Utils.Keyboard.IsCtrlOn = () => false;
