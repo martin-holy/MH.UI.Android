@@ -21,7 +21,6 @@ public class LogV : LinearLayout {
   private readonly EditText _detail;
   private readonly CheckBox _wrapText;
   private readonly Button _clearBtn;
-  private readonly CommandBinding _clearCommandBinding;
   private bool _disposed;
 
   public LogV(Context context, LogVM dataContext) : base(context) {
@@ -44,10 +43,8 @@ public class LogV : LinearLayout {
     _wrapText = new(context) { Checked = true, Text = "Wrap text" };
     _wrapText.CheckedChange += _wrapTextCheckedChange;
 
-    _clearBtn = new(new ContextThemeWrapper(context, Resource.Style.mh_DialogButton), null, 0) {
-      Text = dataContext.ClearCommand.Text
-    };
-    _clearCommandBinding = new(_clearBtn, dataContext.ClearCommand);
+    _clearBtn = new(new ContextThemeWrapper(context, Resource.Style.mh_DialogButton), null, 0);
+    BindingU.Bind(_clearBtn, dataContext.ClearCommand);
 
     var footer = new LinearLayout(context) { Orientation = Orientation.Horizontal };
     footer.AddView(_wrapText, new LayoutParams(0, LPU.Wrap, 1f));
@@ -87,7 +84,6 @@ public class LogV : LinearLayout {
     if (disposing) {
       _adapter.Dispose();
       _list.Dispose();
-      _clearCommandBinding.Dispose();
       _dataContext.Items.CollectionChanged -= _onItemsCollectionChanged;
     }
     _disposed = true;
