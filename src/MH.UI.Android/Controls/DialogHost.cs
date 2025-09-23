@@ -29,7 +29,6 @@ public class DialogHost : DialogFragment {
   private static LinearLayout? _notImplementedDialog;
   private static readonly Dictionary<Type, IDialogContentV> _dialogs = [];
   private readonly Dialog _dataContext;
-  private readonly List<CommandBinding> _commandBindings = [];
   private bool _disposed;
 
   public DialogHost(Dialog dataContext) {
@@ -92,8 +91,6 @@ public class DialogHost : DialogFragment {
     if (_disposed) return;
     if (disposing) {
       _dataContext.PropertyChanged -= _onDataContextPropertyChanged;
-      foreach (var cb in _commandBindings) cb.Dispose();
-      _commandBindings.Clear();
     }
     _disposed = true;
     base.Dispose(disposing);
@@ -117,7 +114,7 @@ public class DialogHost : DialogFragment {
 
     var titleCloseBtn = new IconButton(context);
     titleCloseBtn.SetImageResource(Resource.Drawable.icon_x_close);
-    _commandBindings.Add(new(titleCloseBtn, MH.UI.Controls.Dialog.CloseCommand, _dataContext));
+    BindingU.Bind(titleCloseBtn, MH.UI.Controls.Dialog.CloseCommand, _dataContext, false);
 
     titleBar.AddView(
       new IconView(context).Bind(_dataContext.Icon),
@@ -144,7 +141,7 @@ public class DialogHost : DialogFragment {
     return view;
   }
 
-  private LinearLayout _createButtonsView(Context context, Dialog dataContext) {
+  private static LinearLayout _createButtonsView(Context context, Dialog dataContext) {
     var margin = DimensU.Spacing * 2;
     var view = new LinearLayout(context) { Orientation = Orientation.Horizontal };
 
@@ -152,7 +149,7 @@ public class DialogHost : DialogFragment {
       var btn = new Button(new ContextThemeWrapper(context, Resource.Style.mh_DialogButton), null, 0) {
         Text = ((RelayCommandBase)button.Command).Text
       };
-      _commandBindings.Add(new(btn, button.Command, dataContext));
+      BindingU.Bind(btn, button.Command, dataContext, false);
 
       view.AddView(btn, new LinearLayout.LayoutParams(LPU.Wrap, DisplayU.DpToPx(32))
         .WithMargin(0, margin, margin, margin));
