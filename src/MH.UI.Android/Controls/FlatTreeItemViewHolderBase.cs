@@ -20,17 +20,16 @@ public abstract class FlatTreeItemViewHolderBase : RecyclerView.ViewHolder {
   public FlatTreeItem? DataContext { get; private set; }
 
   public FlatTreeItemViewHolderBase(Context context, IAndroidTreeViewHost treeViewHost) : base(_createContainerView(context)) {
-    var iconBtnSize = context.Resources!.GetDimensionPixelSize(Resource.Dimension.icon_button_size);
-    var gp = context.Resources!.GetDimensionPixelSize(Resource.Dimension.general_padding);
-
     _treeViewHost = treeViewHost;
     _expandedIcon = _createTreeItemExpandIconView(context);
     _expandedIcon.Click += _onExpandedChanged;
     _icon = new IconButton(context);
     _icon.Click += _onIconClick;
     _name = new TextView(context);
+
     _container = (LinearLayout)ItemView;
-    _container.AddView(_expandedIcon, new LinearLayout.LayoutParams(iconBtnSize, iconBtnSize).WithMargin(gp, 0, gp, 0));
+    _container.AddView(_expandedIcon, new LinearLayout.LayoutParams(DimensU.IconButtonSize, DimensU.IconButtonSize)
+      .WithMargin(DimensU.Spacing, 0, DimensU.Spacing, 0));
     _container.AddView(_icon);
     _container.AddView(_name);
   }
@@ -49,7 +48,7 @@ public abstract class FlatTreeItemViewHolderBase : RecyclerView.ViewHolder {
     DataContext = item;
     if (item == null) return;
 
-    int indent = item.Level * ItemView.Resources!.GetDimensionPixelSize(Resource.Dimension.flat_tree_item_indent_size);
+    int indent = item.Level * DimensU.FlatTreeItemIndentSize;
     ItemView.SetPadding(indent, ItemView.PaddingTop, ItemView.PaddingRight, ItemView.PaddingBottom);
 
     _expandedIcon.Visibility = item.TreeItem.Items.Count > 0 ? ViewStates.Visible : ViewStates.Invisible;
@@ -57,7 +56,7 @@ public abstract class FlatTreeItemViewHolderBase : RecyclerView.ViewHolder {
 
     _icon.SetImageDrawable(Icons.GetIcon(ItemView.Context, item.TreeItem.Icon));
 
-    _name.SetText(item.TreeItem.Name, TextView.BufferType.Normal);
+    _name.Text = item.TreeItem.Name;
   }
 
   private void _onExpandedChanged(object? sender, EventArgs e) {
@@ -72,12 +71,12 @@ public abstract class FlatTreeItemViewHolderBase : RecyclerView.ViewHolder {
   private static LinearLayout _createContainerView(Context context) {
     var container = new LinearLayout(context) {
       Orientation = Orientation.Horizontal,
-      LayoutParameters = new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.WrapContent),
+      LayoutParameters = new RecyclerView.LayoutParams(LPU.Match, LPU.Wrap),
       Clickable = true,
       Focusable = true
     };
     container.SetGravity(GravityFlags.CenterVertical);
-    container.SetPadding(context.Resources!.GetDimensionPixelSize(Resource.Dimension.general_padding));
+    container.SetPadding(DimensU.Spacing);
     container.SetBackgroundResource(Resource.Color.c_static_ba);
 
     return container;
