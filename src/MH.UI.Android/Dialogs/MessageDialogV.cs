@@ -23,7 +23,7 @@ public class MessageDialogV : LinearLayout, IDialogContentV {
     _icon = new IconView(context);
     _message = new TextView(context);
 
-    AddView(_icon, new LayoutParams(DisplayU.DpToPx(32), DisplayU.DpToPx(32)).WithMargin(DisplayU.DpToPx(10)));
+    AddView(_icon, new LayoutParams(DisplayU.DpToPx(32), DisplayU.DpToPx(32)).WithDpMargin(10));
     AddView(_message, new LayoutParams(0, LPU.Wrap, 1f));
   }
 
