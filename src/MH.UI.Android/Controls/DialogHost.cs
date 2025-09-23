@@ -119,23 +119,25 @@ public class DialogHost : DialogFragment {
     titleCloseBtn.SetImageResource(Resource.Drawable.icon_x_close);
     _commandBindings.Add(new(titleCloseBtn, MH.UI.Controls.Dialog.CloseCommand, _dataContext));
 
-    titleBar.AddView(new IconView(context).Bind(_dataContext.Icon), new LinearLayout.LayoutParams(DimensU.IconSize, DimensU.IconSize));
+    titleBar.AddView(
+      new IconView(context).Bind(_dataContext.Icon),
+      new LinearLayout.LayoutParams(DimensU.IconSize, DimensU.IconSize));
     titleBar.AddView(
       new TextView(context) { Text = _dataContext.Title, TextSize = 18 },
-      new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WrapContent, 1f));
+      new LinearLayout.LayoutParams(0, LPU.Wrap, 1f));
     titleBar.AddView(titleCloseBtn);
 
-    view.AddView(titleBar, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.WrapContent));
+    view.AddView(titleBar, new LinearLayout.LayoutParams(LPU.Match, LPU.Wrap));
 
     if (_getDialog(context, _dataContext) is { } contentView) {
       if (contentView.Parent is ViewGroup oldParent)
         oldParent.RemoveView(contentView);
 
-      view.AddView(contentView, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WrapContent, ViewGroup.LayoutParams.WrapContent));
+      view.AddView(contentView, new LinearLayout.LayoutParams(LPU.Wrap, LPU.Wrap));
     }
 
     view.AddView(_createButtonsView(context, _dataContext),
-      new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WrapContent, ViewGroup.LayoutParams.WrapContent) {
+      new LinearLayout.LayoutParams(LPU.Wrap, LPU.Wrap) {
         Gravity = GravityFlags.End
       });
 
@@ -143,7 +145,7 @@ public class DialogHost : DialogFragment {
   }
 
   private LinearLayout _createButtonsView(Context context, Dialog dataContext) {
-    var margin = context.Resources!.GetDimensionPixelSize(Resource.Dimension.general_padding) * 2;
+    var margin = DimensU.Spacing * 2;
     var view = new LinearLayout(context) { Orientation = Orientation.Horizontal };
 
     foreach (var button in dataContext.Buttons) {
@@ -152,7 +154,7 @@ public class DialogHost : DialogFragment {
       };
       _commandBindings.Add(new(btn, button.Command, dataContext));
 
-      view.AddView(btn, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WrapContent, DisplayU.DpToPx(32))
+      view.AddView(btn, new LinearLayout.LayoutParams(LPU.Wrap, DisplayU.DpToPx(32))
         .WithMargin(0, margin, margin, margin));
     }
 
