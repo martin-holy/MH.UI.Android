@@ -12,14 +12,6 @@ public class FlatTreeItemViewHolder : FlatTreeItemViewHolderBase {
     _selectItemCommandBinding = new CommandBinding(_container, treeViewHost.DataContext.SelectItemCommand);
   }
 
-  protected override void Dispose(bool disposing) {
-    if (_disposed) return;
-    if (disposing) {
-      _selectItemCommandBinding.Dispose();
-    }
-    base.Dispose(disposing);
-  }
-
   public override void Bind(FlatTreeItem? item) {
     base.Bind(item);
     if (item == null) return;
