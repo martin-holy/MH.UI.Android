@@ -38,11 +38,17 @@ public static class BindingU {
     return new Subscription(() => source.CollectionChanged -= handler);
   }
 
-  public static CommandBinding Bind(View view, ICommand command) {
-    if (view is ImageView imageView && command is RelayCommandBase cmd)
-      imageView.SetImageDrawable(Icons.GetIcon(view.Context, cmd.Icon));
+  public static CommandBinding Bind(View view, ICommand command, bool useCommandIcon = true) =>
+    Bind(view, command, null, useCommandIcon);
 
-    return new(view, command);
+  public static CommandBinding Bind(View view, ICommand command, object? parameter, bool useCommandIcon = true) {
+    if (useCommandIcon
+      && view is ImageView imageView
+      && command is RelayCommandBase cmd
+      && Icons.GetIcon(view.Context, cmd.Icon) is { } icon)
+      imageView.SetImageDrawable(icon);
+
+    return new(view, command, parameter);
   }
 
   private static string[] _getPropertyPath<TSource, TProp>(Expression<Func<TSource, TProp>> expression) {
