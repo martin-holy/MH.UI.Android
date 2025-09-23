@@ -1,8 +1,12 @@
-﻿using System;
+﻿using Android.Views;
+using Android.Widget;
+using MH.Utils.BaseClasses;
+using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq.Expressions;
+using System.Windows.Input;
 
 namespace MH.UI.Android.Utils;
 
@@ -32,6 +36,13 @@ public static class BindingU {
     onChange(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
 
     return new Subscription(() => source.CollectionChanged -= handler);
+  }
+
+  public static CommandBinding Bind(View view, ICommand command) {
+    if (view is ImageView imageView && command is RelayCommandBase cmd)
+      imageView.SetImageDrawable(Icons.GetIcon(view.Context, cmd.Icon));
+
+    return new(view, command);
   }
 
   private static string[] _getPropertyPath<TSource, TProp>(Expression<Func<TSource, TProp>> expression) {
