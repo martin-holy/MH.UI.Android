@@ -1,7 +1,7 @@
 ﻿using Android.Content;
-using Android.Views;
 using Android.Widget;
 using MH.UI.Android.Extensions;
+using MH.UI.Android.Utils;
 using MH.UI.Controls;
 using MH.Utils.BaseClasses;
 using System;
@@ -19,8 +19,8 @@ public class TreeViewHost : TreeViewHostBase<TreeView, TreeViewHostAdapter>, ITr
     _recyclerView.SetAdapter(Adapter);
     _selectionBar = new SelectionBar(context, DataContext.SelectedTreeItems);
 
-    AddView(_selectionBar, new LayoutParams(ViewGroup.LayoutParams.WrapContent, ViewGroup.LayoutParams.WrapContent)
-      .WithMargin(context.Resources!.GetDimensionPixelSize(Resource.Dimension.general_padding))
+    AddView(_selectionBar, new LayoutParams(LPU.Wrap, LPU.Wrap)
+      .WithMargin(DimensU.Spacing)
       .WithRule(LayoutRules.AlignParentRight));
   }
 
