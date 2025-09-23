@@ -8,7 +8,6 @@ using MH.UI.Android.Dialogs;
 using MH.UI.Android.Extensions;
 using MH.UI.Android.Utils;
 using MH.UI.Dialogs;
-using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
 using System;
 using System.Collections.Generic;
@@ -146,10 +145,8 @@ public class DialogHost : DialogFragment {
     var view = new LinearLayout(context) { Orientation = Orientation.Horizontal };
 
     foreach (var button in dataContext.Buttons) {
-      var btn = new Button(new ContextThemeWrapper(context, Resource.Style.mh_DialogButton), null, 0) {
-        Text = ((RelayCommandBase)button.Command).Text
-      };
-      BindingU.Bind(btn, button.Command, dataContext, false);
+      var btn = new Button(new ContextThemeWrapper(context, Resource.Style.mh_DialogButton), null, 0);
+      BindingU.Bind(btn, button.Command, dataContext);
 
       view.AddView(btn, new LinearLayout.LayoutParams(LPU.Wrap, DisplayU.DpToPx(32))
         .WithMargin(0, margin, margin, margin));
