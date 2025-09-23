@@ -49,15 +49,13 @@ public class LogV : LinearLayout {
     };
     _clearCommandBinding = new(_clearBtn, dataContext.ClearCommand);
 
-    var margin = context.Resources!.GetDimensionPixelSize(Resource.Dimension.general_padding);
-
     var footer = new LinearLayout(context) { Orientation = Orientation.Horizontal };
-    footer.AddView(_wrapText, new LayoutParams(0, ViewGroup.LayoutParams.WrapContent, 1f));
-    footer.AddView(_clearBtn, new LayoutParams(ViewGroup.LayoutParams.WrapContent, DisplayU.DpToPx(32)).WithMargin(margin));
+    footer.AddView(_wrapText, new LayoutParams(0, LPU.Wrap, 1f));
+    footer.AddView(_clearBtn, new LayoutParams(LPU.Wrap, DisplayU.DpToPx(32)).WithMargin(DimensU.Spacing));
 
-    AddView(_list, new LayoutParams(ViewGroup.LayoutParams.MatchParent, 0, 0.4f).WithMargin(margin));
-    AddView(_detail, new LayoutParams(ViewGroup.LayoutParams.MatchParent, 0, 1f).WithMargin(margin));
-    AddView(footer, new LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.WrapContent));
+    AddView(_list, new LayoutParams(LPU.Match, 0, 0.4f).WithMargin(DimensU.Spacing));
+    AddView(_detail, new LayoutParams(LPU.Match, 0, 1f).WithMargin(DimensU.Spacing));
+    AddView(footer, new LayoutParams(LPU.Match, LPU.Wrap));
 
     _dataContext.Items.CollectionChanged += _onItemsCollectionChanged;
   }
@@ -117,7 +115,7 @@ public class LogV : LinearLayout {
       _level = new View(context);
       _text = new TextView(context);
       _container = (LinearLayout)ItemView;
-      _container.AddView(_level, new LayoutParams(DisplayU.DpToPx(10), ViewGroup.LayoutParams.MatchParent));
+      _container.AddView(_level, new LayoutParams(DisplayU.DpToPx(10), LPU.Match));
       _container.AddView(_text);
       _container.Click += (_, _) => logV.HandleItemClick(DataContext);
     }
@@ -139,7 +137,7 @@ public class LogV : LinearLayout {
     private static LinearLayout _createContainerView(Context context) {
       var container = new LinearLayout(context) {
         Orientation = Orientation.Horizontal,
-        LayoutParameters = new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.WrapContent),
+        LayoutParameters = new RecyclerView.LayoutParams(LPU.Match, LPU.Wrap),
         Clickable = true,
         Focusable = true
       };
