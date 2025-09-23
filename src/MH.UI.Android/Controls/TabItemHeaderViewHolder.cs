@@ -27,7 +27,7 @@ public class TabItemHeaderViewHolder : RecyclerView.ViewHolder {
     _container = (LinearLayout)ItemView;
     _container.AddView(_icon, new LinearLayout.LayoutParams(DimensU.IconSize, DimensU.IconSize));
     _container.AddView(_name);
-    _selectItemCommandBinding = new CommandBinding(_container, selectItemCommand);
+    _selectItemCommandBinding = BindingU.Bind(_container, selectItemCommand);
   }
 
   public void Bind(IListItem? item, IconTextVisibility itv) {
@@ -64,7 +64,6 @@ public class TabItemHeaderViewHolder : RecyclerView.ViewHolder {
   protected override void Dispose(bool disposing) {
     if (_disposed) return;
     if (disposing) {
-      _selectItemCommandBinding.Dispose();
       _setDataContext(DataContext, null);
     }
     _disposed = true;
