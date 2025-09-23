@@ -6,10 +6,9 @@ using System.Windows.Input;
 namespace MH.UI.Android.Utils;
 
 public sealed class CommandBinding : IDisposable {
-  private readonly View _view;
+  private readonly WeakReference<View> _viewRef;
   private readonly ICommand _command;
   private object? _parameter;
-  private bool _disposed;
 
   public object? Parameter {
     get => _parameter;
@@ -20,9 +19,10 @@ public sealed class CommandBinding : IDisposable {
   }
 
   public CommandBinding(View view, ICommand command) {
-    _view = view;
-    _view.Click += _onClick;
+    _viewRef = new(view);
+    view.Click += _onClick;
     _command = command;
+    _command.CanExecuteChanged += _onCanExecuteChanged;
     _updateEnabledState();
   }
 
@@ -30,15 +30,27 @@ public sealed class CommandBinding : IDisposable {
     _parameter = parameter;
   }
 
-  private void _onClick(object? sender, EventArgs e) =>
-    _command.ExecuteIfCan(_parameter);
+  private void _onClick(object? sender, EventArgs e) {
+    if (_viewRef.TryGetTarget(out _))
+      _command.ExecuteIfCan(_parameter);
+    else
+      Dispose();
+  }
 
-  private void _updateEnabledState() =>
-    _view.Enabled = _command.CanExecute(_parameter);
+  private void _onCanExecuteChanged(object? sender, EventArgs e) =>
+    _updateEnabledState();
+
+  private void _updateEnabledState() {
+    if (_viewRef.TryGetTarget(out var view))
+      view.Enabled = _command.CanExecute(_parameter);
+    else
+      Dispose();
+  }
 
   public void Dispose() {
-    if (_disposed) return;
-    _view.Click -= _onClick;
-    _disposed = true;
+    if (_viewRef.TryGetTarget(out var view))
+      view.Click -= _onClick;
+
+    _command.CanExecuteChanged -= _onCanExecuteChanged;
   }
 }
