@@ -9,7 +9,7 @@ public class FlatTreeItemViewHolder : FlatTreeItemViewHolderBase {
 
   public FlatTreeItemViewHolder(Context context, TreeViewHost treeViewHost) : base(context, treeViewHost) {
     _container.SetBackgroundResource(Resource.Drawable.selectable_item);
-    _selectItemCommandBinding = BindingU.Bind(_container, treeViewHost.DataContext.SelectItemCommand);
+    _selectItemCommandBinding = _container.Bind(treeViewHost.DataContext.SelectItemCommand);
   }
 
   public override void Bind(FlatTreeItem? item) {

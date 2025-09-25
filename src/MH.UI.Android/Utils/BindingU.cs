@@ -79,10 +79,10 @@ public static class BindingU {
     });
   }
 
-  public static CommandBinding Bind(View view, ICommand command, bool useCommandIcon = true, bool useCommandText = true)
+  public static CommandBinding Bind(this View view, ICommand command, bool useCommandIcon = true, bool useCommandText = true)
     => Bind(view, command, null, useCommandIcon, useCommandText);
 
-  public static CommandBinding Bind(View view, ICommand command, object? parameter, bool useCommandIcon = true, bool useCommandText = true) {
+  public static CommandBinding Bind(this View view, ICommand command, object? parameter, bool useCommandIcon = true, bool useCommandText = true) {
     if (command is not RelayCommandBase cmd)
       return new(view, command, parameter);
 

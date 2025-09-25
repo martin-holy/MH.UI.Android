@@ -44,7 +44,7 @@ public class LogV : LinearLayout {
     _wrapText.CheckedChange += _wrapTextCheckedChange;
 
     _clearBtn = new(new ContextThemeWrapper(context, Resource.Style.mh_DialogButton), null, 0);
-    BindingU.Bind(_clearBtn, dataContext.ClearCommand);
+    _clearBtn.Bind(dataContext.ClearCommand);
 
     var footer = new LinearLayout(context) { Orientation = Orientation.Horizontal };
     footer.AddView(_wrapText, new LayoutParams(0, LPU.Wrap, 1f));
