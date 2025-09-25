@@ -1,5 +1,6 @@
 ﻿using Android.Views;
 using Android.Widget;
+using MH.UI.Android.Controls;
 using MH.Utils.BaseClasses;
 using System;
 using System.Collections.Specialized;
@@ -86,8 +87,17 @@ public static class BindingU {
     if (command is not RelayCommandBase cmd)
       return new(view, command, parameter);
 
-    if (useCommandIcon && view is ImageView imageView && Icons.GetIcon(view.Context, cmd.Icon) is { } icon)
-      imageView.SetImageDrawable(icon);
+    if (useCommandIcon) {
+      switch (view) {
+        case ImageView imageView:
+          if (Icons.GetIcon(view.Context, cmd.Icon) is { } icon)
+            imageView.SetImageDrawable(icon);
+          break;
+        case CompactIconTextButton citBtn:
+          citBtn.Icon.Bind(cmd.Icon);
+          break;
+      }
+    }
 
     if (useCommandText && view is TextView textView)
       textView.Text = cmd.Text;
