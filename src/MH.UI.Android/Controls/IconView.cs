@@ -7,11 +7,11 @@ using MH.UI.Android.Utils;
 namespace MH.UI.Android.Controls;
 
 public class IconView(Context context) : ImageView(context) {
-  public IconView Bind(string iconName, int? colorId = null) =>
+  public IconView Bind(string? iconName, int? colorId = null) =>
     _setDrawable(Icons.GetIcon(Context, iconName), colorId);
 
-  public IconView Bind(int drawableId, int? colorId = null) =>
-    _setDrawable(ContextCompat.GetDrawable(Context, drawableId), colorId);
+  public IconView Bind(int? drawableId, int? colorId = null) =>
+    _setDrawable(drawableId == null ? null : ContextCompat.GetDrawable(Context, (int)drawableId), colorId);
 
   private IconView _setDrawable(Drawable? drawable, int? colorId) {
     if (drawable != null) {
