@@ -12,11 +12,12 @@ public class CompactIconTextButton : FrameLayout {
 
   public CompactIconTextButton(Context context) : base(context) {
     Background = ContextCompat.GetDrawable(context, Resource.Drawable.image_button_background);
-    
+
     Icon = new IconView(context);
     Icon.SetPadding(DimensU.Spacing, DimensU.Spacing, DimensU.Spacing * 2, DimensU.Spacing * 2);
     Text = new TextView(context);
     Text.SetPadding(0, 0, DisplayU.DpToPx(2), 0);
+    Text.SetShadowLayer(4f, 2f, 2f, global::Android.Graphics.Color.Black);
 
     AddView(Icon, new LayoutParams(DimensU.IconButtonSize, DimensU.IconButtonSize) { Gravity = GravityFlags.Center });
     AddView(Text, new LayoutParams(LPU.Wrap, LPU.Wrap) { Gravity = GravityFlags.Right | GravityFlags.Bottom });
