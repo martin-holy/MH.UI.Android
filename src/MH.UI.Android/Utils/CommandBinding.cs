@@ -41,8 +41,10 @@ public sealed class CommandBinding : IDisposable {
     _updateEnabledState();
 
   private void _updateEnabledState() {
-    if (_viewRef.TryGetTarget(out var view))
-      view.Enabled = _command.CanExecute(_parameter);
+    if (_viewRef.TryGetTarget(out var view)) {
+      if (view.Handle != IntPtr.Zero)
+        view.Enabled = _command.CanExecute(_parameter);
+    }
     else
       Dispose();
   }
