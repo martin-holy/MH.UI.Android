@@ -10,7 +10,6 @@ using MH.Utils.BaseClasses;
 using System;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
-using Orientation = Android.Widget.Orientation;
 
 namespace MH.UI.Android.Views;
 

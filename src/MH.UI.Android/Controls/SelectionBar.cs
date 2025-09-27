@@ -25,7 +25,7 @@ public class SelectionBar : LinearLayout {
     _clearSelectionBtn.Click += _onClearSelectionBtnClick;
 
     var gp = context.Resources!.GetDimensionPixelSize(Resource.Dimension.general_padding);
-    Orientation = global::Android.Widget.Orientation.Horizontal;
+    Orientation = Orientation.Horizontal;
     Visibility = ViewStates.Gone;
     Background = BackgroundFactory.RoundSolidDark();
     SetGravity(GravityFlags.CenterVertical);
