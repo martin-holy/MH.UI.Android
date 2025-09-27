@@ -14,7 +14,7 @@ namespace MH.UI.Android.Controls;
 
 public interface IAndroidTreeViewHost : ITreeViewHost {
   public TreeView DataContext { get; }
-  public void ShowItemMenu(View anchor, object? item);
+  public TreeMenu? ItemMenu {  get; }
 }
 
 public abstract class TreeViewHostBase<TView, TAdapter> : RelativeLayout, IAndroidTreeViewHost
@@ -22,19 +22,17 @@ public abstract class TreeViewHostBase<TView, TAdapter> : RelativeLayout, IAndro
     where TAdapter : TreeViewHostAdapterBase {
   protected readonly RecyclerView _recyclerView;
   protected bool _disposed;
-  private TreeView? _itemMenuVM;
-  private TreeMenuHost? _itemMenuV;
 
   public TView DataContext { get; }
   public TAdapter? Adapter { get; set; }
-  public Func<object, IEnumerable<MenuItem>>? ItemMenuFactory { get; }
+  public TreeMenu? ItemMenu { get; }
   public event EventHandler<bool>? HostIsVisibleChangedEvent;
   TreeView IAndroidTreeViewHost.DataContext => DataContext;
   double ITreeViewHost.Width => Width;
 
   protected TreeViewHostBase(Context context, TView dataContext, Func<object, IEnumerable<MenuItem>>? itemMenuFactory) : base(context) {
     DataContext = dataContext;
-    ItemMenuFactory = itemMenuFactory;
+    if (itemMenuFactory != null) ItemMenu = new(context, itemMenuFactory);
     SetBackgroundResource(Resource.Color.c_static_ba);
 
     _recyclerView = new(context);
@@ -57,27 +55,6 @@ public abstract class TreeViewHostBase<TView, TAdapter> : RelativeLayout, IAndro
   protected override void OnVisibilityChanged(View changedView, [GeneratedEnum] ViewStates visibility) {
     base.OnVisibilityChanged(changedView, visibility);
     HostIsVisibleChangedEvent?.Invoke(this, visibility == ViewStates.Visible);
-  }
-
-  public void ShowItemMenu(View anchor, object? item) {
-    if (item == null) return;
-    if (_itemMenuVM == null) {
-      _itemMenuVM = new();
-      _itemMenuV = new TreeMenuHost(Context!, _itemMenuVM);
-    }
-
-    if (ItemMenuFactory?.Invoke(item) is not { } menuItems) return;
-
-    _itemMenuVM.RootHolder.Execute(items => {
-      items.Clear();
-      foreach (var menuItem in menuItems)
-        items.Add(menuItem);
-    });
-
-    if (_itemMenuV == null || _itemMenuVM.RootHolder.Count == 0) return;
-    _itemMenuV.Observer.MenuAnchor = anchor;
-    _itemMenuV.Observer.UpdatePopupSize();
-    _itemMenuV.Popup.ShowAsDropDown(anchor);
   }
 
   public virtual void ExpandRootWhenReady(ITreeItem root) => root.IsExpanded = true;

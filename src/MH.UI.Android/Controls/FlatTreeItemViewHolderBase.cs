@@ -65,7 +65,7 @@ public abstract class FlatTreeItemViewHolderBase : RecyclerView.ViewHolder {
   }
 
   private void _onIconClick(object? sender, EventArgs e) {
-    _treeViewHost.ShowItemMenu(_icon, DataContext?.TreeItem);
+    _treeViewHost.ItemMenu?.ShowItemMenu(_icon, DataContext?.TreeItem);
   }
 
   private static LinearLayout _createContainerView(Context context) {
