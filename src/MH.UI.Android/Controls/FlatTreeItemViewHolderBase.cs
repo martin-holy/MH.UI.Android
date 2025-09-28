@@ -13,7 +13,7 @@ public abstract class FlatTreeItemViewHolderBase : RecyclerView.ViewHolder {
   protected readonly IAndroidTreeViewHost _treeViewHost;
   protected readonly LinearLayout _container;
   private readonly ImageView _expandedIcon;
-  private readonly ImageView _icon;
+  private readonly IconButton _icon;
   private readonly TextView _name;
   protected bool _disposed;
 
