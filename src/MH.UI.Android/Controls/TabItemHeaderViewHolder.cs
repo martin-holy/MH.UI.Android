@@ -5,29 +5,34 @@ using AndroidX.RecyclerView.Widget;
 using MH.UI.Android.Extensions;
 using MH.UI.Android.Utils;
 using MH.UI.Controls;
+using MH.Utils;
 using MH.Utils.Extensions;
 using MH.Utils.Interfaces;
+using System;
 using System.ComponentModel;
-using System.Windows.Input;
 
 namespace MH.UI.Android.Controls;
 
 public class TabItemHeaderViewHolder : RecyclerView.ViewHolder {
-  protected readonly LinearLayout _container;
-  private readonly IconView _icon;
+  private readonly TabControlHost _tabControlHost;
+  private readonly LinearLayout _container;
+  private readonly IconButton _icon;
   private readonly TextView _name;
   private bool _disposed;
   private readonly CommandBinding _selectItemCommandBinding;
 
   public IListItem? DataContext { get; private set; }
 
-  public TabItemHeaderViewHolder(Context context, ICommand selectItemCommand) : base(_createContainerView(context)) {
-    _icon = new(context);
-    _name = new(context);
+  public TabItemHeaderViewHolder(Context context, TabControlHost tabControlHost) : base(_createContainerView(context)) {
+    _tabControlHost = tabControlHost;
+    _icon = new IconButton(context);
+    _icon.SetPadding(0);
+    _icon.Click += _onIconClick;
+    _name = new TextView(context);
     _container = (LinearLayout)ItemView;
-    _container.AddView(_icon, new LinearLayout.LayoutParams(DimensU.IconSize, DimensU.IconSize));
+    _container.AddView(_icon);
     _container.AddView(_name);
-    _selectItemCommandBinding = _container.Bind(selectItemCommand);
+    _selectItemCommandBinding = _container.Bind(tabControlHost.DataContext.SelectTabCommand);
   }
 
   public void Bind(IListItem? item, IconTextVisibility itv) {
@@ -53,6 +58,7 @@ public class TabItemHeaderViewHolder : RecyclerView.ViewHolder {
   private void _setDataContext(IListItem? oldValue, IListItem? newValue) {
     if (oldValue != null) oldValue.PropertyChanged -= _onDataContextPropertyChanged;
     if (newValue != null) newValue.PropertyChanged += _onDataContextPropertyChanged;
+    DataContext = newValue;
   }
 
   private void _onDataContextPropertyChanged(object? sender, PropertyChangedEventArgs e) {
@@ -61,10 +67,15 @@ public class TabItemHeaderViewHolder : RecyclerView.ViewHolder {
       _name.Text = listItem.Name;
   }
 
+  private void _onIconClick(object? sender, EventArgs e) {
+    _tabControlHost.ItemMenu?.ShowItemMenu(_icon, DataContext);
+  }
+
   protected override void Dispose(bool disposing) {
     if (_disposed) return;
     if (disposing) {
       _setDataContext(DataContext, null);
+      _icon.Click -= _onIconClick;
     }
     _disposed = true;
     base.Dispose(disposing);
@@ -78,7 +89,7 @@ public class TabItemHeaderViewHolder : RecyclerView.ViewHolder {
       Focusable = true
     };
     container.SetGravity(GravityFlags.CenterVertical);
-    container.SetPadding(context.Resources!.GetDimensionPixelSize(Resource.Dimension.general_padding));
+    container.SetPadding(0, 0, DimensU.Spacing, 0);
     container.SetBackgroundResource(Resource.Drawable.tab_item_header_background);
 
     return container;

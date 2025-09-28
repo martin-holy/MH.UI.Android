@@ -4,6 +4,7 @@ using Android.Widget;
 using AndroidX.RecyclerView.Widget;
 using MH.UI.Android.Extensions;
 using MH.UI.Controls;
+using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
 using MH.Utils.Interfaces;
 using System;
@@ -14,7 +15,6 @@ using System.Linq;
 namespace MH.UI.Android.Controls;
 
 public class TabControlHost : LinearLayout {
-  private readonly TabControl _dataContext;
   private readonly RecyclerView _tabHeaders;
   private readonly FrameLayout _tabContent;
   private readonly TabControlHostHeaderAdapter _adapter;
@@ -22,13 +22,17 @@ public class TabControlHost : LinearLayout {
   private readonly Func<LinearLayout, object?, View?> _getItemView;
   private bool _disposed;
 
+  public readonly TabControl DataContext;
+  public TreeMenu ItemMenu { get; }
+
   public TabControlHost(Context context, TabControl dataContext, Func<LinearLayout, object?, View?> getItemView) : base(context) {
-    _dataContext = dataContext;
+    DataContext = dataContext;
+    ItemMenu = new(context, _itemMenuFactory);
     _getItemView = getItemView;
     Orientation = Orientation.Vertical;
     SetBackgroundResource(Resource.Color.c_static_ba);
 
-    _adapter = new TabControlHostHeaderAdapter(dataContext);
+    _adapter = new TabControlHostHeaderAdapter(this);
 
     _tabHeaders = new(context) { ScrollBarStyle = ScrollbarStyles.OutsideOverlay };
     _tabHeaders.SetLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.Horizontal, false));
@@ -48,8 +52,8 @@ public class TabControlHost : LinearLayout {
   protected override void Dispose(bool disposing) {
     if (_disposed) return;
     if (disposing) {
-      _dataContext.Tabs.CollectionChanged -= _onTabsChanged;
-      _dataContext.PropertyChanged -= _onDataContextPropertyChanged;
+      DataContext.Tabs.CollectionChanged -= _onTabsChanged;
+      DataContext.PropertyChanged -= _onDataContextPropertyChanged;
 
       foreach (var view in _contentViews.Values) {
         _tabContent.RemoveView(view);
@@ -81,7 +85,7 @@ public class TabControlHost : LinearLayout {
   }
 
   private void _updateContent() {
-    if (_dataContext.Selected is not { } selectedItem) {
+    if (DataContext.Selected is not { } selectedItem) {
       _adapter.NotifyDataSetChanged();
       return;
     }
@@ -104,4 +108,7 @@ public class TabControlHost : LinearLayout {
 
     _adapter.NotifyDataSetChanged();
   }
+
+  private IEnumerable<MenuItem> _itemMenuFactory(object item) =>
+    [new(DataContext.CloseTabCommand, item)];
 }

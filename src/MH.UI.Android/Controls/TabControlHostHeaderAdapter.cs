@@ -1,16 +1,16 @@
 ﻿using Android.Views;
 using AndroidX.RecyclerView.Widget;
-using MH.UI.Controls;
 
 namespace MH.UI.Android.Controls;
 
-public class TabControlHostHeaderAdapter(TabControl _tabControl) : RecyclerView.Adapter {
-  public override int ItemCount => _tabControl.Tabs.Count;
+public class TabControlHostHeaderAdapter(TabControlHost _tabControlHost) : RecyclerView.Adapter {
+  public override int ItemCount => _tabControlHost.DataContext.Tabs.Count;
 
   public override RecyclerView.ViewHolder OnCreateViewHolder(ViewGroup parent, int viewType) =>
-    new TabItemHeaderViewHolder(parent.Context!, _tabControl.SelectTabCommand);
+    new TabItemHeaderViewHolder(parent.Context!, _tabControlHost);
 
   public override void OnBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-    ((TabItemHeaderViewHolder)holder).Bind(_tabControl.Tabs[position], _tabControl.TabStrip.IconTextVisibility);
+    ((TabItemHeaderViewHolder)holder)
+      .Bind(_tabControlHost.DataContext.Tabs[position], _tabControlHost.DataContext.TabStrip.IconTextVisibility);
   }
 }
