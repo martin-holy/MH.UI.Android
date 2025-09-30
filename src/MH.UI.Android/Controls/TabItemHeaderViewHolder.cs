@@ -16,7 +16,7 @@ namespace MH.UI.Android.Controls;
 public class TabItemHeaderViewHolder : RecyclerView.ViewHolder {
   private readonly TabControlHost _tabControlHost;
   private readonly LinearLayout _container;
-  private readonly IconButton _icon;
+  private readonly ImageView _icon;
   private readonly TextView _name;
   private bool _disposed;
   private readonly CommandBinding _selectItemCommandBinding;
@@ -25,12 +25,21 @@ public class TabItemHeaderViewHolder : RecyclerView.ViewHolder {
 
   public TabItemHeaderViewHolder(Context context, TabControlHost tabControlHost) : base(_createContainerView(context)) {
     _tabControlHost = tabControlHost;
-    _icon = new IconButton(context);
-    _icon.SetPadding(0);
-    _icon.Click += _onIconClick;
-    _name = new TextView(context);
     _container = (LinearLayout)ItemView;
-    _container.AddView(_icon);
+
+    if (tabControlHost.DataContext.TabStrip.IconTextVisibility.HasFlag(IconTextVisibility.Both)) {
+      _icon = new IconButton(context);
+      _icon.SetPadding(0);
+      _icon.Click += _onIconClick;
+      _container.AddView(_icon);
+    }
+    else {
+      _icon = new IconView(context);
+      _container.AddView(_icon, new LinearLayout.LayoutParams(DimensU.IconSize, DimensU.IconSize)
+        .WithMargin(DimensU.Spacing, DimensU.Spacing, 0, DimensU.Spacing));
+    }
+    
+    _name = new TextView(context);
     _container.AddView(_name);
     _selectItemCommandBinding = _container.Bind(tabControlHost.DataContext.SelectTabCommand);
   }
