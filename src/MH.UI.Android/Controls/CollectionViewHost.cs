@@ -3,7 +3,6 @@ using Android.Views;
 using Android.Widget;
 using MH.UI.Controls;
 using MH.UI.Interfaces;
-using MH.Utils.BaseClasses;
 using System;
 
 namespace MH.UI.Android.Controls;
@@ -23,12 +22,6 @@ public class CollectionViewHost : TreeViewHostBase<CollectionView, CollectionVie
     ((TreeView)DataContext).Host = this;
     Adapter = new CollectionViewHostAdapter(context, this);
     _recyclerView.SetAdapter(Adapter);
-  }
-
-  protected override void Dispose(bool disposing) {
-    if (_disposed) return;
-    if (disposing) ((TreeView)DataContext).Host = null;
-    base.Dispose(disposing);
   }
 
   protected override void OnSizeChanged(int w, int h, int oldw, int oldh) {
