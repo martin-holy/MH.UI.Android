@@ -7,6 +7,7 @@ namespace MH.UI.Android.Controls;
 public class ButtonMenu : IconButton {
   private TreeMenuHost? _treeMenuHost;
   private readonly TreeView _dataContext;
+  private bool _disposed;
 
   public ButtonMenu(Context context, TreeView dataContext, string? iconName) : base(context) {
     _dataContext = dataContext;
@@ -26,11 +27,12 @@ public class ButtonMenu : IconButton {
   }
 
   protected override void Dispose(bool disposing) {
+    if (_disposed) return;
     if (disposing) {
-      _treeMenuHost?.Popup.Dismiss();
-      _treeMenuHost = null;
+      _treeMenuHost?.Dispose();
       Click -= _onClick;
     }
+    _disposed = true;
     base.Dispose(disposing);
   }
 }

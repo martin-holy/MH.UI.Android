@@ -7,14 +7,15 @@ using System.Collections.Generic;
 
 namespace MH.UI.Android.Controls;
 
-public class TreeMenu(Context _context, Func<object, IEnumerable<MenuItem>> _itemMenuFactory) {
+public class TreeMenu(Context _context, Func<object, IEnumerable<MenuItem>> _itemMenuFactory) : IDisposable {
   private TreeView? _itemMenuVM;
   private TreeMenuHost? _itemMenuV;
+  private bool _disposed;
 
   public void ShowItemMenu(View anchor, object? item) {
     if (item == null) return;
     if (_itemMenuVM == null) {
-      _itemMenuVM = new();
+      _itemMenuVM = new TreeView();
       _itemMenuV = new TreeMenuHost(_context, _itemMenuVM);
     }
 
@@ -30,5 +31,11 @@ public class TreeMenu(Context _context, Func<object, IEnumerable<MenuItem>> _ite
     _itemMenuV.Observer.MenuAnchor = anchor;
     _itemMenuV.Observer.UpdatePopupSize();
     _itemMenuV.Popup.ShowAsDropDown(anchor);
+  }
+
+  public void Dispose() {
+    if (_disposed) return;
+    _itemMenuV?.Dispose();
+    _disposed = true;
   }
 }

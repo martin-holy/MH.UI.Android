@@ -1,5 +1,4 @@
 ﻿using Android.Content;
-using Android.Views;
 using Android.Widget;
 using MH.UI.Android.Utils;
 using MH.UI.Android.Extensions;
@@ -17,7 +16,7 @@ public class TreeMenuHost : TreeViewHostBase<TreeView, TreeViewHostAdapterBase> 
     DataContext.Host = this;
     Adapter = new TreeMenuHostAdapter(context, this);
     _recyclerView.SetAdapter(Adapter);
-    Popup = new PopupWindow(this, ViewGroup.LayoutParams.WrapContent, ViewGroup.LayoutParams.WrapContent, true);
+    Popup = new PopupWindow(this, LPU.Wrap, LPU.Wrap, true);
     Observer = new TreeMenuHostSizeObserver(Context!, this, Popup);
     Adapter!.RegisterAdapterDataObserver(Observer);
   }
@@ -27,4 +26,14 @@ public class TreeMenuHost : TreeViewHostBase<TreeView, TreeViewHostAdapterBase> 
   }
 
   public void Close() => Popup.Dismiss();
+
+  protected override void Dispose(bool disposing) {
+    if (_disposed) return;
+    if (disposing) {
+      Popup.Dismiss();
+      Adapter!.UnregisterAdapterDataObserver(Observer);
+      Observer.Dispose();      
+    }
+    base.Dispose(disposing);
+  }
 }

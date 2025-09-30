@@ -3,6 +3,7 @@ using Android.Runtime;
 using Android.Views;
 using Android.Widget;
 using AndroidX.RecyclerView.Widget;
+using MH.UI.Android.Utils;
 using MH.UI.Controls;
 using MH.Utils.BaseClasses;
 using MH.Utils.Interfaces;
@@ -37,16 +38,16 @@ public abstract class TreeViewHostBase<TView, TAdapter> : RelativeLayout, IAndro
 
     _recyclerView = new(context);
     _recyclerView.SetLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.Vertical, false));
-    AddView(_recyclerView, new LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.MatchParent));
+    AddView(_recyclerView, new LayoutParams(LPU.Match, LPU.Match));
   }
 
   protected override void Dispose(bool disposing) {
     if (_disposed) return;
     if (disposing) {
-      HostIsVisibleChangedEvent = null;
       DataContext.Host = null;
+      _recyclerView.SetAdapter(null);
       Adapter?.Dispose();
-      _recyclerView.Dispose();
+      ItemMenu?.Dispose();
     }
     _disposed = true;
     base.Dispose(disposing);
