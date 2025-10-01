@@ -14,7 +14,6 @@ public class TreeMenuItemViewHolder : RecyclerView.ViewHolder {
   private readonly ImageView _expandedIcon;
   private readonly IconView _icon;
   private readonly TextView _name;
-  protected bool _disposed;
   private readonly Action _closePopup;
 
   public FlatTreeItem? DataContext { get; private set; }
@@ -35,16 +34,7 @@ public class TreeMenuItemViewHolder : RecyclerView.ViewHolder {
       .WithMargin(DimensU.Spacing, 0, DimensU.Spacing, 0));
     _container.AddView(_name, new LinearLayout.LayoutParams(0, LPU.Wrap, 1f));
     _container.AddView(_expandedIcon, new LinearLayout.LayoutParams(DimensU.IconButtonSize, DimensU.IconButtonSize));
-    _container.Click += _onContainerClick;
-  }
-
-  protected override void Dispose(bool disposing) {
-    if (_disposed) return;
-    if (disposing) {
-      _container.Click -= _onContainerClick;
-    }
-    _disposed = true;
-    base.Dispose(disposing);
+    _container.WithClickAction(this, _onContainerClick);
   }
 
   public void Bind(FlatTreeItem? item) {
@@ -68,14 +58,14 @@ public class TreeMenuItemViewHolder : RecyclerView.ViewHolder {
     _expandedIcon.Activated = menuItem.IsExpanded;
   }
 
-  private void _onContainerClick(object? sender, EventArgs e) {
-    if (DataContext?.TreeItem is not MenuItem item) return;
+  private static void _onContainerClick(TreeMenuItemViewHolder o, View s) {
+    if (o.DataContext?.TreeItem is not MenuItem item) return;
 
     if (item.Items.Count == 0) {
       if (item.Command?.CanExecute(item.CommandParameter) == true)
         item.Command.Execute(item.CommandParameter);
 
-      _closePopup();
+      o._closePopup();
 
       return;
     }
