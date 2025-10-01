@@ -39,11 +39,13 @@ public static class ViewExtensions {
     return view;
   }
 
-  public static T WithClickAction<T>(this T view, Action action) where T : View {
-    var weakAction = new WeakReference<Action>(action);
-    view.Click += (_, _) => {
-      if (weakAction.TryGetTarget(out var act))
-        act();
+  public static T WithClickAction<T, TOwner>(this T view, TOwner owner, Action<TOwner, T> action)
+  where T : View
+  where TOwner : class {
+    var weakOwner = new WeakReference<TOwner>(owner);
+    view.Click += (s, _) => {
+      if (weakOwner.TryGetTarget(out var target))
+        action(target, (T)s!);
     };
     return view;
   }
