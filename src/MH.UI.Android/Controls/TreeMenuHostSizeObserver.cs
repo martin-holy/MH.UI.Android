@@ -1,5 +1,4 @@
 ﻿using Android.Content;
-using Android.Content.Res;
 using Android.Graphics;
 using Android.Views;
 using Android.Widget;
@@ -28,17 +27,16 @@ public class TreeMenuHostSizeObserver(Context _context, TreeMenuHost _treeMenu, 
 
   public void UpdatePopupSize() {
     if (MenuAnchor == null) throw new ArgumentNullException(nameof(MenuAnchor));
-    var itemHeight = _context.Resources!.GetDimensionPixelSize(Resource.Dimension.menu_item_height);
-    var minHeight = itemHeight * 5;
-    var totalWidth = _getTreeMenuWidth(_context.Resources!, _context, _treeMenu.Adapter!.Items);
-    var totalHeight = _treeMenu.Adapter!.ItemCount * itemHeight;
+    var minHeight = DimensU.MenuItemHeight * 5;
+    var totalWidth = _getTreeMenuWidth(_context, _treeMenu.Adapter!.Items);
+    var totalHeight = _treeMenu.Adapter!.ItemCount * DimensU.MenuItemHeight;
     var maxWidth = DisplayU.Metrics.WidthPixels;
     var maxHeight = _getTreeMenuHeight(MenuAnchor, _popup);
     var targetWidth = Math.Min(totalWidth, maxWidth);
     var targetHeight = Math.Min(totalHeight, maxHeight >= minHeight ? maxHeight : minHeight);
 
     if (targetWidth >= _treeMenu.Width && targetHeight >= _treeMenu.Height) {
-      _updateTreeMenuSize(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.MatchParent);
+      _updateTreeMenuSize(LPU.Match, LPU.Match);
       _updatePopupSize(targetWidth, targetHeight);
     }
     else {
@@ -69,9 +67,7 @@ public class TreeMenuHostSizeObserver(Context _context, TreeMenuHost _treeMenu, 
     _treeMenu.LayoutParameters = lp;
   }
 
-  private static int _getTreeMenuWidth(Resources res, Context context, IEnumerable<FlatTreeItem> items) {
-    var generalPadding = res.GetDimensionPixelSize(Resource.Dimension.general_padding);
-
+  private static int _getTreeMenuWidth(Context context, IEnumerable<FlatTreeItem> items) {
     var textView = new TextView(context);
     var paint = new Paint { TextSize = textView.TextSize };
 
@@ -84,10 +80,10 @@ public class TreeMenuHostSizeObserver(Context _context, TreeMenuHost _treeMenu, 
     }
 
     var padding = DisplayU.DpToPx(2);
-    var indent = res.GetDimensionPixelSize(Resource.Dimension.flat_tree_item_indent_size) * maxLevel;
-    var icon = res.GetDimensionPixelSize(Resource.Dimension.icon_size) + generalPadding * 2;
-    var textPadding = generalPadding * 2;
-    var expander = res.GetDimensionPixelSize(Resource.Dimension.icon_button_size);
+    var indent = DimensU.FlatTreeItemIndentSize * maxLevel;
+    var icon = DimensU.IconSize + DimensU.Spacing * 2;
+    var textPadding = DimensU.Spacing * 2;
+    var expander = DimensU.IconButtonSize;
 
     return (int)(padding + indent + icon + textPadding + maxTextWidth + expander);
   }
