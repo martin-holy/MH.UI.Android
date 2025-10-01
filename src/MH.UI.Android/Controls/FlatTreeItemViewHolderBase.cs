@@ -5,7 +5,6 @@ using AndroidX.RecyclerView.Widget;
 using MH.UI.Android.Extensions;
 using MH.UI.Android.Utils;
 using MH.Utils.BaseClasses;
-using System;
 
 namespace MH.UI.Android.Controls;
 
@@ -15,16 +14,18 @@ public abstract class FlatTreeItemViewHolderBase : RecyclerView.ViewHolder {
   private readonly ImageView _expandedIcon;
   private readonly IconButton _icon;
   private readonly TextView _name;
-  protected bool _disposed;
 
   public FlatTreeItem? DataContext { get; private set; }
 
   public FlatTreeItemViewHolderBase(Context context, IAndroidTreeViewHost treeViewHost) : base(_createContainerView(context)) {
     _treeViewHost = treeViewHost;
-    _expandedIcon = _createTreeItemExpandIconView(context);
-    _expandedIcon.Click += _onExpandedChanged;
-    _icon = new IconButton(context);
-    _icon.Click += _onIconClick;
+    _expandedIcon = _createTreeItemExpandIconView(context)
+      .WithClickAction(() => {
+        if (DataContext == null) return;
+        DataContext.TreeItem.IsExpanded = !DataContext.TreeItem.IsExpanded;
+      });
+    _icon = new IconButton(context)
+      .WithClickAction(() => _treeViewHost.ItemMenu?.ShowItemMenu(_icon!, DataContext?.TreeItem));
     _name = new TextView(context);
 
     _container = (LinearLayout)ItemView;
@@ -32,16 +33,6 @@ public abstract class FlatTreeItemViewHolderBase : RecyclerView.ViewHolder {
       .WithMargin(DimensU.Spacing, 0, DimensU.Spacing, 0));
     _container.AddView(_icon);
     _container.AddView(_name);
-  }
-
-  protected override void Dispose(bool disposing) {
-    if (_disposed) return;
-    if (disposing) {
-      _expandedIcon.Click -= _onExpandedChanged;
-      _icon.Click -= _onIconClick;
-    }
-    _disposed = true;
-    base.Dispose(disposing);
   }
 
   public virtual void Bind(FlatTreeItem? item) {
@@ -57,15 +48,6 @@ public abstract class FlatTreeItemViewHolderBase : RecyclerView.ViewHolder {
     _icon.SetImageDrawable(Icons.GetIcon(ItemView.Context, item.TreeItem.Icon));
 
     _name.Text = item.TreeItem.Name;
-  }
-
-  private void _onExpandedChanged(object? sender, EventArgs e) {
-    if (DataContext == null) return;
-    DataContext.TreeItem.IsExpanded = !DataContext.TreeItem.IsExpanded;
-  }
-
-  private void _onIconClick(object? sender, EventArgs e) {
-    _treeViewHost.ItemMenu?.ShowItemMenu(_icon, DataContext?.TreeItem);
   }
 
   private static LinearLayout _createContainerView(Context context) {
