@@ -8,10 +8,9 @@ using MH.UI.Android.Dialogs;
 using MH.UI.Android.Extensions;
 using MH.UI.Android.Utils;
 using MH.UI.Dialogs;
-using MH.Utils.Extensions;
+using MH.Utils;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Threading.Tasks;
 using Color = Android.Graphics.Color;
 using Dialog = MH.UI.Controls.Dialog;
@@ -28,11 +27,10 @@ public class DialogHost : DialogFragment {
   private static LinearLayout? _notImplementedDialog;
   private static readonly Dictionary<Type, IDialogContentV> _dialogs = [];
   private readonly Dialog _dataContext;
-  private bool _disposed;
 
   public DialogHost(Dialog dataContext) {
     _dataContext = dataContext;
-    dataContext.PropertyChanged += _onDataContextPropertyChanged;
+    this.Bind(dataContext, x => x.Result, (_, _) => Dismiss(), false);
     Cancelable = false;
   }
 
@@ -86,19 +84,6 @@ public class DialogHost : DialogFragment {
     return dialog;
   }
 
-  protected override void Dispose(bool disposing) {
-    if (_disposed) return;
-    if (disposing) {
-      _dataContext.PropertyChanged -= _onDataContextPropertyChanged;
-    }
-    _disposed = true;
-    base.Dispose(disposing);
-  }
-
-  private void _onDataContextPropertyChanged(object? sender, PropertyChangedEventArgs e) {
-    if (e.Is(nameof(MH.UI.Controls.Dialog.Result))) Dismiss();
-  }
-
   public override View OnCreateView(LayoutInflater? inflater, ViewGroup? container, Bundle? savedInstanceState) {
     var context = container?.Context ?? Activity!;
 
@@ -109,11 +94,10 @@ public class DialogHost : DialogFragment {
     var titleBar = new LinearLayout(context) { Orientation = Orientation.Horizontal };
     titleBar.SetGravity(GravityFlags.CenterVertical);
     titleBar.SetBackgroundResource(Resource.Color.c_black2);
-    titleBar.SetPadding(context.Resources!.GetDimensionPixelSize(Resource.Dimension.general_padding));
+    titleBar.SetPadding(DimensU.Spacing);
 
-    var titleCloseBtn = new IconButton(context);
+    var titleCloseBtn = new IconButton(context).WithCommand(UI.Controls.Dialog.CloseCommand, _dataContext, false);
     titleCloseBtn.SetImageResource(Resource.Drawable.icon_x_close);
-    BindingU.Bind(titleCloseBtn, MH.UI.Controls.Dialog.CloseCommand, _dataContext, false);
 
     titleBar.AddView(
       new IconView(context).Bind(_dataContext.Icon),
@@ -145,8 +129,8 @@ public class DialogHost : DialogFragment {
     var view = new LinearLayout(context) { Orientation = Orientation.Horizontal };
 
     foreach (var button in dataContext.Buttons) {
-      var btn = new Button(new ContextThemeWrapper(context, Resource.Style.mh_DialogButton), null, 0);
-      BindingU.Bind(btn, button.Command, dataContext);
+      var btn = new Button(new ContextThemeWrapper(context, Resource.Style.mh_DialogButton), null, 0)
+        .WithCommand(button.Command, dataContext);
 
       view.AddView(btn, new LinearLayout.LayoutParams(LPU.Wrap, DisplayU.DpToPx(32))
         .WithMargin(0, margin, margin, margin));
