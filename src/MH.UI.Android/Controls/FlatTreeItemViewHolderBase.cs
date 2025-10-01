@@ -20,12 +20,12 @@ public abstract class FlatTreeItemViewHolderBase : RecyclerView.ViewHolder {
   public FlatTreeItemViewHolderBase(Context context, IAndroidTreeViewHost treeViewHost) : base(_createContainerView(context)) {
     _treeViewHost = treeViewHost;
     _expandedIcon = _createTreeItemExpandIconView(context)
-      .WithClickAction(() => {
-        if (DataContext == null) return;
-        DataContext.TreeItem.IsExpanded = !DataContext.TreeItem.IsExpanded;
+      .WithClickAction(this, (o, _) => {
+        if (o.DataContext == null) return;
+        o.DataContext.TreeItem.IsExpanded = !o.DataContext.TreeItem.IsExpanded;
       });
     _icon = new IconButton(context)
-      .WithClickAction(() => _treeViewHost.ItemMenu?.ShowItemMenu(_icon!, DataContext?.TreeItem));
+      .WithClickAction(this, (o, s) => o._treeViewHost.ItemMenu?.ShowItemMenu(s, o.DataContext?.TreeItem));
     _name = new TextView(context);
 
     _container = (LinearLayout)ItemView;
