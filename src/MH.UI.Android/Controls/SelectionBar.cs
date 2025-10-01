@@ -24,12 +24,11 @@ public class SelectionBar : LinearLayout {
     _clearSelectionBtn.SetImageResource(Resource.Drawable.icon_x_close);
     _clearSelectionBtn.Click += _onClearSelectionBtnClick;
 
-    var gp = context.Resources!.GetDimensionPixelSize(Resource.Dimension.general_padding);
     Orientation = Orientation.Horizontal;
     Visibility = ViewStates.Gone;
     Background = BackgroundFactory.RoundSolidDark();
     SetGravity(GravityFlags.CenterVertical);
-    SetPadding(gp, 0, gp, 0);
+    SetPadding(DimensU.Spacing, 0, DimensU.Spacing, 0);
     AddView(_selectedCount);
     AddView(_clearSelectionBtn);
   }
