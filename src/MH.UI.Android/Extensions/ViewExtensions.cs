@@ -1,5 +1,6 @@
 ﻿using Android.Views;
 using Android.Widget;
+using System;
 
 namespace MH.UI.Android.Extensions;
 
@@ -35,6 +36,15 @@ public static class ViewExtensions {
     if (gravity != null) newLp.SetGravity((GravityFlags)gravity);
     view.LayoutParameters = newLp;
 
+    return view;
+  }
+
+  public static T WithClickAction<T>(this T view, Action action) where T : View {
+    var weakAction = new WeakReference<Action>(action);
+    view.Click += (_, _) => {
+      if (weakAction.TryGetTarget(out var act))
+        act();
+    };
     return view;
   }
 }
