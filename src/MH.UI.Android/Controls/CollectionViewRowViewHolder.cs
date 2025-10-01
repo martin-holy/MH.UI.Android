@@ -3,6 +3,7 @@ using Android.Views;
 using Android.Widget;
 using AndroidX.RecyclerView.Widget;
 using MH.UI.Android.Extensions;
+using MH.UI.Android.Utils;
 using MH.UI.Interfaces;
 using MH.Utils.BaseClasses;
 using MH.Utils.Interfaces;
@@ -40,18 +41,19 @@ public class CollectionViewRowViewHolder : RecyclerView.ViewHolder, IDisposable 
         var itemView = new CollectionViewItem(_container.Context!).Bind(rowItem, view, itemWidth, itemHeight);
         itemView.Click += _onItemClick;
         itemView.LongClick += _onItemLongClick;
-        _container.AddView(itemView, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WrapContent, ViewGroup.LayoutParams.WrapContent));
+        _container.AddView(itemView, new LinearLayout.LayoutParams(LPU.Wrap, LPU.Wrap));
       }
   }
 
   private void _unbind() {
-    for (int i = 0; i < _container.ChildCount; i++)
-      if (_container.GetChildAt(i) is View childView) {
-        childView.Click -= _onItemClick;
-        childView.LongClick -= _onItemLongClick;
+    while (_container.ChildCount > 0) {
+      if (_container.GetChildAt(0) is View child) {
+        child.Click -= _onItemClick;
+        child.LongClick -= _onItemLongClick;
+        _container.RemoveViewAt(0);
+        child.Dispose();
       }
-
-    _container.RemoveAllViews();
+    }
   }
 
   private void _onItemClick(object? sender, EventArgs e) =>
