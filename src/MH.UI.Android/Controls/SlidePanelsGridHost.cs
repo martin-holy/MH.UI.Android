@@ -3,6 +3,7 @@ using Android.Views;
 using Android.Widget;
 using AndroidX.RecyclerView.Widget;
 using AndroidX.ViewPager2.Widget;
+using MH.UI.Android.Utils;
 using System;
 
 namespace MH.UI.Android.Controls;
@@ -24,9 +25,9 @@ public class SlidePanelsGridHost : LinearLayout {
     _viewPager = new(context) { Adapter = new PanelAdapter(this) };
     _bottomPanel = new(context) { Visibility = ViewStates.Gone };
 
-    AddView(_topPanel, new LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.WrapContent));
-    AddView(_viewPager, new LayoutParams(ViewGroup.LayoutParams.MatchParent, 0, 1f));
-    AddView(_bottomPanel, new LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.WrapContent));
+    AddView(_topPanel, new LayoutParams(LPU.Match, LPU.Wrap));
+    AddView(_viewPager, new LayoutParams(LPU.Match, 0, 1f));
+    AddView(_bottomPanel, new LayoutParams(LPU.Match, LPU.Wrap));
   }
 
   public void SetTopPanel(View view) {
@@ -45,7 +46,7 @@ public class SlidePanelsGridHost : LinearLayout {
 
     public override RecyclerView.ViewHolder OnCreateViewHolder(ViewGroup parent, int viewType) {
       var view = _host._panelFactory(viewType);
-      view.LayoutParameters = new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.MatchParent);
+      view.LayoutParameters = new RecyclerView.LayoutParams(LPU.Match, LPU.Match);
       return new PanelViewHolder(view);
     }
 
