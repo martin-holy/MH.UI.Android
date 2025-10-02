@@ -58,9 +58,11 @@ public abstract class TreeViewHostBase<TView, TAdapter> : RelativeLayout, IAndro
     HostIsVisibleChangedEvent?.Invoke(this, visibility == ViewStates.Visible);
   }
 
-  public virtual void ExpandRootWhenReady(ITreeItem root) => root.IsExpanded = true;
+  public virtual void ExpandRootWhenReady(ITreeItem root) =>
+    root.IsExpanded = true;
 
-  public virtual void ScrollToTop() { /* TODO PORT */ }
+  public virtual void ScrollToTop() =>
+    _recyclerView.ScrollTo(0, 0);
 
   public virtual void ScrollToItems(object[] items, bool exactly) {
     var item = items[^1];
