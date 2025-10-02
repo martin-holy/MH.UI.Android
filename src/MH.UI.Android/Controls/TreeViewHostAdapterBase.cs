@@ -16,7 +16,7 @@ public abstract class TreeViewHostAdapterBase : RecyclerView.Adapter {
   protected readonly Context _context;
   protected readonly ObservableCollection<ITreeItem> _rootHolder;
   protected FlatTreeItem[] _items = [];
-  private bool _disposed;
+  protected bool _disposed;
 
   public override int ItemCount => _items.Length;
   public IReadOnlyList<FlatTreeItem> Items => _items;
@@ -24,36 +24,36 @@ public abstract class TreeViewHostAdapterBase : RecyclerView.Adapter {
   protected TreeViewHostAdapterBase(Context context, ObservableCollection<ITreeItem> rootHolder) {
     _context = context;
     _rootHolder = rootHolder;
-    _rootHolder.CollectionChanged += _onRootHolderCollectionChanged;
+    this.Bind(_rootHolder, (o, _e) => o.SetItemsSource());
     SetItemsSource();
   }
 
   internal void SetItemsSource() {
+    if (_disposed) return;
     var newFlatItems = Tree.ToFlatTreeItems(_rootHolder);
-    _updateTreeItemSubscriptions(_items, newFlatItems);
+    var oldItems = _items.Except(newFlatItems).ToArray();
+    var newItems = newFlatItems.Except(_items).ToArray();
+    _unsubscribe(oldItems);
+    _subscribe(newItems);
     _items = [.. newFlatItems];
     Tasks.Dispatch(NotifyDataSetChanged);
   }
 
-  private void _onTreeItemsChanged(object? sender, NotifyCollectionChangedEventArgs e) =>
-    SetItemsSource();
-
-  private void _updateTreeItemSubscriptions(IEnumerable<FlatTreeItem> oldItems, IEnumerable<FlatTreeItem> newItems) {
-    var o = oldItems.Except(newItems).ToArray();
-    var n = newItems.Except(oldItems).ToArray();
-
-    foreach (var item in o) {
-      item.TreeItem.PropertyChanged -= _onTreeItemPropertyChanged;
-      item.TreeItem.Items.CollectionChanged -= _onTreeItemsChanged;
-      if (item.TreeItem is ILeafyTreeItem { Leaves: INotifyCollectionChanged leaves })
-        leaves.CollectionChanged -= _onTreeItemsChanged;
-    }
-
-    foreach (var item in n) {
+  private void _subscribe(FlatTreeItem[] items) {
+    foreach (var item in items) {
       item.TreeItem.PropertyChanged += _onTreeItemPropertyChanged;
       item.TreeItem.Items.CollectionChanged += _onTreeItemsChanged;
       if (item.TreeItem is ILeafyTreeItem { Leaves: INotifyCollectionChanged leaves })
         leaves.CollectionChanged += _onTreeItemsChanged;
+    }
+  }
+
+  private void _unsubscribe(FlatTreeItem[] items) {
+    foreach (var item in items) {
+      item.TreeItem.PropertyChanged -= _onTreeItemPropertyChanged;
+      item.TreeItem.Items.CollectionChanged -= _onTreeItemsChanged;
+      if (item.TreeItem is ILeafyTreeItem { Leaves: INotifyCollectionChanged leaves })
+        leaves.CollectionChanged -= _onTreeItemsChanged;
     }
   }
 
@@ -62,17 +62,8 @@ public abstract class TreeViewHostAdapterBase : RecyclerView.Adapter {
       SetItemsSource();
   }
 
-  private void _onRootHolderCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e) =>
+  private void _onTreeItemsChanged(object? sender, NotifyCollectionChangedEventArgs e) =>
     SetItemsSource();
-
-  protected override void Dispose(bool disposing) {
-    if (_disposed) return;
-    if (disposing) {
-      _rootHolder.CollectionChanged -= _onRootHolderCollectionChanged;
-    }
-    _disposed = true;
-    base.Dispose(disposing);
-  }
 
   protected int _findIndexOfTreeItem(ITreeItem treeItem) {
     for (var i = 0; i < _items.Length; i++)
@@ -80,5 +71,15 @@ public abstract class TreeViewHostAdapterBase : RecyclerView.Adapter {
         return i;
 
     return -1;
+  }
+
+  protected override void Dispose(bool disposing) {
+    if (_disposed) return;
+    if (disposing) {
+      _unsubscribe(_items);
+      _items = [];
+    }
+    _disposed = true;
+    base.Dispose(disposing);
   }
 }
