@@ -1,7 +1,5 @@
 ﻿using Android.Content;
 using Android.Graphics.Drawables;
-using Android.Runtime;
-using Android.Util;
 using Android.Views;
 using Android.Widget;
 using MH.UI.Android.Utils;
@@ -11,17 +9,16 @@ using System;
 
 namespace MH.UI.Android.Controls;
 
-public class ZoomAndPanHost : FrameLayout, IZoomAndPanHost, IDisposable {
-  private bool _disposed;
-  private ImageView _imageView = null!;
+public class ZoomAndPanHost : FrameLayout, IZoomAndPanHost {
+  private readonly ImageView _imageView;
   private readonly global::Android.Graphics.Matrix _matrix = new();
-  private ScaleGestureDetector _scaleDetector = null!;
-  private GestureDetector _gestureDetector = null!;
+  private readonly ScaleGestureDetector _scaleDetector;
+  private readonly GestureDetector _gestureDetector;
   private bool _isPanning;
   private bool _isScaling;
-  private ZoomAndPan? _dataContext;
+  private bool _disposed;
 
-  public ZoomAndPan DataContext { get => _dataContext ?? throw new InvalidOperationException(ErrorMessages.DataContextNotInitialized); }
+  public ZoomAndPan DataContext { get; }
   double IZoomAndPanHost.Width => Width;
   double IZoomAndPanHost.Height => Height;
 
@@ -32,23 +29,14 @@ public class ZoomAndPanHost : FrameLayout, IZoomAndPanHost, IDisposable {
   public event EventHandler<(int, PointD)>? HostMouseWheelEvent;
   public event EventHandler? SingleTapConfirmedEvent;
 
-  public ZoomAndPanHost(Context context) : base(context) => _initialize(context);
-  public ZoomAndPanHost(Context context, IAttributeSet attrs) : base(context, attrs) => _initialize(context);
-  protected ZoomAndPanHost(nint javaReference, JniHandleOwnership transfer) : base(javaReference, transfer) => _initialize(Context!);
-
-  private void _initialize(Context context) {
+  public ZoomAndPanHost(Context context, ZoomAndPan dataContext) : base(context) {
+    DataContext = dataContext;
+    dataContext.Host = this;
     _imageView = new ImageView(context);
     _imageView.SetScaleType(ImageView.ScaleType.Matrix);
     _scaleDetector = new ScaleGestureDetector(context, new ScaleListener(this));
     _gestureDetector = new GestureDetector(context, new GestureListener(this));
-    AddView(_imageView, new LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.MatchParent));
-  }
-
-  public ZoomAndPanHost Bind(ZoomAndPan? dataContext) {
-    _dataContext = dataContext;
-    if (dataContext == null) return this;
-    dataContext.Host = this;
-    return this;
+    AddView(_imageView, new LayoutParams(LPU.Match, LPU.Match));
   }
 
   public void SetImageBitmap(global::Android.Graphics.Bitmap? bitmap) {
@@ -110,23 +98,13 @@ public class ZoomAndPanHost : FrameLayout, IZoomAndPanHost, IDisposable {
 
   protected override void Dispose(bool disposing) {
     if (_disposed) return;
-
     if (disposing) {
-      HostSizeChangedEvent = null;
-      HostMouseMoveEvent = null;
-      HostMouseDownEvent = null;
-      HostMouseUpEvent = null;
-      HostMouseWheelEvent = null;
-      SingleTapConfirmedEvent = null;
-
       DataContext.Host = null;
       _imageView.SetImageBitmap(null);
-      _imageView.Dispose();
       _matrix.Dispose();
       _scaleDetector.Dispose();
       _gestureDetector.Dispose();
     }
-
     _disposed = true;
     base.Dispose(disposing);
   }
