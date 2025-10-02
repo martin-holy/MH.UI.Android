@@ -24,7 +24,7 @@ public abstract class TreeViewHostAdapterBase : RecyclerView.Adapter {
   protected TreeViewHostAdapterBase(Context context, ObservableCollection<ITreeItem> rootHolder) {
     _context = context;
     _rootHolder = rootHolder;
-    this.Bind(_rootHolder, (o, _e) => o.SetItemsSource());
+    this.Bind(_rootHolder, (o, _) => o.SetItemsSource());
     SetItemsSource();
   }
 
