@@ -13,6 +13,7 @@ public class SlidePanelsGridHost : LinearLayout {
   private readonly LinearLayout _topPanel;
   private readonly LinearLayout _bottomPanel;
   private readonly Func<int, View> _panelFactory;
+  private bool _disposed;
 
   public ViewPager2 ViewPager { get => _viewPager; }
 
@@ -39,6 +40,17 @@ public class SlidePanelsGridHost : LinearLayout {
     _bottomPanel.RemoveAllViews();
     _bottomPanel.AddView(view);
     _bottomPanel.Visibility = isVisible ? ViewStates.Visible : ViewStates.Gone;
+  }
+
+  protected override void Dispose(bool disposing) {
+    if (_disposed) return;
+    if (disposing) {
+      var adapter = _viewPager.Adapter;
+      _viewPager.Adapter = null;
+      adapter?.Dispose();
+    }
+    _disposed = true;
+    base.Dispose(disposing);
   }
 
   private class PanelAdapter(SlidePanelsGridHost _host) : RecyclerView.Adapter {
