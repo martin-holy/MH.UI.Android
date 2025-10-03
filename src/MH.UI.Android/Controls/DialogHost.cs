@@ -57,7 +57,7 @@ public class DialogHost : DialogFragment {
       return dialog.Bind(dataContext);
 
     View? view = dataContext switch {
-      GroupByDialog => new GroupByDialogV(context, (GroupByDialog)dataContext),
+      GroupByDialog => new GroupByDialogV(context, (GroupByDialog)dataContext), // this dialog is not cached
       InputDialog => new InputDialogV(context),
       MessageDialog => new MessageDialogV(context),
       ToggleDialog => new ToggleDialogV(context),
@@ -65,11 +65,14 @@ public class DialogHost : DialogFragment {
     };
 
     view ??= _contentViewFactory?.Invoke(context, dataContext);
-    dialog = view as IDialogContentV;
-    if (dialog == null) return _getNotImplementedDialog(context, dataContext);
-    _dialogs.Add(type, dialog);
+    if (view == null) return _getNotImplementedDialog(context, dataContext);
 
-    return dialog.Bind(dataContext);
+    if (view is IDialogContentV dlg) {
+      _dialogs.Add(type, dlg);
+      dlg.Bind(dataContext);
+    }
+
+    return view;
   }
 
   public override global::Android.App.Dialog OnCreateDialog(Bundle? savedInstanceState) {
