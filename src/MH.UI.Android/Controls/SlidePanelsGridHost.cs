@@ -4,42 +4,42 @@ using Android.Widget;
 using AndroidX.RecyclerView.Widget;
 using AndroidX.ViewPager2.Widget;
 using MH.UI.Android.Utils;
+using MH.UI.Controls;
+using MH.Utils;
 using System;
 
 namespace MH.UI.Android.Controls;
 
 public class SlidePanelsGridHost : LinearLayout {
   private readonly ViewPager2 _viewPager;
-  private readonly LinearLayout _topPanel;
-  private readonly LinearLayout _bottomPanel;
-  private readonly Func<int, View> _panelFactory;
+  private readonly View _panelLeft;
+  private readonly View _panelTop;
+  private readonly View _panelRight;
+  private readonly View _panelBottom;
+  private readonly View _panelMiddle;
   private bool _disposed;
 
   public ViewPager2 ViewPager { get => _viewPager; }
+  public SlidePanelsGrid DataContext { get; }
 
-  public SlidePanelsGridHost(Context context, Func<int, View> panelFactory) : base(context) {
-    _panelFactory = panelFactory;
+  public SlidePanelsGridHost(Context context, SlidePanelsGrid dataContext, View left, View top, View right, View bottom, View middle) : base(context) {
+    DataContext = dataContext;
+    _panelLeft = left;
+    _panelTop = top;
+    _panelRight = right;
+    _panelBottom = bottom;
+    _panelMiddle = middle;
+    _viewPager = new(context) { Adapter = new PanelAdapter(this) };
+
     Orientation = Orientation.Vertical;
     SetBackgroundResource(Resource.Color.c_static_ba);
 
-    _topPanel = new(context);
-    _viewPager = new(context) { Adapter = new PanelAdapter(this) };
-    _bottomPanel = new(context) { Visibility = ViewStates.Gone };
+    this.Bind(dataContext.PanelTop, x => x.IsPinned, (v, p) => v._panelTop.Visibility = p ? ViewStates.Visible : ViewStates.Gone);
+    this.Bind(dataContext.PanelBottom, x => x.IsPinned, (v, p) => v._panelBottom.Visibility = p ? ViewStates.Visible : ViewStates.Gone);
 
-    AddView(_topPanel, new LayoutParams(LPU.Match, LPU.Wrap));
+    AddView(top, new LayoutParams(LPU.Match, LPU.Wrap));
     AddView(_viewPager, new LayoutParams(LPU.Match, 0, 1f));
-    AddView(_bottomPanel, new LayoutParams(LPU.Match, LPU.Wrap));
-  }
-
-  public void SetTopPanel(View view) {
-    _topPanel.RemoveAllViews();
-    _topPanel.AddView(view);
-  }
-
-  public void SetBottomPanel(View view, bool isVisible) {
-    _bottomPanel.RemoveAllViews();
-    _bottomPanel.AddView(view);
-    _bottomPanel.Visibility = isVisible ? ViewStates.Visible : ViewStates.Gone;
+    AddView(bottom, new LayoutParams(LPU.Match, LPU.Wrap));
   }
 
   protected override void Dispose(bool disposing) {
@@ -54,17 +54,22 @@ public class SlidePanelsGridHost : LinearLayout {
   }
 
   private class PanelAdapter(SlidePanelsGridHost _host) : RecyclerView.Adapter {
-    public override int ItemCount => 3; // Left, Middle, Right
+    public override int ItemCount => 3;
 
     public override RecyclerView.ViewHolder OnCreateViewHolder(ViewGroup parent, int viewType) {
-      var view = _host._panelFactory(viewType);
+      var view = viewType switch {
+        0 => _host._panelLeft,
+        1 => _host._panelMiddle,
+        2 => _host._panelRight,
+        _ => throw new ArgumentOutOfRangeException(nameof(viewType))
+      };
       view.LayoutParameters = new RecyclerView.LayoutParams(LPU.Match, LPU.Match);
       return new PanelViewHolder(view);
     }
 
     public override void OnBindViewHolder(RecyclerView.ViewHolder holder, int position) { }
 
-    public override int GetItemViewType(int position) => position; // 0=Left, 1=Middle, 2=Right
+    public override int GetItemViewType(int position) => position;
   }
 
   private class PanelViewHolder(View itemView) : RecyclerView.ViewHolder(itemView);
