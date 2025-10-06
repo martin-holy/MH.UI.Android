@@ -6,6 +6,7 @@ using Android.Provider;
 using Android.Util;
 using Android.Webkit;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Path = System.IO.Path;
@@ -186,6 +187,35 @@ public static class MediaStoreU {
     }
 
     return null;
+  }
+
+  public static void DeleteFiles(List<string> filePaths, Context context) {
+    if (context.ContentResolver is not { } resolver) return;
+
+    foreach (var filePath in filePaths) {
+      if (string.IsNullOrWhiteSpace(filePath)) continue;
+
+      try {
+        if (!File.Exists(filePath)) continue;
+
+        if (Build.VERSION.SdkInt < BuildVersionCodes.R) {
+          File.Delete(filePath);
+        }
+        else {
+          var imageId = _getImageId(filePath, context);
+          if (imageId > 0) {
+            var uri = ContentUris.WithAppendedId(MediaStore.Images.Media.ExternalContentUri!, imageId);
+            resolver.Delete(uri, null, null);
+          }
+          else {
+            File.Delete(filePath);
+          }
+        }
+      }
+      catch (Exception ex) {
+        MH.Utils.Log.Error(ex, $"Delete failed for {filePath}");
+      }
+    }
   }
 }
 
