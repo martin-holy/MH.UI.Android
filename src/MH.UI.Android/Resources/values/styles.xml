@@ -5,6 +5,7 @@
     <item name="android:editTextStyle">@style/mh_EditText</item>    
     <item name="android:imageButtonStyle">@style/mh_ImageButton</item>
     <item name="android:progressBarStyle">@style/mh_ProgressBar</item>
+		<item name="android:seekBarStyle">@style/mh_SeekBar</item>
     <item name="android:textViewStyle">@style/mh_TextView</item>
     <item name="android:checkboxStyle">@style/mh_CheckBox</item>
     <item name="android:radioButtonStyle">@style/mh_RadioButton</item>
@@ -38,6 +39,15 @@
     <item name="android:progressDrawable">@drawable/progress_bar_progress</item>
     <item name="android:indeterminate">false</item>
   </style>
+
+	<style name="mh_SeekBar" parent="android:Widget.SeekBar">
+		<item name="android:progressDrawable">@drawable/seekbar_progress</item>
+		<item name="android:thumb">@drawable/seekbar_thumb</item>
+		<item name="android:thumbOffset">5dp</item>
+		<item name="android:paddingLeft">5dp</item>
+		<item name="android:paddingRight">5dp</item>
+		<item name="android:progressTint">@color/c_accent</item>
+	</style>
   
   <style name="mh_TextView" parent="android:Widget.TextView">
     <item name="android:layout_width">wrap_content</item>

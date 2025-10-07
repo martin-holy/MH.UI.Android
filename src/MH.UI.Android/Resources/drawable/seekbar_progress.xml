@@ -1,0 +1,42 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:a="http://schemas.android.com/apk/res/android">
+
+	<item a:id="@a:id/background" a:top="8dp" a:bottom="8dp">
+		<shape a:shape="rectangle">
+			<size a:height="4dp"/>
+			<solid a:color="@color/gray6"/>
+		</shape>
+	</item>
+
+	<item a:id="@a:id/background" a:top="8dp" a:bottom="8dp" a:state_enabled="false">
+		<shape a:shape="rectangle">
+			<size a:height="4dp"/>
+			<solid a:color="@color/gray3"/>
+		</shape>
+	</item>
+
+	 <item a:id="@a:id/secondaryProgress" a:top="8dp" a:bottom="8dp">
+		<shape a:shape="rectangle">
+			<size a:height="4dp"/>
+			<solid a:color="@color/gray6"/>
+		</shape>
+	</item> 
+
+	<item a:id="@a:id/progress" a:top="8dp" a:bottom="8dp">
+		<clip a:clipOrientation="horizontal" a:gravity="left">
+			<shape a:shape="rectangle">
+				<size a:height="4dp"/>
+				<solid a:color="@color/c_accent"/>
+			</shape>
+		</clip>
+	</item>
+
+	<item a:id="@a:id/progress" a:top="8dp" a:bottom="8dp" a:state_enabled="false">
+		<clip a:clipOrientation="horizontal" a:gravity="left">
+			<shape a:shape="rectangle">
+				<size a:height="4dp"/>
+				<solid a:color="@color/c_disabled_accent"/>
+			</shape>
+		</clip>
+	</item>
+</layer-list>
