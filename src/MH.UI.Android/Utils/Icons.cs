@@ -1,4 +1,5 @@
 ﻿using Android.Content;
+using Android.Content.Res;
 using Android.Graphics;
 using Android.Graphics.Drawables;
 using AndroidX.Core.Content;
@@ -9,6 +10,11 @@ using System.Collections.Generic;
 namespace MH.UI.Android.Utils;
 
 public static class Icons {
+  private static readonly int[][] _tintStates = [
+    [global::Android.Resource.Attribute.StateEnabled],
+    [-global::Android.Resource.Attribute.StateEnabled]
+  ];
+
   public static Color DefaultColor { get; set; } = Color.Gray;
   public static Dictionary<object, object>? IconNameToColor { get; set; }
   public static Func<string, string> ConvertIconName { get; set; } = (iconName) => iconName.ToSnakeCase();
@@ -18,8 +24,14 @@ public static class Icons {
     var id = context.Resources.GetIdentifier(ConvertIconName(iconName), "drawable", context.PackageName);
     if (id == 0) return null;
     if (ContextCompat.GetDrawable(context, id) is not { } drawable) return null;
+
+    var colors = new int[] {
+      GetColor(context, iconName, iconNameToColor ?? IconNameToColor),
+      ContextCompat.GetColor(context, Resource.Color.c_disabled_fo)
+    };
+
     drawable.Mutate();
-    drawable.SetTint(GetColor(context, iconName, iconNameToColor ?? IconNameToColor));
+    drawable.SetTintList(new ColorStateList(_tintStates, colors));
     return drawable;
   }
 
