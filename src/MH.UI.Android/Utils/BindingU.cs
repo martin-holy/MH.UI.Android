@@ -2,6 +2,10 @@
 using Android.Widget;
 using MH.UI.Android.Controls;
 using MH.Utils.BaseClasses;
+using MH.Utils.Binding;
+using System;
+using System.ComponentModel;
+using System.Linq.Expressions;
 using System.Windows.Input;
 
 namespace MH.UI.Android.Utils;
@@ -40,5 +44,33 @@ public static class BindingU {
   public static T WithCommand<T>(this T view, ICommand command, object? parameter, bool useCommandIcon = true, bool useCommandText = true) where T : View {
     view.Bind(command, parameter, useCommandIcon, useCommandText);
     return view;
+  }
+
+  public static Slider BindProgress<TSource, TProp>(
+    this Slider slider,
+    TSource source,
+    Expression<Func<TSource, TProp>> property,
+    MH.Utils.BindingU.Mode mode = MH.Utils.BindingU.Mode.TwoWay)
+    where TSource : class, INotifyPropertyChanged {
+
+    EventHandler<global::Android.Widget.SeekBar.ProgressChangedEventArgs>? handler = null;
+
+    new ViewBinder<Slider, double>(
+      slider,
+      subscribe: eh => {
+        handler = (s, e) => eh(s, e.Progress / 10.0 + slider.MinD);
+        slider.ProgressChanged += handler;
+      },
+      unsubscribe: eh => {
+        if (handler != null) slider.ProgressChanged -= handler;
+      },
+      getViewValue: v => v.Progress / 10.0 + v.MinD,
+      setViewValue: (v, val) => {
+        int newProgress = (int)((val - v.MinD) * 10);
+        if (v.Progress != newProgress)
+          v.Progress = newProgress;
+      }).Bind(source, property, mode);
+
+    return slider;
   }
 }
