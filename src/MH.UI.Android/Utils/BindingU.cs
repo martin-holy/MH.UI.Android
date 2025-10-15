@@ -1,8 +1,8 @@
 ﻿using Android.Views;
 using Android.Widget;
 using MH.UI.Android.Controls;
+using MH.Utils;
 using MH.Utils.BaseClasses;
-using MH.Utils.Binding;
 using System;
 using System.ComponentModel;
 using System.Linq.Expressions;
@@ -46,31 +46,36 @@ public static class BindingU {
     return view;
   }
 
-  public static Slider BindProgress<TSource, TProp>(
-    this Slider slider,
-    TSource source,
-    Expression<Func<TSource, TProp>> property,
-    MH.Utils.BindingU.Mode mode = MH.Utils.BindingU.Mode.TwoWay)
+  public static Slider BindProgress<TSource, TProp>(this Slider slider, TSource source, Expression<Func<TSource, TProp>> property)
     where TSource : class, INotifyPropertyChanged {
 
     EventHandler<global::Android.Widget.SeekBar.ProgressChangedEventArgs>? handler = null;
 
     new ViewBinder<Slider, double>(
       slider,
-      subscribe: eh => {
-        handler = (s, e) => eh(s, e.Progress / 10.0 + slider.MinD);
+      eh => {
+        handler = (s, e) => eh(s, e.Progress / 10.0 + ((Slider)s!).MinD);
         slider.ProgressChanged += handler;
       },
-      unsubscribe: eh => {
-        if (handler != null) slider.ProgressChanged -= handler;
-      },
-      getViewValue: v => v.Progress / 10.0 + v.MinD,
-      setViewValue: (v, val) => {
-        int newProgress = (int)((val - v.MinD) * 10);
-        if (v.Progress != newProgress)
-          v.Progress = newProgress;
-      }).Bind(source, property, mode);
+      eh => { if (handler != null) slider.ProgressChanged -= handler; },
+      (v, val) => v.Progress = (int)((val - v.MinD) * 10))
+      .Bind(source, property);
 
     return slider;
+  }
+
+  public static TextView BindText<TSource, TProp>(
+    this TextView textView,
+    TSource source,
+    Expression<Func<TSource, TProp>> property,
+    string? format)
+    where TSource : class, INotifyPropertyChanged {
+
+    new ViewBinder<TextView, string>(
+      textView,
+      (v, val) => v.Text = format == null ? val : string.Format(format, val))
+      .Bind(source, property);
+
+    return textView;
   }
 }
