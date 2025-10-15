@@ -68,12 +68,12 @@ public static class BindingU {
     this TextView textView,
     TSource source,
     Expression<Func<TSource, TProp>> property,
-    string? format)
+    Func<TProp, string> formatter)
     where TSource : class, INotifyPropertyChanged {
 
     new ViewBinder<TextView, string>(
       textView,
-      (v, val) => v.Text = format == null ? val : string.Format(format, val))
+      (v, val) => v.Text = formatter((TProp)Convert.ChangeType(val, typeof(TProp))!))
       .Bind(source, property);
 
     return textView;
