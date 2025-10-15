@@ -46,24 +46,6 @@ public static class BindingU {
     return view;
   }
 
-  public static Slider BindProgress<TSource, TProp>(this Slider slider, TSource source, Expression<Func<TSource, TProp>> property)
-    where TSource : class, INotifyPropertyChanged {
-
-    EventHandler<global::Android.Widget.SeekBar.ProgressChangedEventArgs>? handler = null;
-
-    new ViewBinder<Slider, double>(
-      slider,
-      eh => {
-        handler = (s, e) => eh(s, e.Progress / 10.0 + ((Slider)s!).MinD);
-        slider.ProgressChanged += handler;
-      },
-      eh => { if (handler != null) slider.ProgressChanged -= handler; },
-      (v, val) => v.Progress = (int)((val - v.MinD) * 10))
-      .Bind(source, property);
-
-    return slider;
-  }
-
   public static TextView BindText<TSource, TProp>(
     this TextView textView,
     TSource source,
