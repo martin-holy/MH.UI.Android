@@ -60,4 +60,22 @@ public static class BindingU {
 
     return textView;
   }
+
+  public static CheckBox BindChecked<TSource, TProp>(this CheckBox checkBox, TSource source, Expression<Func<TSource, TProp>> property)
+    where TSource : class, INotifyPropertyChanged {
+
+    EventHandler<CompoundButton.CheckedChangeEventArgs>? handler = null;
+
+    new ViewBinder<CheckBox, bool>(
+      checkBox,
+      eh => {
+        handler = (s, e) => eh(s, e.IsChecked);
+        checkBox.CheckedChange += handler;
+      },
+      eh => { if (handler != null) checkBox.CheckedChange -= handler; },
+      (v, val) => v.Checked = val)
+      .Bind(source, property);
+
+    return checkBox;
+  }
 }
