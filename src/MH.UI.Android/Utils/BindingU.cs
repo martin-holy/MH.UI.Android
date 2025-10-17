@@ -1,4 +1,5 @@
-﻿using Android.Views;
+﻿using Android.Text;
+using Android.Views;
 using Android.Widget;
 using MH.UI.Android.Controls;
 using MH.Utils;
@@ -61,6 +62,24 @@ public static class BindingU {
     return textView;
   }
 
+  public static EditText BindText<TSource, TProp>(this EditText editText, TSource source, Expression<Func<TSource, TProp>> property)
+    where TSource : class, INotifyPropertyChanged {
+
+    EventHandler<TextChangedEventArgs>? handler = null;
+
+    new ViewBinder<EditText, string>(
+      editText,
+      eh => {
+        handler = (s, e) => eh(s, e.Text?.ToString() ?? string.Empty);
+        editText.TextChanged += handler;
+      },
+      eh => { if (handler != null) editText.TextChanged -= handler; },
+      (v, val) => { if (!val.Equals(v.Text)) v.Text = val; })
+      .Bind(source, property);
+
+    return editText;
+  }
+
   public static CheckBox BindChecked<TSource, TProp>(this CheckBox checkBox, TSource source, Expression<Func<TSource, TProp>> property)
     where TSource : class, INotifyPropertyChanged {
 
@@ -73,7 +92,7 @@ public static class BindingU {
         checkBox.CheckedChange += handler;
       },
       eh => { if (handler != null) checkBox.CheckedChange -= handler; },
-      (v, val) => v.Checked = val)
+      (v, val) => { if (val != v.Checked) v.Checked = val; })
       .Bind(source, property);
 
     return checkBox;
