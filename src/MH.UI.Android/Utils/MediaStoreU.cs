@@ -5,9 +5,11 @@ using Android.OS;
 using Android.Provider;
 using Android.Util;
 using Android.Webkit;
+using AndroidX.Core.Content;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Path = System.IO.Path;
 
@@ -215,6 +217,32 @@ public static class MediaStoreU {
       catch (Exception ex) {
         MH.Utils.Log.Error(ex, $"Delete failed for {filePath}");
       }
+    }
+  }
+
+  public static void ShareFiles(Context context, IEnumerable<string> filePaths) {
+    try {
+      var uris = new List<global::Android.Net.Uri>();
+      foreach (var path in filePaths) {
+        var file = new Java.IO.File(path);
+        if (!file.Exists()) continue;
+        if (FileProvider.GetUriForFile(context, context.PackageName + ".fileprovider", file) is { } uri)
+          uris.Add(uri);
+      }
+
+      if (uris.Count == 0) return;
+
+      var intent = new Intent(Intent.ActionSendMultiple);
+      intent.SetType("*/*");
+      intent.PutParcelableArrayListExtra(Intent.ExtraStream, [.. uris.Cast<IParcelable>()]);
+      intent.AddFlags(ActivityFlags.GrantReadUriPermission);
+
+      var chooser = Intent.CreateChooser(intent, "Share via");
+      chooser.AddFlags(ActivityFlags.NewTask);
+      context.StartActivity(chooser);
+    }
+    catch (Exception ex) {
+      MH.Utils.Log.Error(ex, "Failed to share files");
     }
   }
 }
