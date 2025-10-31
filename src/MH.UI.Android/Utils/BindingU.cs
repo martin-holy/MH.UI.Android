@@ -5,7 +5,9 @@ using MH.UI.Android.Controls;
 using MH.Utils;
 using MH.Utils.BaseClasses;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Windows.Input;
 
@@ -96,5 +98,35 @@ public static class BindingU {
       .Bind(source, property);
 
     return checkBox;
+  }
+
+  public static Spinner BindSelected<TSource, TProp, TKey>(
+    this Spinner spinner,
+    TSource source,
+    Expression<Func<TSource, TProp>> property,
+    KeyValuePair<TKey, string>[] map)
+    where TSource : class, INotifyPropertyChanged {
+
+    EventHandler<AdapterView.ItemSelectedEventArgs>? handler = null;
+
+    var adapter = new ArrayAdapter<string>(spinner.Context!, Resource.Layout.spinner_item, [.. map.Select(x => x.Value)]);
+    adapter.SetDropDownViewResource(Resource.Layout.spinner_dropdown_item);
+    spinner.Adapter = adapter;
+
+    new ViewBinder<Spinner, TKey>(
+      spinner,
+      eh => {
+        handler = (s, e) => eh(s, map[e.Position].Key);
+        spinner.ItemSelected += handler;
+      },
+      eh => { if (handler != null) spinner.ItemSelected -= handler; },
+      (v, val) => {
+        var index = Array.FindIndex(map, kvp => Equals(kvp.Key, val));
+        if (index >= 0 && v.SelectedItemPosition != index)
+          v.SetSelection(index);
+      })
+      .Bind(source, property);
+
+    return spinner;
   }
 }
