@@ -6,6 +6,7 @@
     <item name="android:imageButtonStyle">@style/mh_ImageButton</item>
     <item name="android:progressBarStyle">@style/mh_ProgressBar</item>
 		<item name="android:seekBarStyle">@style/mh_SeekBar</item>
+		<item name="android:spinnerStyle">@style/mh_Spinner</item>
     <item name="android:textViewStyle">@style/mh_TextView</item>
     <item name="android:checkboxStyle">@style/mh_CheckBox</item>
     <item name="android:radioButtonStyle">@style/mh_RadioButton</item>
@@ -47,6 +48,13 @@
 		<item name="android:paddingLeft">5dp</item>
 		<item name="android:paddingRight">5dp</item>
 		<item name="android:progressTint">@color/c_accent</item>
+	</style>
+
+	<style name="mh_Spinner" parent="android:Widget.Spinner.DropDown">
+		<item name="android:background">@drawable/view_border</item>
+		<item name="android:popupBackground">@drawable/view_border</item>
+		<item name="android:textColor">@color/c_static_fo</item>
+		<item name="android:padding">@dimen/spacing</item>
 	</style>
   
   <style name="mh_TextView" parent="android:Widget.TextView">
