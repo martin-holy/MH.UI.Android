@@ -3,8 +3,7 @@
   android:id="@+id/spinner_dropdown_item_text"
   android:layout_width="match_parent"
   android:layout_height="wrap_content"
-  android:padding="12dp"
-  android:textSize="16sp"
-  android:textColor="?android:attr/textColorPrimary"
+  android:padding="8dp"
+  android:textColor="@color/c_static_fo"
   android:gravity="center_vertical"
-  android:background="?android:attr/selectableItemBackground"/>
+	android:background="@drawable/selectable_item"/>

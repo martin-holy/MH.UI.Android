@@ -3,10 +3,8 @@
   android:id="@+id/spinner_item_text"
   android:layout_width="match_parent"
   android:layout_height="wrap_content"
+	android:drawableEnd="@drawable/drop_down_arrow"
+  android:drawablePadding="@dimen/spacing"
   android:ellipsize="end"
   android:singleLine="true"
-  android:padding="8dp"
-  android:textSize="16sp"
-  android:textColor="?android:attr/textColorPrimary"
-  android:gravity="center_vertical"
-  android:background="?android:attr/selectableItemBackground"/>
+  android:gravity="center_vertical"/>
