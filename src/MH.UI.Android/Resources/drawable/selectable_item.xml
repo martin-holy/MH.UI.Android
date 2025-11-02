@@ -6,6 +6,18 @@
       <stroke a:width="1dp" a:color="@color/c_i_selected_bo"/>
     </shape>
   </item>
+	<item a:state_activated="true">
+		<shape>
+			<solid a:color="@color/c_i_selected_ba"/>
+			<stroke a:width="1dp" a:color="@color/c_i_selected_bo"/>
+		</shape>
+	</item>
+	<item a:state_pressed="true">
+		<shape>
+			<solid a:color="@color/c_i_selected_ba"/>
+			<stroke a:width="1dp" a:color="@color/c_i_selected_bo"/>
+		</shape>
+	</item>
   <item>
     <shape>
       <solid a:color="@color/c_static_ba"/>
