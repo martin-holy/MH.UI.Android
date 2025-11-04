@@ -1,5 +1,6 @@
 ﻿using Android.Graphics;
 using Android.Media;
+using MH.Utils.Extensions;
 using System;
 
 namespace MH.UI.Android.Utils;
@@ -34,6 +35,28 @@ public static class ImagingU {
       var scaled = Bitmap.CreateScaledBitmap(frame, newW, newH, true);
       frame.Recycle();
       return scaled;
+    }
+    catch (Exception ex) {
+      MH.Utils.Log.Error(ex);
+      return null;
+    }
+    finally {
+      retriever.Release();
+    }
+  }
+
+  public static object[]? GetVideoMetadata(string dirPath, string fileName) {
+    var srcPath = IOExtensions.PathCombine(dirPath, fileName);
+    var retriever = new MediaMetadataRetriever();
+    try {
+      retriever.SetDataSource(srcPath);
+
+      int.TryParse(retriever.ExtractMetadata(MetadataKey.VideoHeight), out var h);
+      int.TryParse(retriever.ExtractMetadata(MetadataKey.VideoWidth), out var w);
+      int.TryParse(retriever.ExtractMetadata(MetadataKey.VideoRotation), out var o);
+      retriever.ExtractMetadata(MetadataKey.CaptureFramerate).TryParseDoubleUniversal(out var fps);
+
+      return [h, w, o, fps];
     }
     catch (Exception ex) {
       MH.Utils.Log.Error(ex);
