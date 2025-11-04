@@ -3,7 +3,6 @@ using Android.Graphics;
 using Android.Media;
 using Android.OS;
 using Android.Provider;
-using Android.Util;
 using Android.Webkit;
 using AndroidX.Core.Content;
 using System;
@@ -16,8 +15,6 @@ using Path = System.IO.Path;
 namespace MH.UI.Android.Utils;
 
 public static class MediaStoreU {
-  const string TAG = "MediaStoreU";
-
   public static async Task<Bitmap?> GetThumbnailBitmapAsync(string filePath, Context context, int targetSize = 512) {
     try {
       var imageId = _getImageId(filePath, context);
@@ -34,7 +31,7 @@ public static class MediaStoreU {
             return bmp;
         }
         catch (Exception ex) {
-          Log.Debug(TAG, $"LoadThumbnail uri failed: {ex.Message}");
+          MH.Utils.Log.Error(ex, $"LoadThumbnail uri failed: {ex.Message}");
         }
 
         try {
@@ -43,7 +40,7 @@ public static class MediaStoreU {
             return bmp;
         }
         catch (Exception ex) {
-          Log.Warn(TAG, $"ScanFile failed: {ex.Message}");
+          MH.Utils.Log.Error(ex, $"ScanFile failed: {ex.Message}");
         }
       }
       else {
@@ -53,8 +50,8 @@ public static class MediaStoreU {
           try {
             context.ContentResolver?.Insert(MediaStore.Images.Media.ExternalContentUri!, values);
           }
-          catch (Exception insEx) {
-            Log.Warn(TAG, $"Insert into MediaStore (legacy) failed: {insEx.Message}");
+          catch (Exception ex) {
+            MH.Utils.Log.Error(ex, $"Insert into MediaStore (legacy) failed: {ex.Message}");
           }
 
           imageId = _getImageId(filePath, context);
@@ -66,13 +63,13 @@ public static class MediaStoreU {
               context.ContentResolver!, imageId, ThumbnailKind.MiniKind, new() { InSampleSize = 1 });
           }
           catch (Exception ex) {
-            Log.Warn(TAG, $"GetThumbnail (legacy) failed: {ex.Message}");
+            MH.Utils.Log.Error(ex, $"GetThumbnail (legacy) failed: {ex.Message}");
           }
         }
       }
     }
     catch (Exception ex) {
-      Log.Warn(TAG, $"GetThumbnailBitmap error: {ex}");
+      MH.Utils.Log.Error(ex, $"GetThumbnailBitmap error: {ex}");
     }
 
     return null;
@@ -133,7 +130,7 @@ public static class MediaStoreU {
       }
     }
     catch (Exception ex) {
-      Log.Warn(TAG, $"GetImageId query failed: {ex.Message}");
+      MH.Utils.Log.Error(ex, $"GetImageId query failed: {ex.Message}");
     }
 
     return -1;
@@ -175,9 +172,9 @@ public static class MediaStoreU {
             return (long)(dt.ToUniversalTime() - new DateTime(1970, 1, 1)).TotalMilliseconds;
         }
       }
-      catch (Exception exifEx) {
+      catch (Exception ex) {
         // ignore exif errors and fallback to file times
-        Log.Debug(TAG, $"Exif read failed: {exifEx.Message}");
+        MH.Utils.Log.Error(ex, $"Exif read failed: {ex.Message}");
       }
 
       var fi = new FileInfo(filePath);
@@ -185,7 +182,7 @@ public static class MediaStoreU {
         return (long)(fi.CreationTimeUtc - new DateTime(1970, 1, 1)).TotalMilliseconds;
     }
     catch (Exception ex) {
-      Log.Warn(TAG, $"GetDateTakenMillisSafe error: {ex}");
+      MH.Utils.Log.Error(ex, $"GetDateTakenMillisSafe error: {ex}");
     }
 
     return null;
