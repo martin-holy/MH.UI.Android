@@ -15,16 +15,36 @@ using Path = System.IO.Path;
 namespace MH.UI.Android.Utils;
 
 public static class MediaStoreU {
-  public static async Task<Bitmap?> GetThumbnailBitmapAsync(string filePath, Context context, int targetSize = 512) {
+  public static Task<Bitmap?> GetImageThumbnail(string filePath, Context context, int targetSize = 512) =>
+    _getThumbnail(filePath, context, targetSize, _getImageId, MediaStore.Images.Media.ExternalContentUri,
+      _getLegacyImageThumb, _createLegacyImageValues);
+
+  public static Task<Bitmap?> GetVideoThumbnail(string filePath, Context context, int targetSize = 512) =>
+    _getThumbnail(filePath, context, targetSize, _getVideoId, MediaStore.Video.Media.ExternalContentUri,
+      _getLegacyVideoThumb, _createLegacyVideoValues);
+
+  private static Bitmap? _getLegacyImageThumb(ContentResolver resolver, long id) =>
+    MediaStore.Images.Thumbnails.GetThumbnail(resolver, id, ThumbnailKind.MiniKind, new() { InSampleSize = 1 });
+
+  private static Bitmap? _getLegacyVideoThumb(ContentResolver resolver, long id) =>
+    MediaStore.Video.Thumbnails.GetThumbnail(resolver, id, VideoThumbnailKind.MiniKind, new() { InSampleSize = 1 });
+
+  private static async Task<Bitmap?> _getThumbnail(string filePath, Context context, int targetSize,
+    Func<string, Context, long> getMediaId, global::Android.Net.Uri? collectionUri,
+    Func<ContentResolver, long, Bitmap?> legacyGetThumb,
+    Func<string, ContentValues> createLegacyMediaValues) {
+
+    if (collectionUri == null) return null;
+
     try {
-      var imageId = _getImageId(filePath, context);
+      var mediaId = getMediaId(filePath, context);
 
       // API 29+ path
       if (Build.VERSION.SdkInt >= BuildVersionCodes.Q) {
         var size = new global::Android.Util.Size(targetSize, targetSize);
-        var uri = imageId == -1
+        var uri = mediaId == -1
           ? global::Android.Net.Uri.FromFile(new Java.IO.File(filePath))
-          : ContentUris.WithAppendedId(MediaStore.Images.Media.ExternalContentUri!, imageId);
+          : ContentUris.WithAppendedId(collectionUri, mediaId);
 
         try {
           if (context.ContentResolver?.LoadThumbnail(uri, size, null) is { } bmp)
@@ -45,22 +65,21 @@ public static class MediaStoreU {
       }
       else {
         // API < 29 - legacy flow
-        if (imageId == -1) {
-          var values = _buildMediaStoreContentValuesForLegacyInsert(filePath);
+        if (mediaId == -1) {
+          var values = createLegacyMediaValues(filePath);
           try {
-            context.ContentResolver?.Insert(MediaStore.Images.Media.ExternalContentUri!, values);
+            context.ContentResolver?.Insert(collectionUri, values);
           }
           catch (Exception ex) {
             MH.Utils.Log.Error(ex, $"Insert into MediaStore (legacy) failed: {ex.Message}");
           }
 
-          imageId = _getImageId(filePath, context);
+          mediaId = getMediaId(filePath, context);
         }
 
-        if (imageId != -1) {
+        if (mediaId != -1) {
           try {
-            return MediaStore.Images.Thumbnails.GetThumbnail(
-              context.ContentResolver!, imageId, ThumbnailKind.MiniKind, new() { InSampleSize = 1 });
+            return legacyGetThumb(context.ContentResolver!, mediaId);
           }
           catch (Exception ex) {
             MH.Utils.Log.Error(ex, $"GetThumbnail (legacy) failed: {ex.Message}");
@@ -88,10 +107,10 @@ public static class MediaStoreU {
     return tcs.Task;
   }
 
-  private static ContentValues _buildMediaStoreContentValuesForLegacyInsert(string filePath) {
+  private static ContentValues _createLegacyImageValues(string filePath) {
     var values = new ContentValues();
     values.Put(MediaStore.Images.Media.InterfaceConsts.Data, filePath);
-    values.Put(MediaStore.Images.Media.InterfaceConsts.MimeType, _getMimeType(filePath));
+    values.Put(MediaStore.Images.Media.InterfaceConsts.MimeType, _getMimeType(filePath) ?? "image/*");
     var dt = _getDateTakenMillisSafe(filePath);
     if (dt.HasValue) values.Put(MediaStore.Images.Media.InterfaceConsts.DateTaken, dt.Value);
     var fi = new FileInfo(filePath);
@@ -101,17 +120,48 @@ public static class MediaStoreU {
     return values;
   }
 
-  private static long _getImageId(string filePath, Context context) {
-    if (context.ContentResolver is not { } resolver || MediaStore.Images.Media.ExternalContentUri is not { } uri) return -1;
+  private static ContentValues _createLegacyVideoValues(string filePath) {
+    var values = new ContentValues();
+    values.Put(MediaStore.Video.Media.InterfaceConsts.Data, filePath);
+    values.Put(MediaStore.Video.Media.InterfaceConsts.MimeType, _getMimeType(filePath) ?? "video/*");
+    var dt = _getDateTakenMillisSafe(filePath);
+    if (dt.HasValue) values.Put(MediaStore.Video.Media.InterfaceConsts.DateTaken, dt.Value);
+    var fi = new FileInfo(filePath);
+    values.Put(MediaStore.Video.Media.InterfaceConsts.DateModified, (long)(fi.LastWriteTimeUtc.Subtract(new DateTime(1970, 1, 1)).TotalSeconds));
+    values.Put(MediaStore.Video.Media.InterfaceConsts.Size, fi.Exists ? fi.Length : 0);
+    values.Put(MediaStore.Video.Media.InterfaceConsts.DisplayName, Path.GetFileName(filePath));
+    return values;
+  }
+
+  private static long _getImageId(string filePath, Context context) =>
+  _getMediaId(
+    filePath,
+    context,
+    MediaStore.Images.Media.ExternalContentUri,
+    MediaStore.Images.Media.InterfaceConsts.Id,
+    MediaStore.Images.Media.InterfaceConsts.Data,
+    MediaStore.Images.Media.InterfaceConsts.DisplayName,
+    Build.VERSION.SdkInt >= BuildVersionCodes.Q ? MediaStore.Images.Media.InterfaceConsts.RelativePath : null);
+
+  private static long _getVideoId(string filePath, Context context) =>
+    _getMediaId(
+      filePath,
+      context,
+      MediaStore.Video.Media.ExternalContentUri,
+      MediaStore.Video.Media.InterfaceConsts.Id,
+      MediaStore.Video.Media.InterfaceConsts.Data,
+      MediaStore.Video.Media.InterfaceConsts.DisplayName,
+      Build.VERSION.SdkInt >= BuildVersionCodes.Q ? MediaStore.Video.Media.InterfaceConsts.RelativePath : null);
+
+  private static long _getMediaId(string filePath, Context context, global::Android.Net.Uri? collectionUri,
+    string idColumn, string dataColumn, string displayNameColumn, string? relativePathColumn) {
+
+    if (context.ContentResolver is not { } resolver || collectionUri is null) return -1;
 
     try {
       // 1) try DATA (works pre-29 and often on 29 if provider exposes it)
-      using var dataCursor = resolver.Query(
-        uri,
-        [MediaStore.Images.Media.InterfaceConsts.Id],
-        $"{MediaStore.Images.Media.InterfaceConsts.Data}=?",
-        [filePath],
-        null);
+      using var dataCursor = resolver.Query(collectionUri, [idColumn], $"{dataColumn}=?", [filePath], null);
+
       if (dataCursor != null && dataCursor.MoveToFirst())
         return dataCursor.GetLong(0);
 
@@ -119,9 +169,9 @@ public static class MediaStoreU {
       if (Build.VERSION.SdkInt >= BuildVersionCodes.Q) {
         if (_computeRelativePathUnderExternalStorage(filePath) is { } relativePath) {
           using var pathCursor = resolver.Query(
-            uri,
-            [MediaStore.Images.Media.InterfaceConsts.Id],
-            $"{MediaStore.Images.Media.InterfaceConsts.DisplayName}=? AND {MediaStore.Images.Media.InterfaceConsts.RelativePath}=?",
+            collectionUri,
+            [idColumn],
+            $"{displayNameColumn}=? AND {relativePathColumn}=?",
             [Path.GetFileName(filePath), relativePath],
             null);
           if (pathCursor != null && pathCursor.MoveToFirst())
@@ -130,7 +180,7 @@ public static class MediaStoreU {
       }
     }
     catch (Exception ex) {
-      MH.Utils.Log.Error(ex, $"GetImageId query failed: {ex.Message}");
+      MH.Utils.Log.Error(ex, $"GetMediaId query failed: {ex.Message}");
     }
 
     return -1;
@@ -155,9 +205,8 @@ public static class MediaStoreU {
     }
   }
 
-  private static string _getMimeType(string filePath) =>
-    MimeTypeMap.Singleton?.GetMimeTypeFromExtension(Path.GetExtension(filePath)?.TrimStart('.').ToLowerInvariant())
-    ?? "image/*";
+  private static string? _getMimeType(string filePath) =>
+    MimeTypeMap.Singleton?.GetMimeTypeFromExtension(Path.GetExtension(filePath)?.TrimStart('.').ToLowerInvariant());
 
   private static long? _getDateTakenMillisSafe(string filePath) {
     try {
@@ -199,16 +248,29 @@ public static class MediaStoreU {
 
         if (Build.VERSION.SdkInt < BuildVersionCodes.R) {
           File.Delete(filePath);
+          continue;
+        }
+
+        var isImage = (_getMimeType(filePath) ?? string.Empty).StartsWith("image/");
+        var collection = isImage
+          ? MediaStore.Images.Media.ExternalContentUri
+          : MediaStore.Video.Media.ExternalContentUri;
+        var id = isImage
+          ? _getImageId(filePath, context)
+          : _getVideoId(filePath, context);
+
+        if (id <= 0) {
+          // unknown type or not indexed — try both
+          id = _getImageId(filePath, context);
+          if (id <= 0) id = _getVideoId(filePath, context);
+        }
+
+        if (id > 0) {
+          var uri = ContentUris.WithAppendedId(collection, id);
+          resolver.Delete(uri, null, null);
         }
         else {
-          var imageId = _getImageId(filePath, context);
-          if (imageId > 0) {
-            var uri = ContentUris.WithAppendedId(MediaStore.Images.Media.ExternalContentUri!, imageId);
-            resolver.Delete(uri, null, null);
-          }
-          else {
-            File.Delete(filePath);
-          }
+          File.Delete(filePath);
         }
       }
       catch (Exception ex) {
