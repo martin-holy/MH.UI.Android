@@ -11,12 +11,14 @@ namespace MH.UI.Android.Controls;
 
 public class ZoomAndPanHost : FrameLayout, IZoomAndPanHost {
   private readonly ImageView _imageView;
+  private readonly VideoView _videoView;
   private readonly global::Android.Graphics.Matrix _matrix = new();
   private readonly ScaleGestureDetector _scaleDetector;
   private readonly GestureDetector _gestureDetector;
   private bool _isPanning;
   private bool _isScaling;
   private bool _disposed;
+  private bool _showingVideo;
 
   public ZoomAndPan DataContext { get; }
   double IZoomAndPanHost.Width => Width;
@@ -32,20 +34,53 @@ public class ZoomAndPanHost : FrameLayout, IZoomAndPanHost {
   public ZoomAndPanHost(Context context, ZoomAndPan dataContext) : base(context) {
     DataContext = dataContext;
     dataContext.Host = this;
+
     _imageView = new ImageView(context);
     _imageView.SetScaleType(ImageView.ScaleType.Matrix);
+
+    _videoView = new VideoView(context) { Visibility = ViewStates.Gone };
+    _videoView.SetZOrderOnTop(false);
+
     _scaleDetector = new ScaleGestureDetector(context, new ScaleListener(this));
     _gestureDetector = new GestureDetector(context, new GestureListener(this));
+
     AddView(_imageView, new LayoutParams(LPU.Match, LPU.Match));
+    AddView(_videoView, new LayoutParams(LPU.Match, LPU.Match));
   }
 
-  public void SetImageBitmap(global::Android.Graphics.Bitmap? bitmap) {
+  public void SetImagePath(string? path) {
+    var bitmap = string.IsNullOrEmpty(path)
+      ? null
+      : global::Android.Graphics.BitmapFactory.DecodeFile(path);
+
+    _showingVideo = false;
+    _videoView.Visibility = ViewStates.Gone;
+    _imageView.Visibility = ViewStates.Visible;
+
     var oldBitmap = _imageView.Drawable is BitmapDrawable bd ? bd.Bitmap : null;
     _imageView.SetImageBitmap(bitmap);
     if (oldBitmap?.IsRecycled == false && bitmap != oldBitmap) oldBitmap.Recycle();
   }
 
+  public void SetVideoPath(string? path) {
+    if (string.IsNullOrEmpty(path)) {
+      if (_showingVideo && _videoView.IsPlaying)
+        _videoView.StopPlayback();
+
+      return;
+    }
+
+    _showingVideo = true;
+    _imageView.Visibility = ViewStates.Gone;
+    _videoView.Visibility = ViewStates.Visible;
+
+    _videoView.SetVideoPath(path);
+    _videoView.Start();
+  }
+
   public void UpdateImageTransform() {
+    if (_showingVideo) return; // Skip zoom transform for now
+
     _matrix.SetScale((float)DataContext.ScaleX, (float)DataContext.ScaleY);
     _matrix.PostTranslate((float)DataContext.TransformX, (float)DataContext.TransformY);
     _imageView.ImageMatrix = _matrix;
@@ -53,6 +88,9 @@ public class ZoomAndPanHost : FrameLayout, IZoomAndPanHost {
 
   public override bool OnTouchEvent(MotionEvent? e) {
     if (e == null) return base.OnTouchEvent(e);
+
+    if (_showingVideo) return base.OnTouchEvent(e); // disable zoom/pan on video for now
+
     _scaleDetector.OnTouchEvent(e);
     _gestureDetector.OnTouchEvent(e);
 
@@ -86,7 +124,6 @@ public class ZoomAndPanHost : FrameLayout, IZoomAndPanHost {
     UpdateImageTransform();
   }
 
-  // TODO make animation in ZoomAndPan optional
   public void StartAnimation(double toValue, double duration, bool horizontal, Action onCompleted) {
     // Not implemented (animation skipped)
     onCompleted();
@@ -101,6 +138,7 @@ public class ZoomAndPanHost : FrameLayout, IZoomAndPanHost {
     if (disposing) {
       DataContext.Host = null;
       _imageView.SetImageBitmap(null);
+      _videoView.StopPlayback();
       _matrix.Dispose();
       _scaleDetector.Dispose();
       _gestureDetector.Dispose();
@@ -124,6 +162,8 @@ public class ZoomAndPanHost : FrameLayout, IZoomAndPanHost {
     }
 
     public override bool OnDoubleTap(MotionEvent e) {
+      if (_host._showingVideo) return false; // Skip zoom toggle on video for now
+
       if (_host.DataContext.IsZoomed)
         _host.DataContext.ScaleToFit();
       else
