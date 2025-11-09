@@ -8,7 +8,6 @@ using MH.UI.Controls;
 using MH.Utils;
 using MH.Utils.BaseClasses;
 using MH.Utils.Interfaces;
-using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
@@ -20,16 +19,14 @@ public class TabControlHost : LinearLayout {
   private readonly FrameLayout _tabContent;
   private readonly TabControlHostHeaderAdapter _adapter;
   private readonly Dictionary<IListItem, View> _contentViews = [];
-  private readonly Func<LinearLayout, object?, View?> _getItemView;
   private bool _disposed;
 
   public readonly TabControl DataContext;
   public TreeMenu ItemMenu { get; }
 
-  public TabControlHost(Context context, TabControl dataContext, Func<LinearLayout, object?, View?> getItemView) : base(context) {
+  public TabControlHost(Context context, TabControl dataContext) : base(context) {
     DataContext = dataContext;
     ItemMenu = new TreeMenu(context, _itemMenuFactory);
-    _getItemView = getItemView;
     Orientation = Orientation.Vertical;
     SetBackgroundResource(Resource.Color.c_static_ba);
 
@@ -49,6 +46,8 @@ public class TabControlHost : LinearLayout {
     this.Bind(DataContext, x => x.Selected, (_, _) => _updateContent());
     _updateContent();
   }
+
+  protected virtual View? _getItemView(LinearLayout container, object? item) => null;
 
   protected override void Dispose(bool disposing) {
     if (_disposed) return;
