@@ -4,6 +4,7 @@ using MH.Utils.Extensions;
 using System;
 
 namespace MH.UI.Android.Utils;
+
 public static class ImagingU {
   public static Bitmap? CreateImageThumbnail(string srcPath, int desiredSize) {
     var opts = new BitmapFactory.Options { InJustDecodeBounds = true };
@@ -65,5 +66,45 @@ public static class ImagingU {
     finally {
       retriever.Release();
     }
+  }
+
+  public static Bitmap ApplyOrientation(this Bitmap bitmap, MH.Utils.Imaging.Orientation orientation) {
+    if (orientation == MH.Utils.Imaging.Orientation.Normal) return bitmap;
+
+    var matrix = new Matrix();
+
+    switch (orientation) {
+      case MH.Utils.Imaging.Orientation.Rotate90:
+        matrix.PostRotate(90);
+        break;
+      case MH.Utils.Imaging.Orientation.Rotate180:
+        matrix.PostRotate(180);
+        break;
+      case MH.Utils.Imaging.Orientation.Rotate270:
+        matrix.PostRotate(270);
+        break;
+      case MH.Utils.Imaging.Orientation.FlipHorizontal:
+        matrix.PostScale(-1, 1);
+        break;
+      case MH.Utils.Imaging.Orientation.FlipVertical:
+        matrix.PostScale(1, -1);
+        break;
+      case MH.Utils.Imaging.Orientation.Transpose:
+        matrix.PostRotate(90);
+        matrix.PostScale(-1, 1);
+        break;
+      case MH.Utils.Imaging.Orientation.Transverse:
+        matrix.PostRotate(270);
+        matrix.PostScale(-1, 1);
+        break;
+    }
+
+    if (!matrix.IsIdentity) {
+      var rotated = Bitmap.CreateBitmap(bitmap, 0, 0, bitmap.Width, bitmap.Height, matrix, true);
+      bitmap.Recycle();
+      bitmap = rotated;
+    }
+
+    return bitmap;
   }
 }
