@@ -107,4 +107,17 @@ public static class ImagingU {
 
     return bitmap;
   }
+
+  public static MH.Utils.Imaging.Orientation ConvertOrientationFromAndroidToMH(int orientation) =>
+    orientation switch {
+      (int)global::Android.Media.Orientation.Normal => MH.Utils.Imaging.Orientation.Normal,
+      (int)global::Android.Media.Orientation.Rotate90 => MH.Utils.Imaging.Orientation.Rotate90,
+      (int)global::Android.Media.Orientation.Rotate180 => MH.Utils.Imaging.Orientation.Rotate180,
+      (int)global::Android.Media.Orientation.Rotate270 => MH.Utils.Imaging.Orientation.Rotate270,
+      (int)global::Android.Media.Orientation.FlipHorizontal => MH.Utils.Imaging.Orientation.FlipHorizontal,
+      (int)global::Android.Media.Orientation.FlipVertical => MH.Utils.Imaging.Orientation.FlipVertical,
+      (int)global::Android.Media.Orientation.Transpose => MH.Utils.Imaging.Orientation.Transpose,
+      (int)global::Android.Media.Orientation.Transverse => MH.Utils.Imaging.Orientation.Transverse,
+      _ => MH.Utils.Imaging.Orientation.Normal
+    };
 }
