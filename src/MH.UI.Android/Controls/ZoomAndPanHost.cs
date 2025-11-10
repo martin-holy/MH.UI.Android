@@ -48,7 +48,7 @@ public class ZoomAndPanHost : FrameLayout, IZoomAndPanHost {
     AddView(_videoView, new LayoutParams(LPU.Match, LPU.Match));
   }
 
-  public void SetImagePath(string? path) {
+  public void SetImagePath(string? path, MH.Utils.Imaging.Orientation orientation = MH.Utils.Imaging.Orientation.Normal) {
     var bitmap = string.IsNullOrEmpty(path)
       ? null
       : global::Android.Graphics.BitmapFactory.DecodeFile(path);
@@ -58,7 +58,7 @@ public class ZoomAndPanHost : FrameLayout, IZoomAndPanHost {
     _imageView.Visibility = ViewStates.Visible;
 
     var oldBitmap = _imageView.Drawable is BitmapDrawable bd ? bd.Bitmap : null;
-    _imageView.SetImageBitmap(bitmap);
+    _imageView.SetImageBitmap(bitmap?.ApplyOrientation(orientation));
     if (oldBitmap?.IsRecycled == false && bitmap != oldBitmap) oldBitmap.Recycle();
   }
 
