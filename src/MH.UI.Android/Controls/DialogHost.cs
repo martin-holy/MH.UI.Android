@@ -59,7 +59,7 @@ public class DialogHost : DialogFragment {
     View? view = dataContext switch {
       GroupByDialog gbDlg => new GroupByDialogV(context, gbDlg),
       InputDialog iDlg => new InputDialogV(context, iDlg),
-      MessageDialog => new MessageDialogV(context),
+      MessageDialog mDlg => new MessageDialogV(context, mDlg),
       ToggleDialog => new ToggleDialogV(context),
       _ => null
     };
