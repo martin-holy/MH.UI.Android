@@ -100,6 +100,48 @@ public static class BindingU {
     return checkBox;
   }
 
+  public static RadioGroup BindChecked<TSource, TEnum>(
+    this RadioGroup radioGroup,
+    TSource source,
+    Expression<Func<TSource, TEnum>> property,
+    TEnum[] values)
+    where TSource : class, INotifyPropertyChanged
+    where TEnum : struct, Enum {
+
+    EventHandler<RadioGroup.CheckedChangeEventArgs>? handler = null;
+
+    new ViewBinder<RadioGroup, TEnum>(
+      radioGroup,
+      eh => {
+        handler = (s, e) => {
+          if (radioGroup.FindViewById<RadioButton>(e.CheckedId) is not { } checkedButton) return;
+
+          for (int i = 0; i < values.Length; i++) {
+            var rb = radioGroup.GetChildAt(i) as RadioButton;
+            if (rb?.Id == checkedButton.Id) {
+              eh(s, values[i]);
+              break;
+            }
+          }
+        };
+        radioGroup.CheckedChange += handler;
+      },
+      eh => {
+        if (handler != null) radioGroup.CheckedChange -= handler;
+      },
+      (v, val) => {
+        for (int i = 0; i < values.Length && i < radioGroup.ChildCount; i++) {
+          if (EqualityComparer<TEnum>.Default.Equals(values[i], val)) {
+            if (radioGroup.GetChildAt(i) is RadioButton rb && !rb.Checked) v.Check(rb.Id);
+            break;
+          }
+        }
+      }
+    ).Bind(source, property);
+
+    return radioGroup;
+  }
+
   public static Spinner BindSelected<TSource, TProp, TKey>(
     this Spinner spinner,
     TSource source,
