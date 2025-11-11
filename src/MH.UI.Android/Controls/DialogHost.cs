@@ -57,8 +57,8 @@ public class DialogHost : DialogFragment {
       return dialog.Bind(dataContext);
 
     View? view = dataContext switch {
-      GroupByDialog => new GroupByDialogV(context, (GroupByDialog)dataContext), // this dialog is not cached
-      InputDialog => new InputDialogV(context),
+      GroupByDialog gbDlg => new GroupByDialogV(context, gbDlg),
+      InputDialog iDlg => new InputDialogV(context, iDlg),
       MessageDialog => new MessageDialogV(context),
       ToggleDialog => new ToggleDialogV(context),
       _ => null
