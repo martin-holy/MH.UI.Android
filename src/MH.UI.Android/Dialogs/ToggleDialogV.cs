@@ -15,7 +15,7 @@ public class ToggleDialogV : LinearLayout {
     SetPadding(0, DisplayU.DpToPx(10), 0, DisplayU.DpToPx(10));
     SetGravity(GravityFlags.CenterVertical);
 
-    var icon = new IconView(context).Bind(Res.IconQuestion);
+    var icon = new IconView(context, Res.IconQuestion);
     var item = new IconTextView(context).BindIcon(dataContext.Item!.Icon).BindText(dataContext.Item.Name);
     var message = new TextView(context) { Text = dataContext.Message };
 

@@ -6,7 +6,13 @@ using MH.UI.Android.Utils;
 
 namespace MH.UI.Android.Controls;
 
-public class IconView(Context context) : ImageView(context) {
+public class IconView : ImageView {
+  public IconView(Context context) : base(context) { }
+
+  public IconView(Context context, string? iconName, int? colorId = null) : base(context) {
+    _setDrawable(Icons.GetIcon(Context, iconName), colorId);
+  }
+
   public IconView Bind(string? iconName, int? colorId = null) =>
     _setDrawable(Icons.GetIcon(Context, iconName), colorId);
 

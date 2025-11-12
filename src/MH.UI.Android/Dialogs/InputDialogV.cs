@@ -18,7 +18,7 @@ public sealed class InputDialogV : LinearLayout {
     SetPadding(0, DisplayU.DpToPx(10), 0, DisplayU.DpToPx(10));
     SetGravity(GravityFlags.CenterVertical);
 
-    var icon = new IconView(context).Bind(dataContext.Icon);
+    var icon = new IconView(context, dataContext.Icon);
     var message = new TextView(context) { Text = dataContext.Message };
     var answer = new EditText(context).BindText(dataContext, x => x.Answer);
     answer.RequestFocus();

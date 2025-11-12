@@ -86,7 +86,7 @@ public class DialogHost : DialogFragment {
     titleCloseBtn.SetImageResource(Resource.Drawable.icon_x_close);
 
     titleBar.AddView(
-      new IconView(context).Bind(_dataContext.Icon),
+      new IconView(context, _dataContext.Icon),
       new LinearLayout.LayoutParams(DimensU.IconSize, DimensU.IconSize));
     titleBar.AddView(
       new TextView(context) { Text = _dataContext.Title, TextSize = 18 },
