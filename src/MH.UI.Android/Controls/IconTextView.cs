@@ -31,6 +31,11 @@ public class IconTextView : LinearLayout {
     _textPadding = _text.PaddingLeft;
   }
 
+  public IconTextView(Context context, string? iconName, string text) : this(context) {
+    BindIcon(iconName);
+    BindText(text);
+  }
+
   public IconTextView BindIcon(string? iconName, int? colorId = null) {
     if (!_icon.SetVisibleIf(!string.IsNullOrEmpty(iconName))) return this;
     _icon.Bind(iconName!, colorId);
