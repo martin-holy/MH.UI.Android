@@ -10,22 +10,15 @@ using MH.UI.Android.Utils;
 using MH.UI.Dialogs;
 using MH.Utils;
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
-using Color = Android.Graphics.Color;
 using Dialog = MH.UI.Controls.Dialog;
 
 namespace MH.UI.Android.Controls;
 
-public interface IDialogContentV {
-  public View Bind(Dialog dataContext);
-}
-
 public class DialogHost : DialogFragment {
-  private static FragmentActivity? _currentActivity;
+  private static WeakReference<FragmentActivity>? _activityRef;
   private static Func<Context, Dialog, View?>? _contentViewFactory;
   private static LinearLayout? _notImplementedDialog;
-  private static readonly Dictionary<Type, IDialogContentV> _dialogs = [];
   private readonly Dialog _dataContext;
 
   public DialogHost(Dialog dataContext) {
@@ -34,28 +27,23 @@ public class DialogHost : DialogFragment {
     Cancelable = false;
   }
 
-  public static void Initialize(FragmentActivity activity, Func<Context, Dialog, View?> contentViewFactory) {
-    _currentActivity = activity;
+  public static void Initialize(FragmentActivity activity, Func<Context, Dialog, View?>? contentViewFactory) {
+    _activityRef = new WeakReference<FragmentActivity>(activity);
     _contentViewFactory = contentViewFactory;
   }
 
   public static Task<int> ShowAsync(Dialog dataContext) {
-    if (_currentActivity == null || _contentViewFactory == null)
-      throw new InvalidOperationException("DialogHost not initialized");
+    if (_activityRef == null || !_activityRef.TryGetTarget(out var activity))
+      throw new InvalidOperationException("DialogHost not initialized or Activity no longer valid.");
 
     var fragment = new DialogHost(dataContext);
-    _currentActivity.RunOnUiThread(() => {
-      fragment.Show(_currentActivity.SupportFragmentManager, "dialog");
-    });
+    activity.RunOnUiThread(() =>
+      fragment.Show(activity.SupportFragmentManager, "dialog"));
 
     return dataContext.TaskCompletionSource.Task;
   }
 
   private static View? _getDialog(Context context, Dialog dataContext) {
-    var type = dataContext.GetType();
-    if (_dialogs.TryGetValue(type, out var dialog))
-      return dialog.Bind(dataContext);
-
     View? view = dataContext switch {
       GroupByDialog gbDlg => new GroupByDialogV(context, gbDlg),
       InputDialog iDlg => new InputDialogV(context, iDlg),
@@ -67,11 +55,6 @@ public class DialogHost : DialogFragment {
     view ??= _contentViewFactory?.Invoke(context, dataContext);
     if (view == null) return _getNotImplementedDialog(context, dataContext);
 
-    if (view is IDialogContentV dlg) {
-      _dialogs.Add(type, dlg);
-      dlg.Bind(dataContext);
-    }
-
     return view;
   }
 
@@ -79,7 +62,7 @@ public class DialogHost : DialogFragment {
     var dialog = base.OnCreateDialog(savedInstanceState);
 
     if (dialog.Window is { } window) {
-      window?.SetBackgroundDrawable(new ColorDrawable(Color.Transparent));
+      window?.SetBackgroundDrawable(new ColorDrawable(global::Android.Graphics.Color.Transparent));
       window?.RequestFeature(WindowFeatures.NoTitle);
       window?.DecorView.SetPadding(0, 0, 0, 0);
     }
