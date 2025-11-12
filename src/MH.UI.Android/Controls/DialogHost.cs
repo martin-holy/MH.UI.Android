@@ -60,7 +60,7 @@ public class DialogHost : DialogFragment {
       GroupByDialog gbDlg => new GroupByDialogV(context, gbDlg),
       InputDialog iDlg => new InputDialogV(context, iDlg),
       MessageDialog mDlg => new MessageDialogV(context, mDlg),
-      ToggleDialog => new ToggleDialogV(context),
+      ToggleDialog tDlg => new ToggleDialogV(context, tDlg),
       _ => null
     };
 
