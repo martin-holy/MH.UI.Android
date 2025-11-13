@@ -100,6 +100,39 @@ public static class BindingU {
     return checkBox;
   }
 
+  public static Slider BindProgress<TSource, TProp>(this Slider slider, TSource source, Expression<Func<TSource, TProp>> property)
+    where TSource : class, INotifyPropertyChanged {
+
+    EventHandler<SeekBar.ProgressChangedEventArgs>? handler = null;
+
+    new ViewBinder<Slider, double>(
+      slider,
+      eh => {
+        handler = (s, e) => {
+          var sl = (Slider)s!;
+          if (!e.FromUser) return;
+
+          var value = e.Progress / sl.Scale + sl.MinD;
+          var snapped = Math.Round(value / sl.TickFrequency) * sl.TickFrequency;
+
+          var snappedProgress = (int)Math.Round((snapped - sl.MinD) * sl.Scale);
+          if (snappedProgress != e.Progress) {
+            sl.Progress = snappedProgress;
+            eh(s, snapped);
+          }
+          else {
+            eh(s, snapped);
+          }
+        };
+        slider.ProgressChanged += handler;
+      },
+      eh => { if (handler != null) slider.ProgressChanged -= handler; },
+      (v, val) => v.Progress = (int)Math.Round((val - v.MinD) * v.Scale)
+    ).Bind(source, property);
+
+    return slider;
+  }
+
   public static RadioGroup BindChecked<TSource, TEnum>(
     this RadioGroup radioGroup,
     TSource source,
