@@ -19,10 +19,10 @@ public sealed class GroupByDialogV : LinearLayout {
     groupMode.SetPadding(DimensU.Spacing);
     groupMode.AddView(new RadioButton(context) { Text = "Group by" });
     groupMode.AddView(new RadioButton(context) { Text = "Group by - Then by" });
-    groupMode.BindChecked(dataContext, x => x.GroupMode, [GroupMode.GroupBy, GroupMode.ThenBy]);
+    groupMode.BindChecked(dataContext, x => x.GroupMode, [GroupMode.GroupBy, GroupMode.ThenBy], out _);
 
     AddView(new TreeViewHost(context, dataContext.TreeView, null), new LayoutParams(LPU.Match, DisplayU.DpToPx(300), 1f));
     AddView(groupMode, new LayoutParams(LPU.Wrap, LPU.Wrap));
-    AddView(new CheckBox(context) { Text = "Group recursive" }.BindChecked(dataContext, x => x.IsRecursive));
+    AddView(new CheckBox(context) { Text = "Group recursive" }.BindChecked(dataContext, x => x.IsRecursive, out _));
   }
 }

@@ -7,6 +7,7 @@ using MH.UI.Android.Utils;
 using MH.UI.Controls;
 using MH.Utils;
 using MH.Utils.Interfaces;
+using System;
 
 namespace MH.UI.Android.Controls;
 
@@ -16,7 +17,7 @@ public class TabItemHeaderViewHolder : RecyclerView.ViewHolder {
   private readonly ImageView _icon;
   private readonly TextView _name;
   private readonly CommandBinding _selectItemCommandBinding;
-  private ViewBinder<TextView, string>? _nameBinding;
+  private IDisposable? _nameBinding;
 
   public IListItem? DataContext { get; private set; }
 
@@ -54,8 +55,7 @@ public class TabItemHeaderViewHolder : RecyclerView.ViewHolder {
     _name.Visibility = isTextVisible ? ViewStates.Visible : ViewStates.Gone;
     _name.SetPadding(isIconVisible ? DimensU.Spacing : 0);
     _nameBinding?.Dispose();
-    _nameBinding = new(_name, (v, val) => v.Text = val);
-    _nameBinding.Bind(item, x => x.Name);
+    _name.BindText(item, x => x.Name, x => x, out _nameBinding);
 
     ItemView.Selected = item.IsSelected;
     _selectItemCommandBinding.Parameter = item;

@@ -53,59 +53,75 @@ public static class BindingU {
     this TextView textView,
     TSource source,
     Expression<Func<TSource, TProp>> property,
-    Func<TProp, string> formatter)
+    Func<TProp, string> formatter,
+    out IDisposable? binder)
     where TSource : class, INotifyPropertyChanged {
 
-    new ViewBinder<TextView, string>(
+    binder = new ViewBinder<TextView, string, TSource, TProp>(
       textView,
-      (v, val) => v.Text = formatter((TProp)Convert.ChangeType(val, typeof(TProp))!))
-      .Bind(source, property);
+      (v, val) => v.Text = formatter((TProp)Convert.ChangeType(val, typeof(TProp))!),
+      source,
+      property);
 
     return textView;
   }
 
-  public static EditText BindText<TSource, TProp>(this EditText editText, TSource source, Expression<Func<TSource, TProp>> property)
+  public static EditText BindText<TSource, TProp>(
+    this EditText editText,
+    TSource source,
+    Expression<Func<TSource, TProp>> property,
+    out IDisposable? binder)
     where TSource : class, INotifyPropertyChanged {
 
     EventHandler<TextChangedEventArgs>? handler = null;
 
-    new ViewBinder<EditText, string>(
+    binder = new ViewBinder<EditText, string, TSource, TProp>(
       editText,
       eh => {
         handler = (s, e) => eh(s, e.Text?.ToString() ?? string.Empty);
         editText.TextChanged += handler;
       },
       eh => { if (handler != null) editText.TextChanged -= handler; },
-      (v, val) => { if (!val.Equals(v.Text)) v.Text = val; })
-      .Bind(source, property);
+      (v, val) => { if (!val.Equals(v.Text)) v.Text = val; },
+      source,
+      property);
 
     return editText;
   }
 
-  public static CheckBox BindChecked<TSource, TProp>(this CheckBox checkBox, TSource source, Expression<Func<TSource, TProp>> property)
+  public static CheckBox BindChecked<TSource, TProp>(
+    this CheckBox checkBox,
+    TSource source,
+    Expression<Func<TSource, TProp>> property,
+    out IDisposable? binder)
     where TSource : class, INotifyPropertyChanged {
 
     EventHandler<CompoundButton.CheckedChangeEventArgs>? handler = null;
 
-    new ViewBinder<CheckBox, bool>(
+    binder = new ViewBinder<CheckBox, bool, TSource, TProp>(
       checkBox,
       eh => {
         handler = (s, e) => eh(s, e.IsChecked);
         checkBox.CheckedChange += handler;
       },
       eh => { if (handler != null) checkBox.CheckedChange -= handler; },
-      (v, val) => { if (val != v.Checked) v.Checked = val; })
-      .Bind(source, property);
+      (v, val) => { if (val != v.Checked) v.Checked = val; },
+      source,
+      property);
 
     return checkBox;
   }
 
-  public static Slider BindProgress<TSource, TProp>(this Slider slider, TSource source, Expression<Func<TSource, TProp>> property)
+  public static Slider BindProgress<TSource, TProp>(
+    this Slider slider,
+    TSource source,
+    Expression<Func<TSource, TProp>> property,
+    out IDisposable? binder)
     where TSource : class, INotifyPropertyChanged {
 
     EventHandler<SeekBar.ProgressChangedEventArgs>? handler = null;
 
-    new ViewBinder<Slider, double>(
+    binder = new ViewBinder<Slider, double, TSource, TProp>(
       slider,
       eh => {
         handler = (s, e) => {
@@ -127,8 +143,9 @@ public static class BindingU {
         slider.ProgressChanged += handler;
       },
       eh => { if (handler != null) slider.ProgressChanged -= handler; },
-      (v, val) => v.Progress = (int)Math.Round((val - v.MinD) * v.Scale)
-    ).Bind(source, property);
+      (v, val) => v.Progress = (int)Math.Round((val - v.MinD) * v.Scale),
+      source,
+      property);
 
     return slider;
   }
@@ -137,13 +154,14 @@ public static class BindingU {
     this RadioGroup radioGroup,
     TSource source,
     Expression<Func<TSource, TEnum>> property,
-    TEnum[] values)
+    TEnum[] values,
+    out IDisposable? binder)
     where TSource : class, INotifyPropertyChanged
     where TEnum : struct, Enum {
 
     EventHandler<RadioGroup.CheckedChangeEventArgs>? handler = null;
 
-    new ViewBinder<RadioGroup, TEnum>(
+    binder = new ViewBinder<RadioGroup, TEnum, TSource, TEnum>(
       radioGroup,
       eh => {
         handler = (s, e) => {
@@ -169,8 +187,9 @@ public static class BindingU {
             break;
           }
         }
-      }
-    ).Bind(source, property);
+      },
+      source,
+      property);
 
     return radioGroup;
   }
@@ -179,7 +198,8 @@ public static class BindingU {
     this Spinner spinner,
     TSource source,
     Expression<Func<TSource, TProp>> property,
-    KeyValuePair<TKey, string>[] map)
+    KeyValuePair<TKey, string>[] map,
+    out IDisposable? binder)
     where TSource : class, INotifyPropertyChanged {
 
     EventHandler<AdapterView.ItemSelectedEventArgs>? handler = null;
@@ -188,7 +208,7 @@ public static class BindingU {
     adapter.SetDropDownViewResource(Resource.Layout.spinner_dropdown_item);
     spinner.Adapter = adapter;
 
-    new ViewBinder<Spinner, TKey>(
+    binder = new ViewBinder<Spinner, TKey, TSource, TProp>(
       spinner,
       eh => {
         handler = (s, e) => eh(s, map[e.Position].Key);
@@ -199,8 +219,9 @@ public static class BindingU {
         var index = Array.FindIndex(map, kvp => Equals(kvp.Key, val));
         if (index >= 0 && v.SelectedItemPosition != index)
           v.SetSelection(index);
-      })
-      .Bind(source, property);
+      },
+      source,
+      property);
 
     return spinner;
   }

@@ -20,7 +20,7 @@ public sealed class InputDialogV : LinearLayout {
 
     var icon = new IconView(context, dataContext.Icon);
     var message = new TextView(context) { Text = dataContext.Message };
-    var answer = new EditText(context).BindText(dataContext, x => x.Answer);
+    var answer = new EditText(context).BindText(dataContext, x => x.Answer, out _);
     answer.RequestFocus();
     answer.Bind(dataContext, x => x.Error, (t, error) => {
       t.Hint = dataContext.ErrorMessage; // TODO Find out other way to show error message.
