@@ -18,7 +18,7 @@ public static class Init {
     MH.Utils.Keyboard.IsAltOn = () => false;
     MH.Utils.Keyboard.IsShiftOn = () => false;
 
-    //MH.Utils.Clipboard.SetText = Clipboard.SetText;
+    MH.Utils.Clipboard.SetText = ClipboardU.SetText;
 
     //MH.Utils.Imaging.GetBitmapHashPixels = Imaging.GetBitmapHashPixels;
     //MH.Utils.Imaging.ResizeJpg = Imaging.ResizeJpg;
@@ -27,7 +27,5 @@ public static class Init {
 
     _handler = new(Looper.MainLooper!);
     MH.Utils.Tasks.Dispatch = action => _handler.Post(action);
-
-    //CommandManager.RequerySuggested += RelayCommandBase.RaiseCanExecuteChanged;
   }
 }
