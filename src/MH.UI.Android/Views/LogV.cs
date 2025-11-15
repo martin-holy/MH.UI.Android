@@ -84,6 +84,7 @@ public class LogV : LinearLayout {
       _adapter.Dispose();
       _list.Dispose();
       _dataContext.Items.CollectionChanged -= _onItemsCollectionChanged;
+      _wrapText.CheckedChange -= _wrapTextCheckedChange;
     }
     _disposed = true;
     base.Dispose(disposing);
