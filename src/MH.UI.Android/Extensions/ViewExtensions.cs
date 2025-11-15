@@ -1,5 +1,4 @@
 ﻿using Android.Views;
-using Android.Widget;
 using System;
 
 namespace MH.UI.Android.Extensions;
@@ -16,27 +15,6 @@ public static class ViewExtensions {
 
     view.Visibility = ifNot;
     return false;
-  }
-
-  public static T SetGridPosition<T>(this T view, GridLayout.Spec? rowSpec, GridLayout.Spec? columnSpec, GravityFlags? gravity = null) where T : View {
-    var newLp = view.LayoutParameters is ViewGroup.MarginLayoutParams mlp
-      ? new GridLayout.LayoutParams(rowSpec, columnSpec) {
-        Width = mlp.Width,
-        Height = mlp.Height,
-        LeftMargin = mlp.LeftMargin,
-        TopMargin = mlp.TopMargin,
-        RightMargin = mlp.RightMargin,
-        BottomMargin = mlp.BottomMargin
-      }
-      : new GridLayout.LayoutParams(rowSpec, columnSpec) {
-        Width = view.LayoutParameters?.Width ?? ViewGroup.LayoutParams.WrapContent,
-        Height = view.LayoutParameters?.Height ?? ViewGroup.LayoutParams.WrapContent
-      };
-
-    if (gravity != null) newLp.SetGravity((GravityFlags)gravity);
-    view.LayoutParameters = newLp;
-
-    return view;
   }
 
   public static T WithClickAction<T, TOwner>(this T view, TOwner owner, Action<TOwner, T> action)
