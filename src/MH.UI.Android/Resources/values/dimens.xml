@@ -1,7 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?> 
 <resources>
   <dimen name="flat_tree_item_indent_size">16dp</dimen>
-  <dimen name="general_padding">4dp</dimen>
 	<dimen name="spacing">4dp</dimen>
   <dimen name="icon_size">24dp</dimen>
   <dimen name="icon_button_size">32dp</dimen>

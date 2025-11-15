@@ -16,23 +16,23 @@
   
   <style name="mh_EditText" parent="android:Widget.EditText">
     <item name="android:background">@drawable/view_border</item>
-    <item name="android:paddingStart">@dimen/general_padding</item>
-    <item name="android:paddingTop">@dimen/general_padding</item>
-    <item name="android:paddingEnd">@dimen/general_padding</item>
-    <item name="android:paddingBottom">@dimen/general_padding</item>
+    <item name="android:paddingStart">@dimen/spacing</item>
+    <item name="android:paddingTop">@dimen/spacing</item>
+    <item name="android:paddingEnd">@dimen/spacing</item>
+    <item name="android:paddingBottom">@dimen/spacing</item>
     <item name="android:textColor">@color/c_static_fo</item>
   </style>
   
   <style name="mh_ImageButton" parent="android:Widget.ImageButton">
     <item name="android:background">@drawable/image_button_background</item>
-    <item name="android:padding">@dimen/general_padding</item>
+    <item name="android:padding">@dimen/spacing</item>
     <item name="android:gravity">center</item>
   </style>
 
 	<style name="mh_DialogButton" parent="android:Widget.Button">
 		<item name="android:background">@drawable/button_background</item>
 		<item name="android:minWidth">48dp</item>
-		<item name="android:padding">@dimen/general_padding</item>
+		<item name="android:padding">@dimen/spacing</item>
 		<item name="android:textColor">@drawable/color_foreground</item>
 	</style>
 
@@ -70,7 +70,7 @@
     <item name="android:layout_width">wrap_content</item>
     <item name="android:layout_height">wrap_content</item>
     <item name="android:textColor">@drawable/color_foreground</item>
-    <item name="android:padding">@dimen/general_padding</item>
+    <item name="android:padding">@dimen/spacing</item>
   </style>
   
   <style name="mh_CheckBox" parent="android:Widget.CompoundButton.CheckBox">
@@ -81,7 +81,7 @@
   <style name="mh_RadioButton" parent="android:Widget.CompoundButton.RadioButton">
     <item name="android:button">@drawable/radio_button_selector</item>
     <item name="android:background">@null</item>
-    <item name="android:padding">@dimen/general_padding</item>
+    <item name="android:padding">@dimen/spacing</item>
   </style>
   
   <style name="mh_IconButton" parent="mh_ImageButton">
