@@ -1,5 +1,6 @@
 ﻿using Android.Graphics;
 using Android.Media;
+using Android.OS;
 using MH.Utils.Extensions;
 using System;
 
@@ -12,11 +13,30 @@ public static class ImagingU {
     var max = Math.Max(opts.OutWidth, opts.OutHeight);
     if (max <= 0) throw new BadImageFormatException();
 
-    var inSample = 1;
-    while (max / (inSample * 2) >= desiredSize) inSample *= 2;
-
-    var decodeOpts = new BitmapFactory.Options { InSampleSize = inSample, InPreferredConfig = Bitmap.Config.Rgb565 };
+    var decodeOpts = new BitmapFactory.Options {
+      InSampleSize = _calculateSampleSize(max, desiredSize),
+      InPreferredConfig = Bitmap.Config.Rgb565
+    };
     return BitmapFactory.DecodeFile(srcPath, decodeOpts);
+  }
+
+  public static Bitmap? CreateImageRegionThumbnail(string srcPath, int x, int y, int size, int desiredSize) {
+    using var decoder = Build.VERSION.SdkInt < BuildVersionCodes.S
+      ? BitmapRegionDecoder.NewInstance(srcPath, false)
+      : BitmapRegionDecoder.NewInstance(srcPath)
+      ?? throw new Exception("Failed to create region decoder.");
+
+    var decodeOpts = new BitmapFactory.Options {
+      InSampleSize = _calculateSampleSize(size, desiredSize),
+      InPreferredConfig = Bitmap.Config.Rgb565
+    };
+    var region = new Rect(x, y, x + size, y + size);
+    if (decoder.DecodeRegion(region, decodeOpts) is not { } cropped) return null;
+
+    var resized = Bitmap.CreateScaledBitmap(cropped, desiredSize, desiredSize, true);
+    cropped.Dispose();
+
+    return resized;
   }
 
   public static Bitmap? CreateVideoThumbnail(string srcPath, int desiredSize) {
@@ -120,4 +140,11 @@ public static class ImagingU {
       (int)global::Android.Media.Orientation.Transverse => MH.Utils.Imaging.Orientation.Transverse,
       _ => MH.Utils.Imaging.Orientation.Normal
     };
+
+  private static int _calculateSampleSize(int srcSize, int desiredSize) {
+    int sample = 1;
+    while (srcSize / (sample * 2) >= desiredSize)
+      sample *= 2;
+    return sample;
+  }
 }
