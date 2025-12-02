@@ -23,7 +23,7 @@ public class DialogHost : DialogFragment {
 
   public DialogHost(Dialog dataContext) {
     _dataContext = dataContext;
-    this.Bind(dataContext, x => x.Result, (_, _) => Dismiss(), false);
+    this.Bind(dataContext, nameof(UI.Controls.Dialog.Result), x => x.Result, (_, _) => Dismiss(), false);
     Cancelable = false;
   }
 

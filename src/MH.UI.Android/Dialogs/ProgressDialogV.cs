@@ -16,12 +16,11 @@ public class ProgressDialogV : LinearLayout {
     SetGravity(GravityFlags.CenterVertical);
 
     var progress = new ProgressBar(context) { Max = dataContext.ProgressMax };
-    var text = new TextView(context);
-
-    progress.Bind(dataContext, x => x.ProgressValue, (t, p) => t.Progress = p);
-    text.Bind(dataContext, x => x.ProgressText, (t, p) => t.Text = p);
+    progress.Bind(dataContext, nameof(dataContext.ProgressValue), x => x.ProgressValue, (s, v) => s.Progress = v);
 
     AddView(progress, new LayoutParams(LPU.Match, LPU.Wrap).WithDpMargin(6, 0, 6, 0));
-    AddView(text, new LayoutParams(LPU.Wrap, LPU.Wrap).WithDpMargin(0, 0, 0, 6));
+    AddView(new TextView(context)
+      .BindText(dataContext, nameof(IProgressDialog.ProgressText), x => x.ProgressText, x => x ?? string.Empty, out var _),
+      new LayoutParams(LPU.Wrap, LPU.Wrap).WithDpMargin(0, 0, 0, 6));
   }
 }

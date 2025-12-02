@@ -42,8 +42,8 @@ public class TabControlHost : LinearLayout {
     AddView(_tabHeaders, new LayoutParams(LPU.Match, LPU.Wrap));
     AddView(_tabContent, new LayoutParams(LPU.Match, 0, 1));
 
-    this.Bind(DataContext.Tabs, (_, e) => _onTabsChanged(null, e));
-    this.Bind(DataContext, x => x.Selected, (_, _) => _updateContent());
+    this.Bind(DataContext, nameof(TabControl.Tabs), x => x.Tabs, (_, _, e) => _onTabsChanged(null, e));
+    this.Bind(DataContext, nameof(TabControl.Selected), x => x.Selected, (_, _) => _updateContent());
     _updateContent();
   }
 

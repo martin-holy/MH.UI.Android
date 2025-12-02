@@ -20,17 +20,17 @@ public sealed class InputDialogV : LinearLayout {
 
     var icon = new IconView(context, dataContext.Icon);
     var message = new TextView(context) { Text = dataContext.Message };
-    var answer = new EditText(context).BindText(dataContext, x => x.Answer, out _);
+    var answer = new EditText(context).BindText(dataContext, nameof(InputDialog.Answer), x => x.Answer, (s, v) => s.Answer = v, out _);
     answer.RequestFocus();
-    answer.Bind(dataContext, x => x.Error, (t, error) => {
-      t.Hint = dataContext.ErrorMessage; // TODO Find out other way to show error message.
-      if (t.Background == null) return;
+    answer.Bind(dataContext, nameof(InputDialog.Error), x => x.Error, (s, error) => {
+      s.Hint = dataContext.ErrorMessage; // TODO Find out other way to show error message.
+      if (s.Background == null) return;
       if (error)
-        t.Background!.SetColorFilter(new PorterDuffColorFilter(
+        s.Background!.SetColorFilter(new PorterDuffColorFilter(
           new Color(ContextCompat.GetColor(Context, Resource.Color.c_input_error)),
           PorterDuff.Mode.SrcAtop!));
       else
-        t.Background!.ClearColorFilter();
+        s.Background!.ClearColorFilter();
     });
 
     var messageAndAnswer = new LinearLayout(context) { Orientation = Orientation.Vertical };

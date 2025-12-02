@@ -34,8 +34,8 @@ public class SlidePanelsGridHost : LinearLayout {
     Orientation = Orientation.Vertical;
     SetBackgroundResource(Resource.Color.c_static_ba);
 
-    this.Bind(dataContext.PanelTop, x => x.IsPinned, (v, p) => v._panelTop.Visibility = p ? ViewStates.Visible : ViewStates.Gone);
-    this.Bind(dataContext.PanelBottom, x => x.IsPinned, (v, p) => v._panelBottom.Visibility = p ? ViewStates.Visible : ViewStates.Gone);
+    this.Bind(dataContext.PanelTop, nameof(SlidePanel.IsPinned), x => x.IsPinned, (v, p) => v._panelTop.Visibility = p ? ViewStates.Visible : ViewStates.Gone);
+    this.Bind(dataContext.PanelBottom, nameof(SlidePanel.IsPinned), x => x.IsPinned, (v, p) => v._panelBottom.Visibility = p ? ViewStates.Visible : ViewStates.Gone);
 
     AddView(top, new LayoutParams(LPU.Match, LPU.Wrap));
     AddView(_viewPager, new LayoutParams(LPU.Match, 0, 1f));

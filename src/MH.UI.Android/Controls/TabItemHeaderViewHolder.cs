@@ -55,7 +55,7 @@ public class TabItemHeaderViewHolder : RecyclerView.ViewHolder {
     _name.Visibility = isTextVisible ? ViewStates.Visible : ViewStates.Gone;
     _name.SetPadding(isIconVisible ? DimensU.Spacing : 0);
     _nameBinding?.Dispose();
-    _name.BindText(item, x => x.Name, x => x, out _nameBinding);
+    _name.BindText(item, nameof(IListItem.Name), x => x.Name, x => x, out _nameBinding);
 
     ItemView.Selected = item.IsSelected;
     _selectItemCommandBinding.Parameter = item;
