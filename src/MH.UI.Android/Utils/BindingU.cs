@@ -122,20 +122,13 @@ public static class BindingU {
       (target, v) => target.Progress = (int)Math.Round((v - target.MinD) * target.Scale),
       eh => {
         handler = (s, e) => {
-          var sl = (Slider)s!;
           if (!e.FromUser) return;
-
+          var sl = (Slider)s!;
           var value = e.Progress / sl.Scale + sl.MinD;
           var snapped = Math.Round(value / sl.TickFrequency) * sl.TickFrequency;
-
           var snappedProgress = (int)Math.Round((snapped - sl.MinD) * sl.Scale);
-          if (snappedProgress != e.Progress) {
-            sl.Progress = snappedProgress;
-            eh(s, snapped);
-          }
-          else {
-            eh(s, snapped);
-          }
+          if (snappedProgress != e.Progress) sl.Progress = snappedProgress;
+          eh(s, snapped);
         };
         slider.ProgressChanged += handler;
       },
