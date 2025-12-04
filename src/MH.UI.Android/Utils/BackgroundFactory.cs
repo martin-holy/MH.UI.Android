@@ -12,7 +12,7 @@ public static class BackgroundFactory {
   public static GradientDrawable Create(int fillResId, int strokeColorResId, int strokeWidthResId, int cornerRadiusResId) {
     var key = $"{fillResId}|{strokeColorResId}|{strokeWidthResId}|{cornerRadiusResId}";
 
-    return _cache.GetOrAdd(key, _ => {
+    var bg = _cache.GetOrAdd(key, _ => {
       var fill = new Color(ContextCompat.GetColor(Application.Context, fillResId));
       var stroke = new Color(ContextCompat.GetColor(Application.Context, strokeColorResId));
       var strokeWidth = (int)Application.Context.Resources.GetDimension(strokeWidthResId);
@@ -24,8 +24,14 @@ public static class BackgroundFactory {
       if (cornerRadiusResId > 0)
         shape.SetCornerRadius(Application.Context.Resources.GetDimension(cornerRadiusResId));
 
-      return shape;
+      return (GradientDrawable)shape.Mutate();
     });
+
+    var state = bg.GetConstantState();
+    var clone = state != null ? state.NewDrawable() : bg;
+    clone = clone.Mutate();
+
+    return (GradientDrawable)clone;
   }
 
   public static GradientDrawable Dark() =>
