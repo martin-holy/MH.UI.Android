@@ -8,57 +8,82 @@ using System.Collections.Generic;
 namespace MH.UI.Android.Controls;
 
 public class LoopPager : ViewGroup {
-  private int _current = 0;
-  private int _visibleIndex = 1;
+  private int _visibleIndex = 0;
   private float _downX;
   private int _scrollStartX;
   private int _pageWidth;
   private readonly OverScroller _scroller;
   private readonly int _touchSlop;
-  private bool _userInputEnabled = true;
   readonly List<View> _pages;
 
-  public bool UserInputEnabled {
-    get => _userInputEnabled;
-    set => _userInputEnabled = value;
-  }
+  public bool UserInputEnabled { get; set; } = true;
 
   public LoopPager(Context context, List<View> pages) : base(context) {
     _pages = pages;
     _scroller = new OverScroller(context);
-    _touchSlop = ViewConfiguration.Get(context).ScaledTouchSlop;
-    ChildrenDrawingOrderEnabled = true;
+    _touchSlop = ViewConfiguration.Get(context)!.ScaledTouchSlop;
+
+    foreach (var page in _pages)
+      AddView(page, new LayoutParams(LPU.Match, LPU.Match));
+
+    _visibleIndex = 0;
     _reorderChildren();
+    _scrollToVisibleIndex();
+  }
+
+  public int GetCurrentItem() =>
+    _pages.IndexOf(GetChildAt(_visibleIndex)!);
+
+  public void SetCurrentItem(int index, bool smoothScroll) {
+    var newVisibleIndex = _indexToVisibleIndex(index);
+    if (_visibleIndex == newVisibleIndex) return;
+
+    int oldScroll = ScrollX;
+    _visibleIndex = newVisibleIndex;
+    _reorderChildren();
+
+    if (smoothScroll) {
+      _scroller.StartScroll(oldScroll, 0, _visibleIndex * _pageWidth - oldScroll, 0, 300);
+      PostInvalidateOnAnimation();
+    }
+    else
+      _scrollToVisibleIndex();
+  }
+
+  private void _scrollToVisibleIndex() =>
+    ScrollTo(_visibleIndex * _pageWidth, 0);
+
+  private int _indexToVisibleIndex(int index) {
+    var page = _pages[index];
+
+    for (int i = 0; i < ChildCount; i++)
+      if (ReferenceEquals(page, GetChildAt(i)))
+        return i;
+
+    throw new IndexOutOfRangeException();
+  }
+
+  private void _reorderChildren() {
+    int count = _pages.Count;
+    if (count == 0) return;
+
+    if (_visibleIndex > 0 && _visibleIndex < count - 1) return;
+
+    if (_visibleIndex == 0 && GetChildAt(ChildCount - 1) is { } last) {
+      RemoveViewAt(ChildCount - 1);
+      AddView(last, 0);
+      _visibleIndex++;
+    }
+    else if (_visibleIndex == count - 1 && GetChildAt(0) is { } first) {
+      RemoveViewAt(0);
+      AddView(first);
+      _visibleIndex--;
+    }
   }
 
   protected override void OnSizeChanged(int w, int h, int oldw, int oldh) {
     base.OnSizeChanged(w, h, oldw, oldh);
     _pageWidth = w;
-    _reorderChildren();
-  }
-
-  public void SetCurrentItem(int item, bool smoothScroll) {
-    int count = _pages.Count;
-    if (count == 0) return;
-
-    if (item < 0)
-      item = count - 1;
-    else if (item >= count)
-      item = 0;
-
-    if (item == _current) return;
-
-    int oldScroll = ScrollX;
-    _current = item;
-    _reorderChildren();
-
-    if (!smoothScroll) {
-      ScrollTo(_visibleIndex * _pageWidth, 0);
-    }
-    else {
-      _scroller.StartScroll(oldScroll, 0, _visibleIndex * _pageWidth - oldScroll, 0, 300);
-      PostInvalidateOnAnimation();
-    }
   }
 
   protected override void OnMeasure(int widthMeasureSpec, int heightMeasureSpec) {
@@ -80,11 +105,11 @@ public class LoopPager : ViewGroup {
       int left = i * _pageWidth;
       GetChildAt(i)!.Layout(left, 0, left + _pageWidth, MeasuredHeight);
     }
-    ScrollTo(_visibleIndex * _pageWidth, 0);
+    _scrollToVisibleIndex();
   }
 
   public override bool OnInterceptTouchEvent(MotionEvent? ev) {
-    if (ev == null || !_userInputEnabled) return false;
+    if (ev == null || !UserInputEnabled) return false;
 
     switch (ev.ActionMasked) {
       case MotionEventActions.Down:
@@ -93,8 +118,7 @@ public class LoopPager : ViewGroup {
         return false;
       case MotionEventActions.Move:
         float dx = Math.Abs(ev.GetX() - _downX);
-        if (dx > _touchSlop)
-          return true;
+        if (dx > _touchSlop) return true;
         break;
     }
 
@@ -102,7 +126,7 @@ public class LoopPager : ViewGroup {
   }
 
   public override bool OnTouchEvent(MotionEvent? ev) {
-    if (ev == null || !_userInputEnabled) return false;
+    if (ev == null || !UserInputEnabled) return false;
 
     switch (ev.ActionMasked) {
       case MotionEventActions.Down:
@@ -116,65 +140,21 @@ public class LoopPager : ViewGroup {
 
       case MotionEventActions.Up:
       case MotionEventActions.Cancel:
-        _finishSwipe();
+        float pageOffset = (float)ScrollX / MeasuredWidth;
+
+        if (pageOffset > _visibleIndex + 0.3f) {
+          _visibleIndex++;
+          _reorderChildren();
+        } else if (pageOffset < _visibleIndex - 0.3f) {
+          _visibleIndex--;
+          _reorderChildren();
+        }
+
+        _scrollToVisibleIndex();
         return true;
     }
 
     return false;
-  }
-
-  private void _finishSwipe() {
-    int w = MeasuredWidth;
-    float pageOffset = (float)ScrollX / w;
-
-    int target = _current;
-
-    if (pageOffset > _visibleIndex + 0.3f)
-      target = (_current + 1) % _pages.Count;
-    else if (pageOffset < _visibleIndex - 0.3f)
-      target = (_current - 1 + _pages.Count) % _pages.Count;
-
-    _current = target;
-    _reorderChildren();
-  }
-
-  private void _reorderChildren() {
-    int count = _pages.Count;
-    if (count == 0) return;
-
-    RemoveAllViews();
-
-    if (count == 1) {
-      AddView(_pages[_current], new LayoutParams(LPU.Match, LPU.Match));
-      _visibleIndex = 0;
-    }
-    else if (count == 2) {
-      int right = (_current + 1) % count;
-      AddView(_pages[_current], new LayoutParams(LPU.Match, LPU.Match));
-      AddView(_pages[right], new LayoutParams(LPU.Match, LPU.Match));
-      _visibleIndex = 0;
-    }
-    else {
-      int left = (_current - 1 + count) % count;
-      int right = (_current + 1) % count;
-      AddView(_pages[left], new LayoutParams(LPU.Match, LPU.Match));
-      AddView(_pages[_current], new LayoutParams(LPU.Match, LPU.Match));
-      AddView(_pages[right], new LayoutParams(LPU.Match, LPU.Match));
-      _visibleIndex = 1;
-    }
-
-    // Force measure and layout so all children render
-    Measure(
-      MeasureSpec.MakeMeasureSpec(MeasuredWidth, MeasureSpecMode.Exactly),
-      MeasureSpec.MakeMeasureSpec(MeasuredHeight, MeasureSpecMode.Exactly)
-    );
-
-    for (int i = 0; i < ChildCount; i++) {
-      int left = i * MeasuredWidth;
-      GetChildAt(i)!.Layout(left, 0, left + MeasuredWidth, MeasuredHeight);
-    }
-
-    ScrollTo(_visibleIndex * _pageWidth, 0);
   }
 
   public override void ComputeScroll() {
@@ -182,9 +162,5 @@ public class LoopPager : ViewGroup {
       ScrollTo(_scroller.CurrX, _scroller.CurrY);
       PostInvalidateOnAnimation();
     }
-  }
-
-  protected override int GetChildDrawingOrder(int childCount, int i) {
-    return i;
   }
 }
