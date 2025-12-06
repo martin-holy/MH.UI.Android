@@ -4,8 +4,31 @@
     <TargetFramework>net9.0-android</TargetFramework>
     <Nullable>enable</Nullable>
     <ApplicationId>cz.martinholy.mh.ui.android</ApplicationId>
-    <Authors>Martin Holý</Authors>
-    <Copyright>Martin Holý</Copyright>
+		
+		<Authors>Martin Holý</Authors>
+		<Company>Martin Holý</Company>
+		<Copyright>Martin Holý</Copyright>
+
+		<RunAnalyzersDuringBuild>False</RunAnalyzersDuringBuild>
+		<RunAnalyzersDuringLiveAnalysis>False</RunAnalyzersDuringLiveAnalysis>
+		<EnableNETAnalyzers>True</EnableNETAnalyzers>
+
+		<!-- Package info for NuGet -->
+		<PackageId>MH.UI.Android</PackageId>
+		<Description>
+			Android-based library that extends the platform-independent MH.UI library by integrating it with Android and providing additional utility classes, controls and resources.
+		</Description>
+		<PackageTags>UI, controls, dialogs, media, zoom, pan, TreeView, CollectionView, TabControl, Slider, LoopPager, TreeMenu, WrapLayout, Binding, MVVM</PackageTags>
+		<PackageLicenseExpression>CC0-1.0</PackageLicenseExpression>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<RepositoryUrl>https://github.com/martin-holy/MH.UI.Android</RepositoryUrl>
+
+		<Version>1.0.0</Version>
+		<AssemblyVersion>1.0.0.0</AssemblyVersion>
+		<FileVersion>1.0.0.0</FileVersion>
+
+		<IncludeSymbols>true</IncludeSymbols>
+		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
 
   <ItemGroup>
