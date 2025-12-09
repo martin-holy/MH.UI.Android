@@ -210,4 +210,16 @@ public static class BindingU {
 
     return spinner;
   }
+
+  public static TTarget BindVisibility<TTarget, TSource>(
+    this TTarget view,
+    TSource source,
+    string propertyName,
+    Func<TSource, bool> getter)
+    where TTarget : View
+    where TSource : class, INotifyPropertyChanged {
+
+    view.Bind(source, propertyName, getter, (t, p) => t.Visibility = p ? ViewStates.Visible : ViewStates.Gone);
+    return view;
+  }
 }
