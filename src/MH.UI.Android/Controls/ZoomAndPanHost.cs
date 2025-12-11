@@ -30,6 +30,7 @@ public class ZoomAndPanHost : FrameLayout, IZoomAndPanHost {
   public event EventHandler? HostMouseUpEvent;
   public event EventHandler<(int, PointD)>? HostMouseWheelEvent;
   public event EventHandler? SingleTapConfirmedEvent;
+  public event EventHandler? ImageTransformUpdatedEvent;
 
   public ZoomAndPanHost(Context context, ZoomAndPan dataContext) : base(context) {
     DataContext = dataContext;
@@ -84,6 +85,8 @@ public class ZoomAndPanHost : FrameLayout, IZoomAndPanHost {
     _matrix.SetScale((float)DataContext.ScaleX, (float)DataContext.ScaleY);
     _matrix.PostTranslate((float)DataContext.TransformX, (float)DataContext.TransformY);
     _imageView.ImageMatrix = _matrix;
+
+    ImageTransformUpdatedEvent?.Invoke(this, EventArgs.Empty);
   }
 
   public override bool OnTouchEvent(MotionEvent? e) {
