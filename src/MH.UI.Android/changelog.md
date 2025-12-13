@@ -1,5 +1,8 @@
-1.1.0-preview.1:
- - [N] BindingU: BindVisibility
+1.1.0:
+	- [N] BindingU: BindVisibility
+	- [N] ZoomAndPanHost: ImageTransformUpdatedEvent
+	- [N] Colors: c_transparent
+	- [N] BackgroundFactory: Create with shadow
 
-1.0.0-preview.1:
- - initial release
+1.0.0:
+	- initial release
