@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Windows.Input;
 
 namespace MH.UI.Android.Utils;
@@ -221,5 +222,190 @@ public static class BindingU {
 
     view.Bind(source, propertyName, getter, (t, p) => t.Visibility = p ? ViewStates.Visible : ViewStates.Gone);
     return view;
+  }
+
+  /* Obsolete */
+
+  [Obsolete]
+  public static TextView BindText<TSource, TProp>(
+    this TextView textView,
+    TSource source,
+    Expression<Func<TSource, TProp>> property,
+    Func<TProp, string> formatter,
+    out IDisposable? binder)
+    where TSource : class, INotifyPropertyChanged {
+
+    binder = new ViewBinder<TextView, TSource, TProp, string>(
+      textView,
+      (v, val) => v.Text = formatter((TProp)Convert.ChangeType(val, typeof(TProp))!),
+      source,
+      property);
+
+    return textView;
+  }
+
+  [Obsolete]
+  public static EditText BindText<TSource, TProp>(
+    this EditText editText,
+    TSource source,
+    Expression<Func<TSource, TProp>> property,
+    out IDisposable? binder)
+    where TSource : class, INotifyPropertyChanged {
+
+    EventHandler<TextChangedEventArgs>? handler = null;
+
+    binder = new ViewBinder<EditText, TSource, TProp, string>(
+      editText,
+      eh => {
+        handler = (s, e) => eh(s, e.Text?.ToString() ?? string.Empty);
+        editText.TextChanged += handler;
+      },
+      eh => { if (handler != null) editText.TextChanged -= handler; },
+      (v, val) => { if (!val.Equals(v.Text)) v.Text = val; },
+      source,
+      property);
+
+    return editText;
+  }
+
+  [Obsolete]
+  public static CheckBox BindChecked<TSource, TProp>(
+    this CheckBox checkBox,
+    TSource source,
+    Expression<Func<TSource, TProp>> property,
+    out IDisposable? binder)
+    where TSource : class, INotifyPropertyChanged {
+
+    EventHandler<CompoundButton.CheckedChangeEventArgs>? handler = null;
+
+    binder = new ViewBinder<CheckBox, TSource, TProp, bool>(
+      checkBox,
+      eh => {
+        handler = (s, e) => eh(s, e.IsChecked);
+        checkBox.CheckedChange += handler;
+      },
+      eh => { if (handler != null) checkBox.CheckedChange -= handler; },
+      (v, val) => { if (val != v.Checked) v.Checked = val; },
+      source,
+      property);
+
+    return checkBox;
+  }
+
+  [Obsolete]
+  public static Slider BindProgress<TSource, TProp>(
+    this Slider slider,
+    TSource source,
+    Expression<Func<TSource, TProp>> property,
+    out IDisposable? binder)
+    where TSource : class, INotifyPropertyChanged {
+
+    EventHandler<SeekBar.ProgressChangedEventArgs>? handler = null;
+
+    binder = new ViewBinder<Slider, TSource, TProp, double>(
+      slider,
+      eh => {
+        handler = (s, e) => {
+          var sl = (Slider)s!;
+          if (!e.FromUser) return;
+
+          var value = e.Progress / sl.Scale + sl.MinD;
+          var snapped = Math.Round(value / sl.TickFrequency) * sl.TickFrequency;
+
+          var snappedProgress = (int)Math.Round((snapped - sl.MinD) * sl.Scale);
+          if (snappedProgress != e.Progress) {
+            sl.Progress = snappedProgress;
+            eh(s, snapped);
+          }
+          else {
+            eh(s, snapped);
+          }
+        };
+        slider.ProgressChanged += handler;
+      },
+      eh => { if (handler != null) slider.ProgressChanged -= handler; },
+      (v, val) => v.Progress = (int)Math.Round((val - v.MinD) * v.Scale),
+      source,
+      property);
+
+    return slider;
+  }
+
+  [Obsolete]
+  public static RadioGroup BindChecked<TSource, TEnum>(
+    this RadioGroup radioGroup,
+    TSource source,
+    Expression<Func<TSource, TEnum>> property,
+    TEnum[] values,
+    out IDisposable? binder)
+    where TSource : class, INotifyPropertyChanged
+    where TEnum : struct, Enum {
+
+    EventHandler<RadioGroup.CheckedChangeEventArgs>? handler = null;
+
+    binder = new ViewBinder<RadioGroup, TSource, TEnum, TEnum>(
+      radioGroup,
+      eh => {
+        handler = (s, e) => {
+          if (radioGroup.FindViewById<RadioButton>(e.CheckedId) is not { } checkedButton) return;
+
+          for (int i = 0; i < values.Length; i++) {
+            var rb = radioGroup.GetChildAt(i) as RadioButton;
+            if (rb?.Id == checkedButton.Id) {
+              eh(s, values[i]);
+              break;
+            }
+          }
+        };
+        radioGroup.CheckedChange += handler;
+      },
+      eh => {
+        if (handler != null) radioGroup.CheckedChange -= handler;
+      },
+      (v, val) => {
+        for (int i = 0; i < values.Length && i < radioGroup.ChildCount; i++) {
+          if (EqualityComparer<TEnum>.Default.Equals(values[i], val)) {
+            if (radioGroup.GetChildAt(i) is RadioButton rb && !rb.Checked) v.Check(rb.Id);
+            break;
+          }
+        }
+      },
+      source,
+      property);
+
+    return radioGroup;
+  }
+
+  [Obsolete]
+  public static Spinner BindSelected<TSource, TProp, TKey>(
+    this Spinner spinner,
+    TSource source,
+    Expression<Func<TSource, TProp>> property,
+    KeyValuePair<TKey, string>[] map,
+    out IDisposable? binder)
+    where TSource : class, INotifyPropertyChanged {
+
+    EventHandler<AdapterView.ItemSelectedEventArgs>? handler = null;
+
+    var adapter = new ArrayAdapter<string>(spinner.Context!, Resource.Layout.spinner_item, [.. map.Select(x => x.Value)]);
+    adapter.SetDropDownViewResource(Resource.Layout.spinner_dropdown_item);
+    spinner.Adapter = adapter;
+
+    binder = new ViewBinder<Spinner, TSource, TProp, TKey>(
+      spinner,
+      eh => {
+        handler = (s, e) => eh(s, map[e.Position].Key);
+        spinner.ItemSelected += handler;
+      },
+      eh => { if (handler != null) spinner.ItemSelected -= handler; },
+      (v, val) => {
+        var index = Array.FindIndex(map, kvp => Equals(kvp.Key, val));
+        if (index >= 0 && v.SelectedItemPosition != index)
+          v.SetSelection(index);
+      },
+      source,
+      property);
+
+    return spinner;
   }
 }
