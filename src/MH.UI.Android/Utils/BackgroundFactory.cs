@@ -15,7 +15,7 @@ public static class BackgroundFactory {
     var bg = _cache.GetOrAdd(key, _ => {
       var fill = new Color(ContextCompat.GetColor(Application.Context, fillResId));
       var stroke = new Color(ContextCompat.GetColor(Application.Context, strokeColorResId));
-      var strokeWidth = (int)Application.Context.Resources.GetDimension(strokeWidthResId);
+      var strokeWidth = (int)Application.Context.Resources!.GetDimension(strokeWidthResId);
 
       var shape = new GradientDrawable();
       shape.SetColor(fill);
@@ -32,6 +32,33 @@ public static class BackgroundFactory {
     clone = clone.Mutate();
 
     return (GradientDrawable)clone;
+  }
+
+  public static Drawable Create(int fillResId, int strokeColorResId, int strokeWidthResId, int cornerRadiusResId, int shadowColorResId) {
+    var res = Application.Context.Resources!;
+    var fillColor = new Color(ContextCompat.GetColor(Application.Context, fillResId));
+    var strokeColor = new Color(ContextCompat.GetColor(Application.Context, strokeColorResId));
+    var strokeWidth = (int)res.GetDimension(strokeWidthResId);
+    var cornerRadius = cornerRadiusResId > 0 ? res.GetDimension(cornerRadiusResId) : 0f;
+    var shadowColor = new Color(ContextCompat.GetColor(Application.Context, shadowColorResId));
+
+    var shadow = new GradientDrawable();
+    shadow.SetColor(Color.Transparent);
+    shadow.SetStroke(strokeWidth, shadowColor);
+    if (cornerRadius > 0)
+      shadow.SetCornerRadius(cornerRadius);
+
+    var stroke = new GradientDrawable();
+    stroke.SetColor(fillColor);
+    stroke.SetStroke(strokeWidth, strokeColor);
+    if (cornerRadius > 0)
+      stroke.SetCornerRadius(cornerRadius);
+
+    var drawable = new LayerDrawable([shadow, stroke]);
+    drawable.SetLayerInset(0, strokeWidth, strokeWidth, 0, 0);
+    drawable.SetLayerInset(1, 0, 0, strokeWidth, strokeWidth);
+
+    return drawable;
   }
 
   public static GradientDrawable Dark() =>
