@@ -108,6 +108,28 @@ public static class BindingU {
     return checkBox;
   }
 
+  public static IconToggleButton BindToggled<TSource, TProp>(
+    this IconToggleButton iconToggleButton,
+    TSource source,
+    string propertyName,
+    Func<TSource, TProp> getter,
+    Action<TSource, TProp> setter,
+    out IDisposable? binder)
+    where TSource : class, INotifyPropertyChanged {
+
+    EventHandler<CompoundButton.CheckedChangeEventArgs>? handler = null;
+
+    binder = new ViewBinder<IconToggleButton, TSource, TProp, bool>(iconToggleButton, source, propertyName, getter, setter,
+      (target, v) => { if (v != target.Checked) target.Checked = v; },
+      eh => {
+        handler = (s, e) => eh(s, e.IsChecked);
+        iconToggleButton.CheckedChanged += handler;
+      },
+      eh => { if (handler != null) iconToggleButton.CheckedChanged -= handler; });
+
+    return iconToggleButton;
+  }
+
   public static Slider BindProgress<TSource, TProp>(
     this Slider slider,
     TSource source,
