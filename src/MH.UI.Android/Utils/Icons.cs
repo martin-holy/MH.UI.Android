@@ -19,11 +19,16 @@ public static class Icons {
   public static Dictionary<object, object>? IconNameToColor { get; set; }
   public static Func<string, string> ConvertIconName { get; set; } = (iconName) => iconName.ToSnakeCase();
 
-  public static Drawable? GetIcon(Context? context, string? iconName, Dictionary<object, object>? iconNameToColor = null) {
+  public static Drawable? GetDrawable(Context? context, string? iconName) {
     if (context == null || context.Resources == null || iconName == null) return null;
     var id = context.Resources.GetIdentifier(ConvertIconName(iconName), "drawable", context.PackageName);
     if (id == 0) return null;
-    if (ContextCompat.GetDrawable(context, id) is not { } drawable) return null;
+    return ContextCompat.GetDrawable(context, id);
+  }
+
+  public static Drawable? GetIcon(Context? context, string? iconName, Dictionary<object, object>? iconNameToColor = null) {
+    if (context == null || iconName == null) return null;
+    if (GetDrawable(context, iconName) is not { } drawable) return null;
 
     var colors = new int[] {
       GetColor(context, iconName, iconNameToColor ?? IconNameToColor),
