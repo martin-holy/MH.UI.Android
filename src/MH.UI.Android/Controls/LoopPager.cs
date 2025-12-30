@@ -1,6 +1,7 @@
 ﻿using Android.Content;
 using Android.Views;
 using Android.Widget;
+using AndroidX.RecyclerView.Widget;
 using MH.UI.Android.Utils;
 using System;
 using System.Collections.Generic;
@@ -108,6 +109,30 @@ public class LoopPager : ViewGroup {
     _scrollToVisibleIndex();
   }
 
+  private bool _isHorizontallyScrollable(View v) =>
+    v is HorizontalScrollView ||
+    (v as RecyclerView)?.GetLayoutManager()?.CanScrollHorizontally() == true;
+
+  private bool _hasHorizontalScrollableUnder(ViewGroup parent, float x, float y) {
+    for (int i = parent.ChildCount - 1; i >= 0; i--) {
+      var child = parent.GetChildAt(i);
+      if (child == null || child.Visibility != ViewStates.Visible) continue;
+
+      float cx = x - child.Left;
+      float cy = y - child.Top;
+
+      if (cx < 0 || cy < 0 || cx >= child.Width || cy >= child.Height) continue;
+
+      if (_isHorizontallyScrollable(child)) return true;
+
+      if (child is ViewGroup vg && _hasHorizontalScrollableUnder(vg, cx, cy)) return true;
+
+      return false;
+    }
+
+    return false;
+  }
+
   public override bool OnInterceptTouchEvent(MotionEvent? ev) {
     if (ev == null || !UserInputEnabled) return false;
 
@@ -117,8 +142,8 @@ public class LoopPager : ViewGroup {
         _scrollStartX = ScrollX;
         return false;
       case MotionEventActions.Move:
-        float dx = Math.Abs(ev.GetX() - _downX);
-        if (dx > _touchSlop) return true;
+        if (Math.Abs(ev.GetX() - _downX) > _touchSlop)
+          return !_hasHorizontalScrollableUnder(this, ev.GetX(), ev.GetY());
         break;
     }
 
