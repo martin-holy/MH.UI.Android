@@ -2,6 +2,7 @@
 	- [N] IconToggleButton
 	- [N] Icons: GetDrawable by iconName
 	- [N] BindingU: IconToggleButton BindToggled
+	- [U] LoopPager: Intercept touch if has horizontal scrollable under
 
 1.1.0:
 	- [N] BindingU: BindVisibility
