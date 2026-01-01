@@ -21,12 +21,12 @@ public class TabControlHost : LinearLayout {
   private readonly Dictionary<IListItem, View> _contentViews = [];
   private bool _disposed;
 
-  public readonly TabControl DataContext;
+  public TabControl DataContext { get; }
   public TreeMenu ItemMenu { get; }
 
   public TabControlHost(Context context, TabControl dataContext) : base(context) {
     DataContext = dataContext;
-    ItemMenu = new TreeMenu(context, _itemMenuFactory);
+    ItemMenu = new TreeMenu(context, dataContext.ItemMenuFactory);
     Orientation = Orientation.Vertical;
     SetBackgroundResource(Resource.Color.c_static_ba);
 
@@ -100,7 +100,4 @@ public class TabControlHost : LinearLayout {
 
     _adapter.NotifyDataSetChanged();
   }
-
-  private IEnumerable<MenuItem> _itemMenuFactory(object item) =>
-    [new(DataContext.CloseTabCommand, item)];
 }
