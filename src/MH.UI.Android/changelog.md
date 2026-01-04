@@ -4,6 +4,7 @@
 	- [N] BindingU: IconToggleButton BindToggled
 	- [U] LoopPager: Intercept touch if has horizontal scrollable under
 	- [C] TabControlHost: using ItemMenuFactory from TabControl
+	- [N] TextViewExtensions: WithTextColor
 
 1.1.0:
 	- [N] BindingU: BindVisibility
