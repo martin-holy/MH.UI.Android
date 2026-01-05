@@ -8,7 +8,7 @@ public class Slider : SeekBar {
   public double Scale { get; }
   public double TickFrequency { get; }  
 
-  public Slider(Context context, double minD, double maxD, double tickFrequency) : base(context) {
+  public Slider(Context? context, double minD, double maxD, double tickFrequency) : base(context) {
     MinD = minD;
     TickFrequency = tickFrequency <= 0 ? (maxD - minD) / 100 : tickFrequency;
     Scale = 1.0 / TickFrequency;
