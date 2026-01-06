@@ -76,7 +76,7 @@ public static class BindingU {
     EventHandler<TextChangedEventArgs>? handler = null;
 
     binder = new ViewBinder<EditText, TSource, TProp, string>(editText, source, propertyName, getter, setter,
-      (target, v) => { if (!v.Equals(target.Text)) target.Text = v; },
+      (target, v) => { if (!string.Equals(target.Text, v)) target.Text = v; },
       eh => {
         handler = (s, e) => eh(s, e.Text?.ToString() ?? string.Empty);
         editText.TextChanged += handler;
