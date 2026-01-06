@@ -5,6 +5,7 @@
 	- [U] LoopPager: Intercept touch if has horizontal scrollable under
 	- [C] TabControlHost: using ItemMenuFactory from TabControl
 	- [N] TextViewExtensions: WithTextColor
+	- [B] BindingU: EditText BindText null reference when string is null
 
 1.1.0:
 	- [N] BindingU: BindVisibility
