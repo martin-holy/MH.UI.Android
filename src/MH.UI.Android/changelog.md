@@ -6,6 +6,7 @@
 	- [C] TabControlHost: using ItemMenuFactory from TabControl
 	- [N] TextViewExtensions: WithTextColor
 	- [B] BindingU: EditText BindText null reference when string is null
+	- [U] DialogHost: Optionally full screen dialogs
 
 1.1.0:
 	- [N] BindingU: BindVisibility
