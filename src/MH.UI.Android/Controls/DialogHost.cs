@@ -99,7 +99,10 @@ public class DialogHost : DialogFragment {
       if (contentView.Parent is ViewGroup oldParent)
         oldParent.RemoveView(contentView);
 
-      view.AddView(contentView, new LinearLayout.LayoutParams(LPU.Wrap, LPU.Wrap));
+      if (contentView.LayoutParameters?.Width == LPU.Match && Dialog?.Window is { } window)
+        window.SetLayout(LPU.Match, LPU.Wrap);
+
+      view.AddView(contentView, contentView.LayoutParameters ?? new LinearLayout.LayoutParams(LPU.Wrap, LPU.Wrap));
     }
 
     view.AddView(_createButtonsView(context, _dataContext),
