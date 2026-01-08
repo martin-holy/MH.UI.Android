@@ -41,6 +41,15 @@ public class TreeMenuItemViewHolder : RecyclerView.ViewHolder {
     DataContext = item;
     if (item == null || item.TreeItem is not MenuItem menuItem) return;
 
+    if (menuItem.IsHidden) {
+      ItemView.LayoutParameters!.Height = 0;
+      ItemView.Visibility = ViewStates.Gone;
+      return;
+    }
+
+    ItemView.Visibility = ViewStates.Visible;
+    ItemView.LayoutParameters!.Height = DimensU.MenuItemHeight;
+
     int indent = item.Level * DimensU.FlatTreeItemIndentSize;
     ItemView.SetPadding(indent, ItemView.PaddingTop, ItemView.PaddingRight, ItemView.PaddingBottom);
 
@@ -75,7 +84,7 @@ public class TreeMenuItemViewHolder : RecyclerView.ViewHolder {
 
   private static LinearLayout _createContainerView(Context context) {
     var container = new LinearLayout(context) {
-      LayoutParameters = new ViewGroup.LayoutParams(LPU.Match, DimensU.MenuItemHeight),
+      LayoutParameters = new RecyclerView.LayoutParams(LPU.Match, DimensU.MenuItemHeight),
       Orientation = Orientation.Horizontal,
       Clickable = true,
       Focusable = true
