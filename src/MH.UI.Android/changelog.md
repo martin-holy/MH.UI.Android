@@ -1,3 +1,6 @@
+1.3.0:
+	- [N] ImagingU: ConvertOrientationFromMHToAndroid
+
 1.2.0:
 	- [N] IconToggleButton
 	- [N] Icons: GetDrawable by iconName
