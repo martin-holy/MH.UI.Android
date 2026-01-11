@@ -1,5 +1,6 @@
 1.3.0:
 	- [N] ImagingU: ConvertOrientationFromMHToAndroid
+	- [N] ExifInterfaceExtensions: SetLatLong, SetOrientation and SetUserComment
 
 1.2.0:
 	- [N] IconToggleButton
