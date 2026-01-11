@@ -141,17 +141,17 @@ public static class ImagingU {
       _ => MH.Utils.Imaging.Orientation.Normal
     };
 
-  public static int ConvertOrientationFromMHToAndroid(MH.Utils.Imaging.Orientation orientation) =>
+  public static global::Android.Media.Orientation ConvertOrientationFromMHToAndroid(MH.Utils.Imaging.Orientation orientation) =>
     orientation switch {
-      MH.Utils.Imaging.Orientation.Normal => (int)global::Android.Media.Orientation.Normal,
-      MH.Utils.Imaging.Orientation.Rotate90 => (int)global::Android.Media.Orientation.Rotate90,
-      MH.Utils.Imaging.Orientation.Rotate180 => (int)global::Android.Media.Orientation.Rotate180,
-      MH.Utils.Imaging.Orientation.Rotate270 => (int)global::Android.Media.Orientation.Rotate270,
-      MH.Utils.Imaging.Orientation.FlipHorizontal => (int)global::Android.Media.Orientation.FlipHorizontal,
-      MH.Utils.Imaging.Orientation.FlipVertical => (int)global::Android.Media.Orientation.FlipVertical,
-      MH.Utils.Imaging.Orientation.Transpose => (int)global::Android.Media.Orientation.Transpose,
-      MH.Utils.Imaging.Orientation.Transverse => (int)global::Android.Media.Orientation.Transverse,
-      _ => (int)global::Android.Media.Orientation.Normal
+      MH.Utils.Imaging.Orientation.Normal => global::Android.Media.Orientation.Normal,
+      MH.Utils.Imaging.Orientation.Rotate90 => global::Android.Media.Orientation.Rotate90,
+      MH.Utils.Imaging.Orientation.Rotate180 => global::Android.Media.Orientation.Rotate180,
+      MH.Utils.Imaging.Orientation.Rotate270 => global::Android.Media.Orientation.Rotate270,
+      MH.Utils.Imaging.Orientation.FlipHorizontal => global::Android.Media.Orientation.FlipHorizontal,
+      MH.Utils.Imaging.Orientation.FlipVertical => global::Android.Media.Orientation.FlipVertical,
+      MH.Utils.Imaging.Orientation.Transpose => global::Android.Media.Orientation.Transpose,
+      MH.Utils.Imaging.Orientation.Transverse => global::Android.Media.Orientation.Transverse,
+      _ => global::Android.Media.Orientation.Normal
     };
 
   private static int _calculateSampleSize(int srcSize, int desiredSize) {
