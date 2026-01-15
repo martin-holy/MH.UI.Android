@@ -1,6 +1,8 @@
 1.3.0:
 	- [N] ImagingU: ConvertOrientationFromMHToAndroid
 	- [N] ExifInterfaceExtensions: SetLatLong, SetOrientation and SetUserComment
+	- [N] BitmapExtensions: Create bitmap from file path and region
+	- [N] BitmapExtensions: SaveAsJpeg
 
 1.2.0:
 	- [N] IconToggleButton
