@@ -22,4 +22,9 @@ public static class BitmapExtensions {
 
     return decoder.DecodeRegion(region, opts);
   }
+
+  public static void SaveAsJpeg(this Bitmap bmp, string filePath, int quality) {
+    using var fs = File.Open(filePath, FileMode.Create, FileAccess.Write);
+    bmp.Compress(Bitmap.CompressFormat.Jpeg!, quality, fs);
+  }
 }
