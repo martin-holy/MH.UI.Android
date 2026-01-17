@@ -130,14 +130,19 @@ public static class BindingU {
     return iconToggleButton;
   }
 
-  public static ProgressBar BindProgressBar<TSource>(this ProgressBar progressBar, TSource source)
+  public static ProgressBar BindProgressBar<TSource>(this ProgressBar progressBar, TSource source, out IDisposable? binder)
     where TSource : class, INotifyPropertyChanged, IProgressDialog {
 
     progressBar.Max = source.ProgressMax;
-    MH.Utils.BindingU.Bind(progressBar, source, nameof(IProgressDialog.ProgressValue),
+    binder = MH.Utils.BindingU.Bind(progressBar, source, nameof(IProgressDialog.ProgressValue),
       x => x.ProgressValue, (s, v) => s.Progress = v);
 
     return progressBar;
+  }
+
+  public static TextView BindProgressText(this TextView progressText) {
+
+    return progressText;
   }
 
   public static Slider BindProgress<TSource, TProp>(
