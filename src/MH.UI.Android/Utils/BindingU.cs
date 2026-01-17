@@ -2,13 +2,13 @@
 using Android.Views;
 using Android.Widget;
 using MH.UI.Android.Controls;
+using MH.UI.Dialogs;
 using MH.Utils;
 using MH.Utils.BaseClasses;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Windows.Input;
 
 namespace MH.UI.Android.Utils;
@@ -128,6 +128,16 @@ public static class BindingU {
       eh => { if (handler != null) iconToggleButton.CheckedChanged -= handler; });
 
     return iconToggleButton;
+  }
+
+  public static ProgressBar BindProgressBar<TSource>(this ProgressBar progressBar, TSource source)
+    where TSource : class, INotifyPropertyChanged, IProgressDialog {
+
+    progressBar.Max = source.ProgressMax;
+    MH.Utils.BindingU.Bind(progressBar, source, nameof(IProgressDialog.ProgressValue),
+      x => x.ProgressValue, (s, v) => s.Progress = v);
+
+    return progressBar;
   }
 
   public static Slider BindProgress<TSource, TProp>(
