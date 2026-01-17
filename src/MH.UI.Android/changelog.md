@@ -3,6 +3,7 @@
 	- [N] ExifInterfaceExtensions: SetLatLong, SetOrientation and SetUserComment
 	- [N] BitmapExtensions: Create bitmap from file path and region
 	- [N] BitmapExtensions: SaveAsJpeg
+	- [N] BindingU: BindProgressBar
 
 1.2.0:
 	- [N] IconToggleButton
