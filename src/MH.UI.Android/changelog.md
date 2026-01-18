@@ -4,6 +4,7 @@
 	- [N] BitmapExtensions: Create bitmap from file path and region
 	- [N] BitmapExtensions: SaveAsJpeg
 	- [N] BindingU: BindProgressBar
+	- [N] BindingU: BindProgressText
 
 1.2.0:
 	- [N] IconToggleButton
