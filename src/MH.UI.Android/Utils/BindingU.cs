@@ -140,7 +140,11 @@ public static class BindingU {
     return progressBar;
   }
 
-  public static TextView BindProgressText(this TextView progressText) {
+  public static TextView BindProgressText<TSource>(this TextView progressText, TSource source, out IDisposable? binder)
+    where TSource : class, INotifyPropertyChanged, IProgressDialog {
+
+    progressText.BindText(source, nameof(IProgressDialog.ProgressText),
+      x => x.ProgressText, x => x ?? string.Empty, out binder);
 
     return progressText;
   }
