@@ -4,7 +4,6 @@ using Android.Widget;
 using MH.UI.Android.Extensions;
 using MH.UI.Android.Utils;
 using MH.UI.Dialogs;
-using MH.Utils;
 
 namespace MH.UI.Android.Dialogs;
 
@@ -15,12 +14,9 @@ public class ProgressDialogV : LinearLayout {
     SetPadding(0, DisplayU.DpToPx(10), 0, DisplayU.DpToPx(10));
     SetGravity(GravityFlags.CenterVertical);
 
-    var progress = new ProgressBar(context) { Max = dataContext.ProgressMax };
-    progress.Bind(dataContext, nameof(dataContext.ProgressValue), x => x.ProgressValue, (s, v) => s.Progress = v);
-
-    AddView(progress, new LayoutParams(LPU.Match, LPU.Wrap).WithDpMargin(6, 0, 6, 0));
-    AddView(new TextView(context)
-      .BindText(dataContext, nameof(IProgressDialog.ProgressText), x => x.ProgressText, x => x ?? string.Empty, out var _),
+    AddView(new ProgressBar(context).BindProgressBar(dataContext, out var _),
+      new LayoutParams(LPU.Match, LPU.Wrap).WithDpMargin(6, 0, 6, 0));
+    AddView(new TextView(context).BindProgressText(dataContext, out var _),
       new LayoutParams(LPU.Wrap, LPU.Wrap).WithDpMargin(0, 0, 0, 6));
   }
 }
