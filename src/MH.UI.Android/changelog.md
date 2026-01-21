@@ -5,6 +5,7 @@
 	- [N] BitmapExtensions: SaveAsJpeg
 	- [N] BindingU: BindProgressBar
 	- [N] BindingU: BindProgressText
+	- [U] LoopPager: IsHorizontalGestureConsumer func for touch intercept
 
 1.2.0:
 	- [N] IconToggleButton
