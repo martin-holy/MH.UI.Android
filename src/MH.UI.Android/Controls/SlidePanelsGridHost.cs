@@ -3,7 +3,6 @@ using Android.Views;
 using Android.Widget;
 using MH.UI.Android.Utils;
 using MH.UI.Controls;
-using MH.Utils;
 
 namespace MH.UI.Android.Controls;
 
@@ -30,8 +29,8 @@ public class SlidePanelsGridHost : LinearLayout {
     Orientation = Orientation.Vertical;
     SetBackgroundResource(Resource.Color.c_static_ba);
 
-    this.Bind(dataContext.PanelTop, nameof(SlidePanel.IsPinned), x => x.IsPinned, (v, p) => v._panelTop.Visibility = p ? ViewStates.Visible : ViewStates.Gone);
-    this.Bind(dataContext.PanelBottom, nameof(SlidePanel.IsPinned), x => x.IsPinned, (v, p) => v._panelBottom.Visibility = p ? ViewStates.Visible : ViewStates.Gone);
+    _panelTop.BindVisibility(dataContext.PanelTop, nameof(SlidePanel.IsPinned), x => x.IsPinned);
+    _panelBottom.BindVisibility(dataContext.PanelBottom, nameof(SlidePanel.IsPinned), x => x.IsPinned);
 
     AddView(top, new LayoutParams(LPU.Match, LPU.Wrap));
     AddView(_viewPager, new LayoutParams(LPU.Match, 0, 1f));
