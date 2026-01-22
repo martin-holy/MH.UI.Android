@@ -1,11 +1,64 @@
 ﻿using Android.Media;
 using System;
+using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 
 namespace MH.UI.Android.Extensions;
 
 public static class ExifInterfaceExtensions {
   private const string _userCommentAsciiPrefix = "ASCII\0\0\0";
+
+  public static IReadOnlyList<string> ExifTagsToCopy { get; private set; } = new[] {
+    // time
+    ExifInterface.TagDatetime,
+    ExifInterface.TagDatetimeOriginal,
+    ExifInterface.TagDatetimeDigitized,
+    ExifInterface.TagSubsecTime,
+    ExifInterface.TagSubsecTimeOriginal,
+    ExifInterface.TagSubsecTimeDigitized,
+
+    // camera
+    ExifInterface.TagMake,
+    ExifInterface.TagModel,
+
+    // exposure
+    ExifInterface.TagExposureTime,
+    ExifInterface.TagFNumber,
+    ExifInterface.TagExposureBiasValue,
+    ExifInterface.TagExposureProgram,
+    ExifInterface.TagIsoSpeedRatings,
+    ExifInterface.TagFocalLength,
+    ExifInterface.TagWhiteBalance,
+    ExifInterface.TagFlash,
+    ExifInterface.TagMeteringMode,
+    ExifInterface.TagSceneCaptureType,
+
+    ExifInterface.TagOrientation,
+    ExifInterface.TagUserComment,
+
+    // GPS
+    ExifInterface.TagGpsLatitude,
+    ExifInterface.TagGpsLatitudeRef,
+    ExifInterface.TagGpsLongitude,
+    ExifInterface.TagGpsLongitudeRef,
+    ExifInterface.TagGpsAltitude,
+    ExifInterface.TagGpsAltitudeRef,
+    ExifInterface.TagGpsDatestamp,
+    ExifInterface.TagGpsTimestamp
+  };
+
+  public static void CopyAttributes(this ExifInterface src, ExifInterface dst) {
+    foreach (var tag in ExifTagsToCopy) {
+      var value = src.GetAttribute(tag);
+      if (value != null)
+        dst.SetAttribute(tag, value);
+    }
+  }
+
+  public static void SetExifTagsToCopy(IEnumerable<string> tags) {
+    ExifTagsToCopy = tags.ToArray();
+  }
 
   public static bool SetLatLong(this ExifInterface exif, double? lat, double? lng, ref bool changed) {
     var result = exif.SetLatLong(lat, lng);
