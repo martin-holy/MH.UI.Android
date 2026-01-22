@@ -60,6 +60,15 @@ public static class ExifInterfaceExtensions {
     ExifTagsToCopy = tags.ToArray();
   }
 
+  public static void UpdateDimensions(this ExifInterface exif, int width, int height) {
+    var w = width.ToString();
+    var h = height.ToString();
+    exif.SetAttribute(ExifInterface.TagImageWidth, w);
+    exif.SetAttribute(ExifInterface.TagImageLength, h);
+    exif.SetAttribute(ExifInterface.TagPixelXDimension, w);
+    exif.SetAttribute(ExifInterface.TagPixelYDimension, h);
+  }
+
   public static bool SetLatLong(this ExifInterface exif, double? lat, double? lng, ref bool changed) {
     var result = exif.SetLatLong(lat, lng);
     if (result) changed = true;
