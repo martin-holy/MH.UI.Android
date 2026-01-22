@@ -6,6 +6,9 @@
 	- [N] BindingU: BindProgressBar
 	- [N] BindingU: BindProgressText
 	- [U] LoopPager: IsHorizontalGestureConsumer func for touch intercept
+	- [N] ExifInterfaceExtensions: CopyAttributes
+	- [N] ExifInterfaceExtensions: UpdateDimensions
+	- [N] ImagingU: ResizeJpg
 
 1.2.0:
 	- [N] IconToggleButton
