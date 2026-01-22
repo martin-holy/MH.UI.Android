@@ -1,8 +1,11 @@
 ﻿using Android.Graphics;
 using Android.Media;
 using Android.OS;
+using MH.UI.Android.Extensions;
+using MH.Utils;
 using MH.Utils.Extensions;
 using System;
+using System.IO;
 
 namespace MH.UI.Android.Utils;
 
@@ -159,5 +162,43 @@ public static class ImagingU {
     while (srcSize / (sample * 2) >= desiredSize)
       sample *= 2;
     return sample;
+  }
+
+  public static void ResizeJpg(string src, string dest, int px, bool withMetadata, int quality) {
+    using var srcBitmap = BitmapFactory.DecodeFile(src);
+    if (srcBitmap == null) return;
+
+    var (dstW, dstH) = _calculateSizeForTargetArea(srcBitmap.Width, srcBitmap.Height, px);
+
+    using var resized = Bitmap.CreateScaledBitmap(srcBitmap, dstW, dstH, true);
+
+    using (var fs = File.Open(dest, FileMode.Create, FileAccess.Write)) {
+      resized.Compress(Bitmap.CompressFormat.Jpeg, quality, fs);
+    }
+
+    if (!withMetadata) return;
+
+    var srcExif = new ExifInterface(src);
+    var dstExif = new ExifInterface(dest);
+    srcExif.CopyAttributes(dstExif);
+    dstExif.UpdateDimensions(dstW, dstH);
+    dstExif.SaveAttributes();
+
+    var xmp = XmpU.ReadFromJpeg(src);
+    if (!string.IsNullOrEmpty(xmp)) {
+      xmp = XmpU.UpdateDimensions(xmp, dstW, dstH);
+      XmpU.WriteToJpeg(dest, xmp);
+    }
+  }
+
+  private static (int width, int height) _calculateSizeForTargetArea(int srcWidth, int srcHeight, int targetPixels) {
+    int gcd = MathU.GreatestCommonDivisor(srcWidth, srcHeight);
+    int rw = srcWidth / gcd;
+    int rh = srcHeight / gcd;
+    double q = Math.Sqrt((double)targetPixels / (rw * rh));
+    int w = (int)Math.Round(q * rw);
+    int h = (int)Math.Round(q * rh);
+
+    return (w, h);
   }
 }
