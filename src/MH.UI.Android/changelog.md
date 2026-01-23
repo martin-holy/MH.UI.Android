@@ -9,6 +9,8 @@
 	- [N] ExifInterfaceExtensions: CopyAttributes
 	- [N] ExifInterfaceExtensions: UpdateDimensions
 	- [N] ImagingU: ResizeJpg
+	- [U] FlatTreeItemViewHolderBase: optional icon and name
+	- [N] TreeViewHostAdapter: support for custom TreeItemViewHolder
 
 1.2.0:
 	- [N] IconToggleButton
