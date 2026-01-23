@@ -1,6 +1,5 @@
 ﻿using Android.Graphics;
 using Android.Media;
-using Android.OS;
 using MH.UI.Android.Extensions;
 using MH.Utils;
 using MH.Utils.Extensions;
@@ -24,17 +23,8 @@ public static class ImagingU {
   }
 
   public static Bitmap? CreateImageRegionThumbnail(string srcPath, int x, int y, int size, int desiredSize) {
-    using var decoder = Build.VERSION.SdkInt < BuildVersionCodes.S
-      ? BitmapRegionDecoder.NewInstance(srcPath, false)
-      : BitmapRegionDecoder.NewInstance(srcPath)
-      ?? throw new Exception("Failed to create region decoder.");
-
-    var decodeOpts = new BitmapFactory.Options {
-      InSampleSize = _calculateSampleSize(size, desiredSize),
-      InPreferredConfig = Bitmap.Config.Rgb565
-    };
-    var region = new Rect(x, y, x + size, y + size);
-    if (decoder.DecodeRegion(region, decodeOpts) is not { } cropped) return null;
+    var sampleSize = _calculateSampleSize(size, desiredSize);
+    if (BitmapExtensions.Create(srcPath, x, y, size, size, sampleSize) is not { } cropped) return null;
 
     var resized = Bitmap.CreateScaledBitmap(cropped, desiredSize, desiredSize, true);
     cropped.Dispose();
