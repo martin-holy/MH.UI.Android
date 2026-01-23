@@ -11,9 +11,11 @@ namespace MH.UI.Android.Controls;
 public abstract class FlatTreeItemViewHolderBase : RecyclerView.ViewHolder {
   protected readonly IAndroidTreeViewHost _treeViewHost;
   protected readonly LinearLayout _container;
+  protected virtual bool _showIcon => true;
+  protected virtual bool _showName => true;
   private readonly ImageView _expandedIcon;
-  private readonly IconButton _icon;
-  private readonly TextView _name;
+  private readonly IconButton? _icon;
+  private readonly TextView? _name;
 
   public FlatTreeItem? DataContext { get; private set; }
 
@@ -24,15 +26,21 @@ public abstract class FlatTreeItemViewHolderBase : RecyclerView.ViewHolder {
         if (o.DataContext == null) return;
         o.DataContext.TreeItem.IsExpanded = !o.DataContext.TreeItem.IsExpanded;
       });
-    _icon = new IconButton(context)
-      .WithClickAction(this, (o, s) => o._treeViewHost.ItemMenu?.ShowItemMenu(s, o.DataContext?.TreeItem));
-    _name = new TextView(context);
 
     _container = (LinearLayout)ItemView;
     _container.AddView(_expandedIcon, new LinearLayout.LayoutParams(DimensU.IconButtonSize, DimensU.IconButtonSize)
       .WithMargin(DimensU.Spacing, 0, DimensU.Spacing, 0));
-    _container.AddView(_icon);
-    _container.AddView(_name);
+
+    if (_showIcon) {
+      _icon = new IconButton(context)
+        .WithClickAction(this, (o, s) => o._treeViewHost.ItemMenu?.ShowItemMenu(s, o.DataContext?.TreeItem));
+      _container.AddView(_icon);
+    }
+
+    if (_showName) {
+      _name = new TextView(context);
+      _container.AddView(_name);
+    }
   }
 
   public virtual void Bind(FlatTreeItem? item) {
@@ -45,9 +53,11 @@ public abstract class FlatTreeItemViewHolderBase : RecyclerView.ViewHolder {
     _expandedIcon.Visibility = item.TreeItem.Items.Count > 0 ? ViewStates.Visible : ViewStates.Invisible;
     _expandedIcon.Activated = item.TreeItem.IsExpanded;
 
-    _icon.SetImageDrawable(Icons.GetIcon(ItemView.Context, item.TreeItem.Icon));
+    if (_icon != null)
+      _icon.SetImageDrawable(Icons.GetIcon(ItemView.Context, item.TreeItem.Icon));
 
-    _name.Text = item.TreeItem.Name;
+    if (_name != null)
+      _name.Text = item.TreeItem.Name;
   }
 
   private static LinearLayout _createContainerView(Context context) {
