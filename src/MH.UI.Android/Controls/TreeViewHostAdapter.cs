@@ -1,6 +1,7 @@
 ﻿using Android.Content;
 using Android.Views;
 using AndroidX.RecyclerView.Widget;
+using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
 using MH.Utils.Interfaces;
 using System.Collections.Generic;
@@ -8,14 +9,36 @@ using System.ComponentModel;
 
 namespace MH.UI.Android.Controls;
 
-public class TreeViewHostAdapter(Context _context, TreeViewHost _host)
-  : TreeViewHostAdapterBase(_context, _host.DataContext.RootHolder) {
+public interface ITreeItemViewHolderFactory {
+  public int GetViewType(FlatTreeItem item);
+  public FlatTreeItemViewHolderBase Create(ViewGroup parent, int viewType, IAndroidTreeViewHost host);
+}
+
+internal sealed class DefaultTreeItemViewHolderFactory : ITreeItemViewHolderFactory {
+  public int GetViewType(FlatTreeItem item) => 0;
+
+  public FlatTreeItemViewHolderBase Create(ViewGroup parent, int viewType, IAndroidTreeViewHost host) =>
+    new FlatTreeItemViewHolder(parent.Context!, (TreeViewHost)host);
+}
+
+public class TreeViewHostAdapter : TreeViewHostAdapterBase {
+  private readonly TreeViewHost _host;
+  private readonly ITreeItemViewHolderFactory _factory;
+
+  public TreeViewHostAdapter(Context context, TreeViewHost host, ITreeItemViewHolderFactory? factory = null)
+    : base(context, host.DataContext.RootHolder) {
+    _host = host;
+    _factory = factory ?? new DefaultTreeItemViewHolderFactory();
+  }
+
+  public override int GetItemViewType(int position) =>
+    _factory.GetViewType(_items[position]);
 
   public override RecyclerView.ViewHolder OnCreateViewHolder(ViewGroup parent, int viewType) =>
-    new FlatTreeItemViewHolder(parent.Context!, _host);
+    _factory.Create(parent, viewType, _host);
 
   public override void OnBindViewHolder(RecyclerView.ViewHolder holder, int position) =>
-    ((FlatTreeItemViewHolder)holder).Bind(_items[position]);
+    ((FlatTreeItemViewHolderBase)holder).Bind(_items[position]);
 
   public override void OnBindViewHolder(RecyclerView.ViewHolder holder, int position, IList<Java.Lang.Object> payloads) {
     if (payloads.Count == 0) {
