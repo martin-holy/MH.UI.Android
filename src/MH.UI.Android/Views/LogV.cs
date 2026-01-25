@@ -81,8 +81,8 @@ public class LogV : LinearLayout {
   protected override void Dispose(bool disposing) {
     if (_disposed) return;
     if (disposing) {
+      _list.SetAdapter(null);
       _adapter.Dispose();
-      _list.Dispose();
       _dataContext.Items.CollectionChanged -= _onItemsCollectionChanged;
       _wrapText.CheckedChange -= _wrapTextCheckedChange;
     }
