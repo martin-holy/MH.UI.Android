@@ -11,6 +11,8 @@
 	- [N] ImagingU: ResizeJpg
 	- [U] FlatTreeItemViewHolderBase: optional icon and name
 	- [N] TreeViewHostAdapter: support for custom TreeItemViewHolder
+	- [N] ViewExtensions: WithPadding
+	- [B] ImagingU: ApplyOrientation: switched angle
 
 1.2.0:
 	- [N] IconToggleButton
