@@ -88,13 +88,13 @@ public static class ImagingU {
 
     switch (orientation) {
       case MH.Utils.Imaging.Orientation.Rotate90:
-        matrix.PostRotate(90);
+        matrix.PostRotate(270);
         break;
       case MH.Utils.Imaging.Orientation.Rotate180:
         matrix.PostRotate(180);
         break;
       case MH.Utils.Imaging.Orientation.Rotate270:
-        matrix.PostRotate(270);
+        matrix.PostRotate(90);
         break;
       case MH.Utils.Imaging.Orientation.FlipHorizontal:
         matrix.PostScale(-1, 1);
