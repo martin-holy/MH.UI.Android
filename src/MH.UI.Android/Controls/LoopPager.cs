@@ -2,6 +2,7 @@
 using Android.Views;
 using Android.Widget;
 using AndroidX.RecyclerView.Widget;
+using AndroidX.ViewPager2.Widget;
 using MH.UI.Android.Utils;
 using System;
 using System.Collections.Generic;
@@ -19,12 +20,14 @@ public class LoopPager : ViewGroup {
 
   public bool UserInputEnabled { get; set; } = true;
   public Func<View, bool> IsHorizontalGestureConsumer { get; set; }
+  public Func<View, bool> IsGestureBoundary { get; set; }
 
   public LoopPager(Context context, List<View> pages) : base(context) {
     _pages = pages;
     _scroller = new OverScroller(context);
     _touchSlop = ViewConfiguration.Get(context)!.ScaledTouchSlop;
     IsHorizontalGestureConsumer = DefaultIsHorizontalGestureConsumer;
+    IsGestureBoundary = DefaultIsGestureBoundary;
 
     foreach (var page in _pages)
       AddView(page, new LayoutParams(LPU.Match, LPU.Match));
@@ -114,7 +117,11 @@ public class LoopPager : ViewGroup {
   public static bool DefaultIsHorizontalGestureConsumer(View v) =>
     v is HorizontalScrollView ||
     v is SeekBar ||
+    (v is ViewPager2 vp && vp.Orientation == (int)Orientation.Horizontal && vp.UserInputEnabled) ||
     (v as RecyclerView)?.GetLayoutManager()?.CanScrollHorizontally() == true;
+
+  public static bool DefaultIsGestureBoundary(View v) =>
+    v is ViewPager2 vp && vp.Orientation == (int)Orientation.Horizontal && vp.UserInputEnabled;
 
   private bool _hasHorizontalGestureConsumerUnder(ViewGroup parent, float x, float y) {
     for (int i = parent.ChildCount - 1; i >= 0; i--) {
@@ -127,6 +134,8 @@ public class LoopPager : ViewGroup {
       if (cx < 0 || cy < 0 || cx >= child.Width || cy >= child.Height) continue;
 
       if (IsHorizontalGestureConsumer(child)) return true;
+
+      if (IsGestureBoundary(child)) return false;
 
       if (child is ViewGroup vg && _hasHorizontalGestureConsumerUnder(vg, cx, cy)) return true;
 
