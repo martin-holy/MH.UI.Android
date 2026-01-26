@@ -13,6 +13,7 @@
 	- [N] TreeViewHostAdapter: support for custom TreeItemViewHolder
 	- [N] ViewExtensions: WithPadding
 	- [B] ImagingU: ApplyOrientation: switched angle
+	- [U] LoopPager: support for nested ViewPager2
 
 1.2.0:
 	- [N] IconToggleButton
