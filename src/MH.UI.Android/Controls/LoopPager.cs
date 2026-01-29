@@ -121,7 +121,7 @@ public class LoopPager : ViewGroup {
     (v as RecyclerView)?.GetLayoutManager()?.CanScrollHorizontally() == true;
 
   public static bool DefaultIsGestureBoundary(View v) =>
-    v is ViewPager2 vp && vp.Orientation == (int)Orientation.Horizontal && vp.UserInputEnabled;
+    v is ViewPager2 vp && vp.Orientation == (int)Orientation.Horizontal && !vp.UserInputEnabled;
 
   private bool _hasHorizontalGestureConsumerUnder(ViewGroup parent, float x, float y) {
     for (int i = parent.ChildCount - 1; i >= 0; i--) {
