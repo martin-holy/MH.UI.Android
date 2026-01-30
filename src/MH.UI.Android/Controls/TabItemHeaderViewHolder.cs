@@ -37,8 +37,21 @@ public class TabItemHeaderViewHolder : RecyclerView.ViewHolder {
         .WithMargin(DimensU.Spacing, DimensU.Spacing, 0, DimensU.Spacing));
     }
     
+    // TODO BUG text is clipped when rotated 90 or 270
     _name = new TextView(context);
-    _container.AddView(_name);
+    var rotationAngle = tabControlHost.DataContext.TabStrip.RotationAngle;
+    if (rotationAngle is 90 or 270) {
+      _name.Rotation = rotationAngle;
+      _name.SetSingleLine(true);
+      _name.Ellipsize = null;
+
+      _container.Orientation = Orientation.Vertical;
+      _container.SetPadding(0, DimensU.Spacing, 0, 0);
+      _container.AddView(_name, 0);
+    } else {
+      _container.AddView(_name);
+    }
+
     _selectItemCommandBinding = _container.Bind(tabControlHost.DataContext.SelectTabCommand);
   }
 
