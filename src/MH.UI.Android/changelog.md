@@ -16,6 +16,7 @@
 	- [U] LoopPager: support for nested ViewPager2
 	- [N] TabControlHost: Slot for custom View in TabStrip
 	- [N] TabControlHost: TabItemHeaderViewHolder text rotation
+	- [B] CollectionViewItem: IsSelected binding
 
 1.2.0:
 	- [N] IconToggleButton
