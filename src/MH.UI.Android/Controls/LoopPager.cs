@@ -12,22 +12,30 @@ namespace MH.UI.Android.Controls;
 public class LoopPager : ViewGroup {
   private int _visibleIndex = 0;
   private float _downX;
+  private float _downY;
   private int _scrollStartX;
   private int _pageWidth;
+  private bool _canIntercept;
+  private bool _isDragging;
   private readonly OverScroller _scroller;
   private readonly int _touchSlop;
   readonly List<View> _pages;
 
   public bool UserInputEnabled { get; set; } = true;
+  public bool AllowDragOnlyFromEdge { get; set; } = true;
   public Func<View, bool> IsHorizontalGestureConsumer { get; set; }
   public Func<View, bool> IsGestureBoundary { get; set; }
+  public Func<View?, bool> IsPagerBlockedBy { get; set; }
+  public int EdgeSwipeSizePx { get; set; }
 
   public LoopPager(Context context, List<View> pages) : base(context) {
     _pages = pages;
     _scroller = new OverScroller(context);
     _touchSlop = ViewConfiguration.Get(context)!.ScaledTouchSlop;
+    EdgeSwipeSizePx = DisplayU.DpToPx(24);
     IsHorizontalGestureConsumer = DefaultIsHorizontalGestureConsumer;
     IsGestureBoundary = DefaultIsGestureBoundary;
+    IsPagerBlockedBy = DefaultIsPagerBlockedBy;
 
     foreach (var page in _pages)
       AddView(page, new LayoutParams(LPU.Match, LPU.Match));
@@ -123,7 +131,12 @@ public class LoopPager : ViewGroup {
   public static bool DefaultIsGestureBoundary(View v) =>
     v is ViewPager2 vp && vp.Orientation == (int)Orientation.Horizontal && !vp.UserInputEnabled;
 
-  private bool _hasHorizontalGestureConsumerUnder(ViewGroup parent, float x, float y) {
+  public static bool DefaultIsPagerBlockedBy(View? v) =>
+    v is HorizontalScrollView or SeekBar;
+
+  private View? _findBlockingViewUnder(ViewGroup? parent, float x, float y) {
+    if (parent == null) return null;
+
     for (int i = parent.ChildCount - 1; i >= 0; i--) {
       var child = parent.GetChildAt(i);
       if (child == null || child.Visibility != ViewStates.Visible) continue;
@@ -133,61 +146,109 @@ public class LoopPager : ViewGroup {
 
       if (cx < 0 || cy < 0 || cx >= child.Width || cy >= child.Height) continue;
 
-      if (IsHorizontalGestureConsumer(child)) return true;
+      if (IsHorizontalGestureConsumer(child)) return child;
 
-      if (IsGestureBoundary(child)) return false;
+      if (IsGestureBoundary(child)) return null;
 
-      if (child is ViewGroup vg && _hasHorizontalGestureConsumerUnder(vg, cx, cy)) return true;
+      if (_findBlockingViewUnder(child as ViewGroup, cx, cy) is View innerChild) return innerChild;
 
-      return false;
+      return null;
     }
 
-    return false;
+    return null;
   }
 
-  public override bool OnInterceptTouchEvent(MotionEvent? ev) {
-    if (ev == null || !UserInputEnabled) return false;
+  public override bool DispatchTouchEvent(MotionEvent? e) {
+    if (e == null) return base.DispatchTouchEvent(e);
 
-    switch (ev.ActionMasked) {
+    switch (e.ActionMasked) {
       case MotionEventActions.Down:
-        _downX = ev.GetX();
-        _scrollStartX = ScrollX;
-        return false;
+        _isDragging = false;
+        _downX = e.GetX();
+        _downY = e.GetY();
+
+        var canDrag = AllowDragOnlyFromEdge
+          ? _downX <= EdgeSwipeSizePx || _downX >= Width - EdgeSwipeSizePx
+          : true;
+
+        _canIntercept = canDrag && !IsPagerBlockedBy(_findBlockingViewUnder(this, _downX, _downY));
+
+        break;
       case MotionEventActions.Move:
-        if (Math.Abs(ev.GetX() - _downX) > _touchSlop)
-          return !_hasHorizontalGestureConsumerUnder(this, ev.GetX(), ev.GetY());
+        if (_canIntercept && !_isDragging) {
+          var dx = e.GetX() - _downX;
+          var dy = e.GetY() - _downY;
+          var horizontalEnough = Math.Abs(dx) > _touchSlop && Math.Abs(dx) > Math.Abs(dy);
+          var directionMatchesEdge = (_downX <= EdgeSwipeSizePx && dx > 0) || (_downX >= Width - EdgeSwipeSizePx && dx < 0);
+
+          if (horizontalEnough && directionMatchesEdge) {
+            _sendCancelToChildren(e);
+            _startDragFrom(e);
+          }
+        }
         break;
     }
-
-    return false;
+    return base.DispatchTouchEvent(e);
   }
 
-  public override bool OnTouchEvent(MotionEvent? ev) {
-    if (ev == null || !UserInputEnabled) return false;
+  private void _sendCancelToChildren(MotionEvent src) {
+    if (MotionEvent.Obtain(
+      src.DownTime,
+      src.EventTime,
+      MotionEventActions.Cancel,
+      src.GetX(),
+      src.GetY(),
+      src.MetaState
+    ) is not { } cancel) return;
 
-    switch (ev.ActionMasked) {
+    base.DispatchTouchEvent(cancel);
+    cancel.Recycle();
+  }
+
+  private void _startDragFrom(MotionEvent e) {
+    if (MotionEvent.Obtain(e) is not { } fakeDown) return;
+    _isDragging = true;
+    fakeDown.Action = MotionEventActions.Down;
+    OnTouchEvent(fakeDown);
+    fakeDown.Recycle();
+  }
+
+  public override bool OnInterceptTouchEvent(MotionEvent? e) =>
+    UserInputEnabled && _isDragging;
+
+  public override bool OnTouchEvent(MotionEvent? e) {
+    if (e == null || !UserInputEnabled) return false;
+
+    switch (e.ActionMasked) {
       case MotionEventActions.Down:
-        _downX = ev.GetX();
+        _downX = e.GetX();
+        _scrollStartX = ScrollX;
         return true;
 
       case MotionEventActions.Move:
-        float dx = _downX - ev.GetX();
+        if (!_isDragging) return false;
+
+        var dx = _downX - e.GetX();
         ScrollTo(_scrollStartX + (int)dx, 0);
         return true;
 
       case MotionEventActions.Up:
       case MotionEventActions.Cancel:
-        float pageOffset = (float)ScrollX / MeasuredWidth;
+        if (_isDragging) {
+          var pageOffset = (float)ScrollX / MeasuredWidth;
 
-        if (pageOffset > _visibleIndex + 0.3f) {
-          _visibleIndex++;
-          _reorderChildren();
-        } else if (pageOffset < _visibleIndex - 0.3f) {
-          _visibleIndex--;
-          _reorderChildren();
+          if (pageOffset > _visibleIndex + 0.3f) {
+            _visibleIndex++;
+            _reorderChildren();
+          } else if (pageOffset < _visibleIndex - 0.3f) {
+            _visibleIndex--;
+            _reorderChildren();
+          }
+
+          _scrollToVisibleIndex();
         }
 
-        _scrollToVisibleIndex();
+        _isDragging = false;
         return true;
     }
 
