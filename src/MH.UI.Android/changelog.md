@@ -18,6 +18,8 @@
 	- [N] TabControlHost: TabItemHeaderViewHolder text rotation
 	- [B] CollectionViewItem: IsSelected binding
 	- [U] LoopPager: AllowDragOnlyFromEdge
+	- [U] CollectionViewHost: performance and item content creation
+	- [U] CollectionViewHost: old version set as obsolete
 
 1.2.0:
 	- [N] IconToggleButton
