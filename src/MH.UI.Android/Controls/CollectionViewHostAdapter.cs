@@ -3,9 +3,11 @@ using Android.Views;
 using AndroidX.RecyclerView.Widget;
 using MH.UI.Interfaces;
 using MH.Utils.BaseClasses;
+using System;
 
 namespace MH.UI.Android.Controls;
 
+[Obsolete("Use MH.UI.Android.Controls.Hosts.CollectionViewHost")]
 public class CollectionViewHostAdapter(Context _context, CollectionViewHost _host)
   : TreeViewHostAdapterBase(_context, _host.DataContext.RootHolder) {
 

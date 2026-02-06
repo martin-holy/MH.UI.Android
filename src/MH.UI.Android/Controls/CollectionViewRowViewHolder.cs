@@ -11,6 +11,7 @@ using System;
 
 namespace MH.UI.Android.Controls;
 
+[Obsolete("Use MH.UI.Android.Controls.Hosts.CollectionViewHost")]
 public class CollectionViewRowViewHolder : RecyclerView.ViewHolder, IDisposable {
   private bool _disposed;
   private readonly CollectionViewHost _cvHost;

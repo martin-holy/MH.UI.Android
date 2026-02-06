@@ -5,9 +5,11 @@ using MH.UI.Android.Extensions;
 using MH.UI.Android.Utils;
 using MH.UI.Interfaces;
 using MH.Utils.BaseClasses;
+using System;
 
 namespace MH.UI.Android.Controls;
 
+[Obsolete("Use MH.UI.Android.Controls.Hosts.CollectionViewHost")]
 public class CollectionViewGroupViewHolder : FlatTreeItemViewHolderBase {
   private readonly TextView _sourceCount;
 

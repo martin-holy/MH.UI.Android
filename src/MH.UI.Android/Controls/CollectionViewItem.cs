@@ -9,6 +9,7 @@ using System;
 
 namespace MH.UI.Android.Controls;
 
+[Obsolete("Use MH.UI.Android.Controls.Hosts.CollectionViewHost")]
 public class CollectionViewItem : FrameLayout {
   private readonly View _border;
   private ISelectable? _dataContext;
