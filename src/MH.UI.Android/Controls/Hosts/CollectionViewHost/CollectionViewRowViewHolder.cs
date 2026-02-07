@@ -42,7 +42,7 @@ public class CollectionViewRowViewHolder : RecyclerView.ViewHolder, IDisposable 
     if (_dataContext == null || _dataContext is not ITreeItem { Parent: ICollectionViewGroup group }) return;
 
     var items = _dataContext.Leaves.ToArray();
-    _rowHeight = items.Max(x => group.GetItemSize(x, false)) + CollectionView.ItemBorderSize * 2;
+    _rowHeight = items.Length == 0 ? 0 : items.Max(x => group.GetItemSize(x, false)) + CollectionView.ItemBorderSize * 2;
     _items.LayoutParameters!.Height = _rowHeight;
 
     _adapter.Submit(group, items);
@@ -50,7 +50,9 @@ public class CollectionViewRowViewHolder : RecyclerView.ViewHolder, IDisposable 
 
   protected override void Dispose(bool disposing) {
     if (_disposed) return;
-    if (disposing)       _items.SetAdapter(null);
+    if (disposing) {
+      _items.SetAdapter(null);
+    }
     _disposed = true;
     base.Dispose(disposing);
   }
