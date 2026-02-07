@@ -1,3 +1,6 @@
+1.3.1:
+	- [B] CollectionViewRowViewHolder: row height calculation when items are empty
+
 1.3.0:
 	- [N] ImagingU: ConvertOrientationFromMHToAndroid
 	- [N] ExifInterfaceExtensions: SetLatLong, SetOrientation and SetUserComment
