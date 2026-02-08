@@ -1,5 +1,8 @@
-1.3.1:
+1.4.0:
 	- [B] CollectionViewRowViewHolder: row height calculation when items are empty
+	- [U] LoopPager: GetCurrentItem returns View
+	- [N] LoopPager: PageChangedEvent
+	- [N] ToolBar
 
 1.3.0:
 	- [N] ImagingU: ConvertOrientationFromMHToAndroid
