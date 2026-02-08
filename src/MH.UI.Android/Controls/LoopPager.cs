@@ -45,8 +45,8 @@ public class LoopPager : ViewGroup {
     _scrollToVisibleIndex();
   }
 
-  public int GetCurrentItem() =>
-    _pages.IndexOf(GetChildAt(_visibleIndex)!);
+  public View? GetCurrentItem() =>
+    GetChildAt(_visibleIndex);
 
   public void SetCurrentItem(int index, bool smoothScroll) {
     var newVisibleIndex = _indexToVisibleIndex(index);
