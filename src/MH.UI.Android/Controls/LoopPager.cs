@@ -28,6 +28,8 @@ public class LoopPager : ViewGroup {
   public Func<View?, bool> IsPagerBlockedBy { get; set; }
   public int EdgeSwipeSizePx { get; set; }
 
+  public event EventHandler<View?>? PageChangedEvent;
+
   public LoopPager(Context context, List<View> pages) : base(context) {
     _pages = pages;
     _scroller = new OverScroller(context);
@@ -62,6 +64,8 @@ public class LoopPager : ViewGroup {
     }
     else
       _scrollToVisibleIndex();
+
+    PageChangedEvent?.Invoke(this, GetChildAt(_visibleIndex));
   }
 
   private void _scrollToVisibleIndex() =>
@@ -246,6 +250,7 @@ public class LoopPager : ViewGroup {
           }
 
           _scrollToVisibleIndex();
+          PageChangedEvent?.Invoke(this, GetChildAt(_visibleIndex));
         }
 
         _isDragging = false;
