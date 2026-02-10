@@ -3,6 +3,7 @@
 	- [U] LoopPager: GetCurrentItem returns View
 	- [N] LoopPager: PageChangedEvent
 	- [N] ToolBar
+	- [N] Expand and shrink rect icon
 
 1.3.0:
 	- [N] ImagingU: ConvertOrientationFromMHToAndroid
