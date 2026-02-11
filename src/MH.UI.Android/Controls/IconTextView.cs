@@ -17,7 +17,6 @@ public class IconTextView : LinearLayout {
 
   public IconTextView(Context context) : base(context) {
     Orientation = global::Android.Widget.Orientation.Horizontal;
-    Background = BackgroundFactory.RoundDark();
     SetGravity(GravityFlags.CenterVertical);
 
     _icon = new IconView(context);
