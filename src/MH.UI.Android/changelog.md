@@ -4,6 +4,12 @@
 	- [N] LoopPager: PageChangedEvent
 	- [N] ToolBar
 	- [N] Expand and shrink rect icon
+	- [U] IconTextView: default background removed
+	- [N] ItemsView
+	- [N] SelectableItemsView
+	- [N] ListItemV
+	- [N] SelectFromListDialogV
+	- [C] LogV: using SelectableItemsView
 
 1.3.0:
 	- [N] ImagingU: ConvertOrientationFromMHToAndroid
