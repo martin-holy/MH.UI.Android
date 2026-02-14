@@ -48,6 +48,7 @@ public class DialogHost : DialogFragment {
       GroupByDialog gbDlg => new GroupByDialogV(context, gbDlg),
       InputDialog iDlg => new InputDialogV(context, iDlg),
       MessageDialog mDlg => new MessageDialogV(context, mDlg),
+      SelectFromListDialog sflDlg => new SelectFromListDialogV(context, sflDlg),
       ToggleDialog tDlg => new ToggleDialogV(context, tDlg),
       _ => null
     };
