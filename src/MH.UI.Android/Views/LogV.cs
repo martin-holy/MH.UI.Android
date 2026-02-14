@@ -2,21 +2,19 @@
 using Android.Views;
 using Android.Widget;
 using AndroidX.RecyclerView.Widget;
+using MH.UI.Android.Controls.Items;
 using MH.UI.Android.Extensions;
 using MH.UI.Android.Utils;
 using MH.UI.ViewModels;
 using MH.Utils;
 using MH.Utils.BaseClasses;
-using System;
-using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 
 namespace MH.UI.Android.Views;
 
 public class LogV : LinearLayout {
   private readonly LogVM _dataContext;
-  private readonly RecyclerView _list;
-  private readonly LogAdapter _adapter;
+  private readonly SelectableItemsView<LogItem> _items;
   private readonly EditText _detail;
   private readonly CheckBox _wrapText;
   private readonly Button _clearBtn;
@@ -24,12 +22,12 @@ public class LogV : LinearLayout {
 
   public LogV(Context context, LogVM dataContext) : base(context) {
     _dataContext = dataContext;
-    _adapter = new(dataContext.Items, this);
     Orientation = Orientation.Vertical;
 
-    _list = new(context);
-    _list.SetLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.Vertical, false));
-    _list.SetAdapter(_adapter);
+    _items = new(context, x => new LogItemV(x));
+    _items.SetLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.Vertical, false));
+    _items.BindItems(dataContext.Items);
+    _items.ItemClickedEvent += item => _setDetailText(item?.Detail);
 
     _detail = new(context) {
       Background = null,
@@ -49,7 +47,7 @@ public class LogV : LinearLayout {
     footer.AddView(_wrapText, new LayoutParams(0, LPU.Wrap, 1f));
     footer.AddView(_clearBtn, new LayoutParams(LPU.Wrap, DisplayU.DpToPx(32)).WithMargin(DimensU.Spacing));
 
-    AddView(_list, new LayoutParams(LPU.Match, 0, 0.4f).WithMargin(DimensU.Spacing));
+    AddView(_items, new LayoutParams(LPU.Match, 0, 0.4f).WithMargin(DimensU.Spacing));
     AddView(_detail, new LayoutParams(LPU.Match, 0, 1f).WithMargin(DimensU.Spacing));
     AddView(footer, new LayoutParams(LPU.Match, LPU.Wrap));
 
@@ -57,12 +55,8 @@ public class LogV : LinearLayout {
   }
 
   private void _onItemsCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e) {
-    Tasks.Dispatch(_adapter.NotifyDataSetChanged);
     _setDetailText(null);
   }
-
-  internal void HandleItemClick(LogItem? item) =>
-    _setDetailText(item?.Detail);
 
   private void _setDetailText(string? text) {
     _detail.Text = text;
@@ -81,66 +75,10 @@ public class LogV : LinearLayout {
   protected override void Dispose(bool disposing) {
     if (_disposed) return;
     if (disposing) {
-      _list.SetAdapter(null);
-      _adapter.Dispose();
       _dataContext.Items.CollectionChanged -= _onItemsCollectionChanged;
       _wrapText.CheckedChange -= _wrapTextCheckedChange;
     }
     _disposed = true;
     base.Dispose(disposing);
-  }
-
-  private class LogAdapter(ObservableCollection<LogItem> _items, LogV _logV) : RecyclerView.Adapter {
-    public override int ItemCount => _items.Count;
-
-    public override RecyclerView.ViewHolder OnCreateViewHolder(ViewGroup parent, int viewType) =>
-      new LogItemViewHolder(parent.Context!, _logV);
-
-    public override void OnBindViewHolder(RecyclerView.ViewHolder holder, int position) =>
-      ((LogItemViewHolder)holder).Bind(_items[position]);
-  }
-
-  private class LogItemViewHolder : RecyclerView.ViewHolder {
-    private readonly LinearLayout _container;
-    private readonly View _level;
-    private readonly TextView _text;
-
-    public LogItem? DataContext { get; private set; }
-
-    public LogItemViewHolder(Context context, LogV logV) : base(_createContainerView(context)) {
-      _level = new View(context);
-      _text = new TextView(context);
-      _container = (LinearLayout)ItemView;
-      _container.AddView(_level, new LayoutParams(DisplayU.DpToPx(10), LPU.Match));
-      _container.AddView(_text);
-      _container.Click += (_, _) => logV.HandleItemClick(DataContext);
-    }
-
-    public void Bind(LogItem? item) {
-      DataContext = item;
-      if (item == null) return;
-
-      _level.SetBackgroundResource(item.Level switch {
-        LogLevel.Info => Resource.Color.c_log_info,
-        LogLevel.Warning => Resource.Color.c_log_warning,
-        LogLevel.Error => Resource.Color.c_log_error,
-        _ => throw new ArgumentOutOfRangeException()
-      });
-
-      _text.Text = item.Title;
-    }
-
-    private static LinearLayout _createContainerView(Context context) {
-      var container = new LinearLayout(context) {
-        Orientation = Orientation.Horizontal,
-        LayoutParameters = new RecyclerView.LayoutParams(LPU.Match, LPU.Wrap),
-        Clickable = true,
-        Focusable = true
-      };
-      container.SetGravity(GravityFlags.CenterVertical);
-      container.SetBackgroundResource(Resource.Color.c_static_ba);
-
-      return container;
-    }
   }
 }
