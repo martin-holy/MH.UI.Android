@@ -10,6 +10,7 @@
 	- [N] ListItemV
 	- [N] SelectFromListDialogV
 	- [C] LogV: using SelectableItemsView
+	- [N] PopupSlider
 
 1.3.0:
 	- [N] ImagingU: ConvertOrientationFromMHToAndroid
