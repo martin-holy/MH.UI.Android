@@ -1,3 +1,6 @@
+1.5.0:
+	- [N] WindowExtensions: Enter and exit full screen methods
+
 1.4.0:
 	- [B] CollectionViewRowViewHolder: row height calculation when items are empty
 	- [U] LoopPager: GetCurrentItem returns View
