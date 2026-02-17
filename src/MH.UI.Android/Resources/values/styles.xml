@@ -71,17 +71,20 @@
     <item name="android:layout_height">wrap_content</item>
     <item name="android:textColor">@drawable/color_foreground</item>
     <item name="android:padding">@dimen/spacing</item>
+		<item name="android:textSize">@dimen/text_size</item>
   </style>
   
   <style name="mh_CheckBox" parent="android:Widget.CompoundButton.CheckBox">
     <item name="android:button">@drawable/check_box_selector</item>
     <item name="android:background">@null</item>
+		<item name="android:textSize">@dimen/text_size</item>
   </style>
 
   <style name="mh_RadioButton" parent="android:Widget.CompoundButton.RadioButton">
     <item name="android:button">@drawable/radio_button_selector</item>
     <item name="android:background">@null</item>
     <item name="android:padding">@dimen/spacing</item>
+		<item name="android:textSize">@dimen/text_size</item>
   </style>
   
   <style name="mh_IconButton" parent="mh_ImageButton">
