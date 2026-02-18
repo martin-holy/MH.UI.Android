@@ -13,14 +13,14 @@ using System.Linq;
 
 namespace MH.UI.Android.Controls.Hosts.CollectionViewHost;
 
-public class CollectionViewRowViewHolder : RecyclerView.ViewHolder, IDisposable {
+public class CollectionViewRowV : RelativeLayout, IBindable<FlatTreeItem> {
   private bool _disposed;
   private ICollectionViewRow? _dataContext;
   private readonly RecyclerView _items;
   private readonly CollectionViewItemAdapter _adapter;
   private int _rowHeight;
 
-  public CollectionViewRowViewHolder(Context context, CollectionViewHost cvHost) : base(new RelativeLayout(context)) {
+  public CollectionViewRowV(Context context, CollectionViewHost cvHost) : base(context) {
     _adapter = new CollectionViewItemAdapter(
       item => cvHost.HandleItemClick(_dataContext!, item),
       item => cvHost.HandleItemLongClick(_dataContext!, item),
@@ -33,7 +33,7 @@ public class CollectionViewRowViewHolder : RecyclerView.ViewHolder, IDisposable 
     _items.AddItemDecoration(new VerticalCenterItemDecoration(() => _rowHeight));
     _items.SetAdapter(_adapter);
 
-    ((RelativeLayout)ItemView).AddView(_items, new RelativeLayout.LayoutParams(LPU.Wrap, LPU.Wrap));
+    AddView(_items, new RelativeLayout.LayoutParams(LPU.Wrap, LPU.Wrap));
   }
 
   public void Bind(FlatTreeItem item) {
@@ -47,6 +47,8 @@ public class CollectionViewRowViewHolder : RecyclerView.ViewHolder, IDisposable 
 
     _adapter.Submit(group, items);
   }
+
+  public void Unbind() { }
 
   protected override void Dispose(bool disposing) {
     if (_disposed) return;

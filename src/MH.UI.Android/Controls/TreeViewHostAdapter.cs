@@ -1,6 +1,10 @@
 ﻿using Android.Content;
 using Android.Views;
 using AndroidX.RecyclerView.Widget;
+using MH.UI.Android.Controls.Hosts.TreeViewHost;
+using MH.UI.Android.Controls.Recycler;
+using MH.UI.Android.Utils;
+using MH.UI.Interfaces;
 using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
 using MH.Utils.Interfaces;
@@ -11,14 +15,14 @@ namespace MH.UI.Android.Controls;
 
 public interface ITreeItemViewHolderFactory {
   public int GetViewType(FlatTreeItem item);
-  public FlatTreeItemViewHolderBase Create(ViewGroup parent, int viewType, IAndroidTreeViewHost host);
+  public RecyclerView.ViewHolder Create(ViewGroup parent, int viewType, IAndroidTreeViewHost host);
 }
 
 internal sealed class DefaultTreeItemViewHolderFactory : ITreeItemViewHolderFactory {
   public int GetViewType(FlatTreeItem item) => 0;
 
-  public FlatTreeItemViewHolderBase Create(ViewGroup parent, int viewType, IAndroidTreeViewHost host) =>
-    new FlatTreeItemViewHolder(parent.Context!, (TreeViewHost)host);
+  public RecyclerView.ViewHolder Create(ViewGroup parent, int viewType, IAndroidTreeViewHost host) =>
+    new BaseViewHolder(new FlatTreeItemV(parent.Context!, (TreeViewHost)host), new(LPU.Match, LPU.Wrap));
 }
 
 public class TreeViewHostAdapter : TreeViewHostAdapterBase {
@@ -38,7 +42,7 @@ public class TreeViewHostAdapter : TreeViewHostAdapterBase {
     _factory.Create(parent, viewType, _host);
 
   public override void OnBindViewHolder(RecyclerView.ViewHolder holder, int position) =>
-    ((FlatTreeItemViewHolderBase)holder).Bind(_items[position]);
+    (holder.ItemView as IBindable<FlatTreeItem>)?.Bind(_items[position]);
 
   public override void OnBindViewHolder(RecyclerView.ViewHolder holder, int position, IList<Java.Lang.Object> payloads) {
     if (payloads.Count == 0) {
@@ -47,10 +51,10 @@ public class TreeViewHostAdapter : TreeViewHostAdapterBase {
     }
 
     var item = _items[position];
-    var vh = (FlatTreeItemViewHolder)holder;
+    if (holder.ItemView is not FlatTreeItemV view) return;
     foreach (var payload in payloads) {
       if (Equals(nameof(ITreeItem.IsSelected), payload.ToString()))
-        vh.UpdateSelection(item.TreeItem.IsSelected);
+        view.UpdateSelection(item.TreeItem.IsSelected);
     }
   }
 

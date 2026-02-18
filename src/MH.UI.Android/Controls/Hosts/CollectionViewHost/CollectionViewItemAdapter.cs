@@ -1,6 +1,8 @@
 ﻿using Android.Content;
 using Android.Views;
 using AndroidX.RecyclerView.Widget;
+using MH.UI.Android.Controls.Recycler;
+using MH.UI.Android.Utils;
 using MH.UI.Interfaces;
 using MH.Utils.Interfaces;
 using System;
@@ -39,7 +41,7 @@ public class CollectionViewItemAdapter : RecyclerView.Adapter {
   public override RecyclerView.ViewHolder OnCreateViewHolder(ViewGroup parent, int viewType) {
     var content = _createItemContent(parent.Context!, _requireGroup());
     var shell = new CollectionViewItemShell(parent.Context!, content, _onClick, _onLongClick);
-    return new CollectionViewItemViewHolder(shell);
+    return new BaseViewHolder(shell, new(LPU.Wrap, LPU.Wrap));
   }
 
   public override void OnBindViewHolder(RecyclerView.ViewHolder holder, int position) {
@@ -47,16 +49,16 @@ public class CollectionViewItemAdapter : RecyclerView.Adapter {
     var item = _items[position];
     var itemWidth = group.GetItemSize(item, true);
     var itemHeight = group.GetItemSize(item, false);
-    ((CollectionViewItemViewHolder)holder).Bind(item, itemWidth, itemHeight);
+    ((CollectionViewItemShell)holder.ItemView).Bind(item, itemWidth, itemHeight);
   }
 
   public override void OnViewRecycled(Java.Lang.Object holder) {
-    ((CollectionViewItemViewHolder)holder).Unbind();
+    ((CollectionViewItemShell)((RecyclerView.ViewHolder)holder).ItemView).Unbind();
     base.OnViewRecycled(holder);
   }
 
   public override void OnViewDetachedFromWindow(Java.Lang.Object holder) {
-    ((CollectionViewItemViewHolder)holder).Unbind();
+    ((CollectionViewItemShell)((RecyclerView.ViewHolder)holder).ItemView).Unbind();
     base.OnViewDetachedFromWindow(holder);
   }
 

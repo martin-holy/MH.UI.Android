@@ -1,15 +1,16 @@
 ﻿using Android.Content;
+using MH.UI.Android.Controls;
 using MH.UI.Android.Utils;
 using MH.Utils.BaseClasses;
 
-namespace MH.UI.Android.Controls;
+namespace MH.UI.Android.Controls.Hosts.TreeViewHost;
 
-public class FlatTreeItemViewHolder : FlatTreeItemViewHolderBase {
+public class FlatTreeItemV : FlatTreeItemVBase {
   private readonly CommandBinding _selectItemCommandBinding;
 
-  public FlatTreeItemViewHolder(Context context, TreeViewHost treeViewHost) : base(context, treeViewHost) {
-    _container.SetBackgroundResource(Resource.Drawable.selectable_item);
-    _selectItemCommandBinding = _container.Bind(treeViewHost.DataContext.SelectItemCommand);
+  public FlatTreeItemV(Context context, IAndroidTreeViewHost treeViewHost) : base(context, treeViewHost) {
+    SetBackgroundResource(Resource.Drawable.selectable_item);
+    _selectItemCommandBinding = this.Bind(treeViewHost.DataContext.SelectItemCommand);
   }
 
   public override void Bind(FlatTreeItem? item) {
@@ -21,6 +22,6 @@ public class FlatTreeItemViewHolder : FlatTreeItemViewHolderBase {
 
   public void UpdateSelection(bool selected) {
     if (_treeViewHost.DataContext.ShowTreeItemSelection)
-      _container.Selected = selected;
+      Selected = selected;
   }
 }

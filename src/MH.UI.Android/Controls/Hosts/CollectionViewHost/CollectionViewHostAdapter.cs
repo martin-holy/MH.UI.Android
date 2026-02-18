@@ -1,6 +1,8 @@
 ﻿using Android.Content;
 using Android.Views;
 using AndroidX.RecyclerView.Widget;
+using MH.UI.Android.Controls.Recycler;
+using MH.UI.Android.Utils;
 using MH.UI.Interfaces;
 using MH.Utils.BaseClasses;
 
@@ -14,15 +16,9 @@ public class CollectionViewHostAdapter(Context _context, CollectionViewHost _hos
 
   public override RecyclerView.ViewHolder OnCreateViewHolder(ViewGroup parent, int viewType) =>
     viewType == 0
-      ? new CollectionViewGroupViewHolder(parent.Context!, _host)
-      : new CollectionViewRowViewHolder(parent.Context!, _host);
+      ? new BaseViewHolder(new CollectionViewGroupV(parent.Context!, _host), new(LPU.Match, LPU.Wrap))
+      : new BaseViewHolder(new CollectionViewRowV(parent.Context!, _host), new(LPU.Match, LPU.Wrap));
 
-  public override void OnBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-    var item = _items[position];
-
-    if (holder is CollectionViewGroupViewHolder groupHolder)
-      groupHolder.Bind(item);
-    else if (holder is CollectionViewRowViewHolder rowHolder)
-      rowHolder.Bind(item);
-  }
+  public override void OnBindViewHolder(RecyclerView.ViewHolder holder, int position) =>
+    (holder.ItemView as IBindable<FlatTreeItem>)?.Bind(_items[position]);
 }
