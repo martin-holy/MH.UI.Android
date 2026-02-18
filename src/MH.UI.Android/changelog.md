@@ -1,6 +1,8 @@
 1.5.0:
 	- [N] WindowExtensions: Enter and exit full screen methods
 	- [U] TextSize 15sp for TextView, CheckBox and RadioButton
+	- [N] BaseViewHolder
+	- [C] TreeView and CollectionView refactoring
 
 1.4.0:
 	- [B] CollectionViewRowViewHolder: row height calculation when items are empty
