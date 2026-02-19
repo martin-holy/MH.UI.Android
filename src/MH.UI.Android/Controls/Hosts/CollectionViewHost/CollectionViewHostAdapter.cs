@@ -2,6 +2,7 @@
 using Android.Views;
 using AndroidX.RecyclerView.Widget;
 using MH.UI.Android.Controls.Recycler;
+using MH.UI.Android.Extensions;
 using MH.UI.Android.Utils;
 using MH.UI.Interfaces;
 using MH.Utils.BaseClasses;
@@ -16,7 +17,9 @@ public class CollectionViewHostAdapter(Context _context, CollectionViewHost _hos
 
   public override RecyclerView.ViewHolder OnCreateViewHolder(ViewGroup parent, int viewType) =>
     viewType == 0
-      ? new BaseViewHolder(new CollectionViewGroupV(parent.Context!, _host), new(LPU.Match, LPU.Wrap))
+      ? new BaseViewHolder(
+          new CollectionViewGroupV(parent.Context!, _host),
+          new RecyclerView.LayoutParams(LPU.Match, LPU.Wrap).WithDpMargin(2, 1, 2, 1))
       : new BaseViewHolder(new CollectionViewRowV(parent.Context!, _host), new(LPU.Match, LPU.Wrap));
 
   public override void OnBindViewHolder(RecyclerView.ViewHolder holder, int position) =>

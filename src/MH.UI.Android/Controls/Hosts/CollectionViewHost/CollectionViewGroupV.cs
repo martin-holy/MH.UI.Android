@@ -1,9 +1,6 @@
 ﻿using Android.Content;
 using Android.Widget;
-using AndroidX.RecyclerView.Widget;
-using MH.UI.Android.Controls;
 using MH.UI.Android.Controls.Hosts.TreeViewHost;
-using MH.UI.Android.Extensions;
 using MH.UI.Android.Utils;
 using MH.UI.Interfaces;
 using MH.Utils.BaseClasses;
@@ -17,8 +14,6 @@ public class CollectionViewGroupV : FlatTreeItemVBase {
     _sourceCount = new TextView(context);
     AddView(_sourceCount);
     Background = BackgroundFactory.Dark();
-    if (LayoutParameters is RecyclerView.LayoutParams lp)
-      LayoutParameters = lp.WithDpMargin(2);
   }
 
   public override void Bind(FlatTreeItem? item) {
