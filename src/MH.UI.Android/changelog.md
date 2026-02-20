@@ -3,6 +3,7 @@
 	- [U] TextSize 15sp for TextView, CheckBox and RadioButton
 	- [N] BaseViewHolder
 	- [C] TreeView and CollectionView refactoring
+	- [U] InputDialogV: Set focus and show keyboard
 
 1.4.0:
 	- [B] CollectionViewRowViewHolder: row height calculation when items are empty
