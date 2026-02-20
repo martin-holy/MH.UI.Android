@@ -1,6 +1,7 @@
 ﻿using Android.Content;
 using Android.Graphics;
 using Android.Views;
+using Android.Views.InputMethods;
 using Android.Widget;
 using AndroidX.Core.Content;
 using MH.UI.Android.Controls;
@@ -21,7 +22,6 @@ public sealed class InputDialogV : LinearLayout {
     var icon = new IconView(context, dataContext.Icon);
     var message = new TextView(context) { Text = dataContext.Message };
     var answer = new EditText(context).BindText(dataContext, nameof(InputDialog.Answer), x => x.Answer, (s, v) => s.Answer = v, out _);
-    answer.RequestFocus();
     answer.Bind(dataContext, nameof(InputDialog.Error), x => x.Error, (s, error) => {
       s.Hint = dataContext.ErrorMessage; // TODO Find out other way to show error message.
       if (s.Background == null) return;
@@ -39,5 +39,11 @@ public sealed class InputDialogV : LinearLayout {
 
     AddView(icon, new LayoutParams(DisplayU.DpToPx(32), DisplayU.DpToPx(32)).WithDpMargin(10));
     AddView(messageAndAnswer, new LayoutParams(LPU.Wrap, LPU.Wrap, 1f));
+
+    Post(() => {
+      answer.RequestFocus();
+      if (Context?.GetSystemService(Context.InputMethodService) is InputMethodManager imm)
+        imm.ShowSoftInput(answer, ShowFlags.Implicit);
+    });
   }
 }
