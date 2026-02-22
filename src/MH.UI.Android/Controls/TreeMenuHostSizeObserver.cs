@@ -17,7 +17,20 @@ public class TreeMenuHostSizeObserver(Context _context, TreeMenuHost _treeMenu, 
 
   public override void OnChanged() {
     base.OnChanged();
+    _onItemCountChanged();
+  }
 
+  public override void OnItemRangeInserted(int positionStart, int itemCount) {
+    base.OnItemRangeInserted(positionStart, itemCount);
+    _onItemCountChanged();
+  }
+
+  public override void OnItemRangeRemoved(int positionStart, int itemCount) {
+    base.OnItemRangeRemoved(positionStart, itemCount);
+    _onItemCountChanged();
+  }
+
+  private void _onItemCountChanged() {
     var itemsCount = _treeMenu.Adapter!.Items.Count;
     if (_lastItemsCount != itemsCount) {
       _lastItemsCount = itemsCount;
@@ -95,7 +108,7 @@ public class TreeMenuHostSizeObserver(Context _context, TreeMenuHost _treeMenu, 
     var anchorBottom = anchorTop + anchor.Height;
 
     var popupLoc = new int[2];
-    popup.ContentView.GetLocationOnScreen(popupLoc);
+    popup.ContentView?.GetLocationOnScreen(popupLoc);
     var popupY = popupLoc[1];
 
     return popupY == 0
