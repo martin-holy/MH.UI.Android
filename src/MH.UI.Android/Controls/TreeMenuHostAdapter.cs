@@ -1,6 +1,7 @@
 ﻿using Android.Content;
 using Android.Views;
 using AndroidX.RecyclerView.Widget;
+using MH.UI.Android.Controls.Hosts.TreeViewHost;
 
 namespace MH.UI.Android.Controls;
 
@@ -11,5 +12,5 @@ public class TreeMenuHostAdapter(Context _context, TreeMenuHost _host)
     new TreeMenuItemViewHolder(parent.Context!, _host.Close);
 
   public override void OnBindViewHolder(RecyclerView.ViewHolder holder, int position) =>
-    ((TreeMenuItemViewHolder)holder).Bind(_items[position]);
+    ((TreeMenuItemViewHolder)holder).Bind(Items[position]);
 }

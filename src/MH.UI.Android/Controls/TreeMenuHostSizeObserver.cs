@@ -31,6 +31,7 @@ public class TreeMenuHostSizeObserver(Context _context, TreeMenuHost _treeMenu, 
   }
 
   private void _onItemCountChanged() {
+    if (MenuAnchor == null) return;
     var itemsCount = _treeMenu.Adapter!.Items.Count;
     if (_lastItemsCount != itemsCount) {
       _lastItemsCount = itemsCount;

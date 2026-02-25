@@ -3,6 +3,7 @@ using Android.Widget;
 using MH.UI.Android.Utils;
 using MH.UI.Android.Extensions;
 using MH.UI.Controls;
+using MH.UI.Android.Controls.Hosts.TreeViewHost;
 
 namespace MH.UI.Android.Controls;
 
@@ -21,9 +22,8 @@ public class TreeMenuHost : TreeViewHostBase<TreeView, TreeViewHostAdapterBase> 
     Adapter!.RegisterAdapterDataObserver(Observer);
   }
 
-  public void RefreshMenu() {
-    Post(() => Adapter?.NotifyDataSetChanged());
-  }
+  public void RefreshMenu() =>
+    Post(() => Adapter?.Reset());
 
   public void Close() => Popup.Dismiss();
 

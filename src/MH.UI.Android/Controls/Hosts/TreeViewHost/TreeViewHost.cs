@@ -7,7 +7,7 @@ using MH.Utils.BaseClasses;
 using System;
 using System.Collections.Generic;
 
-namespace MH.UI.Android.Controls;
+namespace MH.UI.Android.Controls.Hosts.TreeViewHost;
 
 public class TreeViewHost : TreeViewHostBase<TreeView, TreeViewHostAdapter>, ITreeViewHost {
   public TreeViewHost(

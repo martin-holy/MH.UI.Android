@@ -55,14 +55,22 @@ public abstract class FlatTreeItemVBase : LinearLayout, IBindable<FlatTreeItem> 
     int indent = item.Level * DimensU.FlatTreeItemIndentSize;
     SetPadding(indent, PaddingTop, PaddingRight, PaddingBottom);
 
-    _expandedIcon.Visibility = item.TreeItem.Items.Count > 0 ? ViewStates.Visible : ViewStates.Invisible;
-    _expandedIcon.Activated = item.TreeItem.IsExpanded;
+    BindIsExpandedVisible(item);
+    BindIsExpanded(item);
 
     if (_icon != null)
       _icon.SetImageDrawable(Icons.GetIcon(Context, item.TreeItem.Icon));
 
     if (_name != null)
       _name.Text = item.TreeItem.Name;
+  }
+
+  public void BindIsExpanded(FlatTreeItem item) {
+    _expandedIcon.Activated = item.TreeItem.IsExpanded;
+  }
+
+  public void BindIsExpandedVisible(FlatTreeItem item) {
+    _expandedIcon.Visibility = item.TreeItem.Items.Count > 0 ? ViewStates.Visible : ViewStates.Invisible;
   }
 
   public virtual void Unbind() { }

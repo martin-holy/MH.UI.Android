@@ -20,6 +20,10 @@ public class CollectionViewGroupV : FlatTreeItemVBase {
     base.Bind(item);
     if (item is not { TreeItem: ICollectionViewGroup group }) return;
 
+    BindSourceCount(group);
+  }
+
+  public void BindSourceCount(ICollectionViewGroup group) {
     _sourceCount.Text = group.SourceCount.ToString();
   }
 }

@@ -9,14 +9,8 @@ using MH.Utils.BaseClasses;
 using MH.Utils.Interfaces;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
-namespace MH.UI.Android.Controls;
-
-public interface IAndroidTreeViewHost : ITreeViewHost {
-  public TreeView DataContext { get; }
-  public TreeMenu? ItemMenu {  get; }
-}
+namespace MH.UI.Android.Controls.Hosts.TreeViewHost;
 
 public abstract class TreeViewHostBase<TView, TAdapter> : RelativeLayout, IAndroidTreeViewHost
     where TView : TreeView
@@ -65,9 +59,13 @@ public abstract class TreeViewHostBase<TView, TAdapter> : RelativeLayout, IAndro
     _recyclerView.ScrollTo(0, 0);
 
   public virtual void ScrollToItems(object[] items, bool exactly) {
-    var item = items[^1];
-    if (Adapter?.Items.SingleOrDefault(x => ReferenceEquals(x.TreeItem, item)) is not { } flatItem) return;
-    var position = Adapter.Items.ToList().IndexOf(flatItem);
+    Post(() => _scrollToItems(items, exactly));
+  }
+
+  private void _scrollToItems(object[] items, bool exactly) {
+    if (Adapter == null || items[^1] is not ITreeItem item) return;
+    var position = Adapter._flatTree.IndexOf(item);
+    if (position < 0) return;
 
     if (exactly && _recyclerView.GetLayoutManager() is LinearLayoutManager layoutManager)
       layoutManager.ScrollToPositionWithOffset(position, 0);

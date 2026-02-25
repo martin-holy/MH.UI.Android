@@ -15,15 +15,16 @@ namespace MH.UI.Android.Controls.Hosts.CollectionViewHost;
 
 public class CollectionViewRowV : RelativeLayout, IBindable<FlatTreeItem> {
   private bool _disposed;
-  private ICollectionViewRow? _dataContext;
+  private FlatTreeItem? _dataContext;
+  private ICollectionViewRow? _row;
   private readonly RecyclerView _items;
   private readonly CollectionViewItemAdapter _adapter;
   private int _rowHeight;
 
   public CollectionViewRowV(Context context, CollectionViewHost cvHost) : base(context) {
     _adapter = new CollectionViewItemAdapter(
-      item => cvHost.HandleItemClick(_dataContext!, item),
-      item => cvHost.HandleItemLongClick(_dataContext!, item),
+      item => cvHost.HandleItemClick(_row!, item),
+      item => cvHost.HandleItemLongClick(_row!, item),
       cvHost.CreateItemContent);
 
     _items = new RecyclerView(context) { HasFixedSize = false };
@@ -37,11 +38,16 @@ public class CollectionViewRowV : RelativeLayout, IBindable<FlatTreeItem> {
   }
 
   public void Bind(FlatTreeItem item) {
-    _adapter.Submit(null, Array.Empty<ISelectable>());
-    _dataContext = item.TreeItem as ICollectionViewRow;
-    if (_dataContext == null || _dataContext is not ITreeItem { Parent: ICollectionViewGroup group }) return;
+    _dataContext = item;
+    BindItems(item);
+  }
 
-    var items = _dataContext.Leaves.ToArray();
+  public void BindItems(FlatTreeItem item) {
+    _adapter.Submit(null, Array.Empty<ISelectable>());
+    _row = item.TreeItem as ICollectionViewRow;
+    if (_row == null || _dataContext?.TreeItem is not ITreeItem { Parent: ICollectionViewGroup group }) return;
+
+    var items = _row.Leaves.ToArray();
     _rowHeight = items.Length == 0 ? 0 : items.Max(x => group.GetItemSize(x, false)) + CollectionView.ItemBorderSize * 2;
     _items.LayoutParameters!.Height = _rowHeight;
 

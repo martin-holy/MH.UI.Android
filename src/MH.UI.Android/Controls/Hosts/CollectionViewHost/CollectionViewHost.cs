@@ -1,6 +1,7 @@
 ﻿using Android.Content;
 using Android.Views;
 using AndroidX.RecyclerView.Widget;
+using MH.UI.Android.Controls.Hosts.TreeViewHost;
 using MH.UI.Controls;
 using MH.UI.Interfaces;
 using MH.Utils.Interfaces;
@@ -31,7 +32,7 @@ public class CollectionViewHost : TreeViewHostBase<CollectionView, CollectionVie
 
     if (Visibility == ViewStates.Visible && DataContext?.RootHolder is [ICollectionViewGroup { Width: 0 } group]) {
       group.Width = w;
-      Adapter?.SetItemsSource();
+      Adapter?.Reset();
     }
   }
 

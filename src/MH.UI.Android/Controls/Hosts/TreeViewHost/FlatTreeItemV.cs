@@ -1,5 +1,4 @@
 ﻿using Android.Content;
-using MH.UI.Android.Controls;
 using MH.UI.Android.Utils;
 using MH.Utils.BaseClasses;
 
@@ -17,11 +16,11 @@ public class FlatTreeItemV : FlatTreeItemVBase {
     base.Bind(item);
     if (item == null) return;
     _selectItemCommandBinding.Parameter = item.TreeItem;
-    UpdateSelection(item.TreeItem.IsSelected);
+    BindIsSelected(item);
   }
 
-  public void UpdateSelection(bool selected) {
+  public void BindIsSelected(FlatTreeItem item) {
     if (_treeViewHost.DataContext.ShowTreeItemSelection)
-      Selected = selected;
+      Selected = item.TreeItem.IsSelected;
   }
 }
