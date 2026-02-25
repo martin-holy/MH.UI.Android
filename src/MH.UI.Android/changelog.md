@@ -1,8 +1,8 @@
-1.5.0:
+2.0.0:
 	- [N] WindowExtensions: Enter and exit full screen methods
 	- [U] TextSize 15sp for TextView, CheckBox and RadioButton
 	- [N] BaseViewHolder
-	- [C] TreeView and CollectionView refactoring
+	- [U] TreeView and CollectionView incremental update
 	- [U] InputDialogV: Set focus and show keyboard
 
 1.4.0:
