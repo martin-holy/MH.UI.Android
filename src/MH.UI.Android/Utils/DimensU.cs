@@ -8,6 +8,7 @@ public static class DimensU {
   public static int IconButtonSize { get; private set; }
   public static int MenuItemHeight { get; private set; }
   public static int Spacing { get; private set; }
+  public static int TextSize { get; private set; }
 
   public static void Init(Context context) {
     var res = context.Resources!;
@@ -16,5 +17,6 @@ public static class DimensU {
     IconButtonSize = res.GetDimensionPixelSize(Resource.Dimension.icon_button_size);
     MenuItemHeight = res.GetDimensionPixelSize(Resource.Dimension.menu_item_height);
     Spacing = res.GetDimensionPixelSize(Resource.Dimension.spacing);
+    TextSize = res.GetDimensionPixelSize(Resource.Dimension.text_size);
   }
 }
