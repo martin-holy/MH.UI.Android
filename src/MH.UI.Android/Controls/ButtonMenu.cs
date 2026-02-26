@@ -1,4 +1,5 @@
 ﻿using Android.Content;
+using MH.UI.Android.Controls.Hosts.TreeMenuHost;
 using MH.UI.Android.Utils;
 using MH.UI.Controls;
 
@@ -20,10 +21,8 @@ public class ButtonMenu : IconButton {
       _treeMenuHost = new TreeMenuHost(Context!, _dataContext);
       _treeMenuHost.Observer.MenuAnchor = this;
     }
-    else
-      _treeMenuHost.RefreshMenu();
 
-    _treeMenuHost.Popup.ShowAsDropDown(this);
+    _treeMenuHost.Show();
   }
 
   protected override void Dispose(bool disposing) {

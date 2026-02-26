@@ -12,10 +12,8 @@ public abstract class TreeViewHostAdapterBase : RecyclerView.Adapter {
   protected readonly Context _context;
   internal FlatTree _flatTree;
   protected bool _disposed;
-
-  private readonly Dictionary<ITreeItem, int> _indexMap = new();
-  private static readonly Java.Lang.Object _isExpandedPayload = new Java.Lang.String("IsExpanded");
-  private static readonly Java.Lang.Object _isExpandedVisiblePayload = new Java.Lang.String("IsExpandedVisible");
+  protected static readonly Java.Lang.Object _isExpandedPayload = new Java.Lang.String("IsExpanded");
+  protected static readonly Java.Lang.Object _isExpandedVisiblePayload = new Java.Lang.String("IsExpandedVisible");
 
   public override int ItemCount => _flatTree.Items.Count;
   public IReadOnlyList<FlatTreeItem> Items => _flatTree.Items;

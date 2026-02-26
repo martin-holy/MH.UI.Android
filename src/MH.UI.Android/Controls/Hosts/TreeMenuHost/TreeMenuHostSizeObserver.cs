@@ -8,10 +8,19 @@ using MH.Utils.BaseClasses;
 using System;
 using System.Collections.Generic;
 
-namespace MH.UI.Android.Controls;
+namespace MH.UI.Android.Controls.Hosts.TreeMenuHost;
 
-public class TreeMenuHostSizeObserver(Context _context, TreeMenuHost _treeMenu, PopupWindow _popup) : RecyclerView.AdapterDataObserver {
-  private int _lastItemsCount;
+public class TreeMenuHostSizeObserver : RecyclerView.AdapterDataObserver {
+  private readonly Context _context;
+  private readonly TreeMenuHost _treeMenu;
+  private readonly PopupWindow _popup;
+  private static Paint _paint = new Paint { TextSize = DimensU.TextSize };
+
+  public TreeMenuHostSizeObserver(Context context, TreeMenuHost treeMenu, PopupWindow popup) {
+    _context = context;
+    _treeMenu = treeMenu;
+    _popup = popup;
+  }
 
   public View? MenuAnchor { get; set; }
 
@@ -32,11 +41,7 @@ public class TreeMenuHostSizeObserver(Context _context, TreeMenuHost _treeMenu, 
 
   private void _onItemCountChanged() {
     if (MenuAnchor == null) return;
-    var itemsCount = _treeMenu.Adapter!.Items.Count;
-    if (_lastItemsCount != itemsCount) {
-      _lastItemsCount = itemsCount;
-      UpdatePopupSize();
-    }
+    UpdatePopupSize();
   }
 
   public void UpdatePopupSize() {
@@ -82,15 +87,12 @@ public class TreeMenuHostSizeObserver(Context _context, TreeMenuHost _treeMenu, 
   }
 
   private static int _getTreeMenuWidth(Context context, IEnumerable<FlatTreeItem> items) {
-    var textView = new TextView(context);
-    var paint = new Paint { TextSize = textView.TextSize };
-
     float maxTextWidth = 0;
     var maxLevel = 0;
     foreach (var item in items) {
       maxLevel = Math.Max(maxLevel, item.Level);
       if (item.TreeItem is MenuItem menuItem && !string.IsNullOrEmpty(menuItem.Text))
-        maxTextWidth = Math.Max(maxTextWidth, paint.MeasureText(menuItem.Text));
+        maxTextWidth = Math.Max(maxTextWidth, _paint.MeasureText(menuItem.Text));
     }
 
     var padding = DisplayU.DpToPx(2);

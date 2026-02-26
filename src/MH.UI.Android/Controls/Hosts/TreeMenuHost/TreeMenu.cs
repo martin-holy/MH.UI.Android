@@ -5,7 +5,7 @@ using MH.Utils.BaseClasses;
 using System;
 using System.Collections.Generic;
 
-namespace MH.UI.Android.Controls;
+namespace MH.UI.Android.Controls.Hosts.TreeMenuHost;
 
 public class TreeMenu(Context _context, Func<object, IEnumerable<MenuItem>> _itemMenuFactory) : IDisposable {
   private TreeView? _itemMenuVM;
@@ -30,7 +30,7 @@ public class TreeMenu(Context _context, Func<object, IEnumerable<MenuItem>> _ite
     if (_itemMenuV == null || _itemMenuVM.RootHolder.Count == 0) return;
     _itemMenuV.Observer.MenuAnchor = anchor;
     _itemMenuV.Observer.UpdatePopupSize();
-    _itemMenuV.Popup.ShowAsDropDown(anchor);
+    _itemMenuV.Show();
   }
 
   public void Dispose() {

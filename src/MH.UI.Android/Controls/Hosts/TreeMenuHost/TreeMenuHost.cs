@@ -5,9 +5,9 @@ using MH.UI.Android.Extensions;
 using MH.UI.Controls;
 using MH.UI.Android.Controls.Hosts.TreeViewHost;
 
-namespace MH.UI.Android.Controls;
+namespace MH.UI.Android.Controls.Hosts.TreeMenuHost;
 
-public class TreeMenuHost : TreeViewHostBase<TreeView, TreeViewHostAdapterBase> {  
+public class TreeMenuHost : TreeViewHostBase<TreeView, TreeMenuHostAdapter> {  
   public TreeMenuHostSizeObserver Observer { get; }
   public PopupWindow Popup { get; }
 
@@ -22,8 +22,10 @@ public class TreeMenuHost : TreeViewHostBase<TreeView, TreeViewHostAdapterBase> 
     Adapter!.RegisterAdapterDataObserver(Observer);
   }
 
-  public void RefreshMenu() =>
-    Post(() => Adapter?.Reset());
+  public void Show() {
+    Adapter?.NotifyDataSetChanged();
+    Popup.ShowAsDropDown(Observer.MenuAnchor);
+  }
 
   public void Close() => Popup.Dismiss();
 
