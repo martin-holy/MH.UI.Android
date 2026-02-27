@@ -7,6 +7,7 @@ public static class DimensU {
   public static int IconSize { get; private set; }
   public static int IconButtonSize { get; private set; }
   public static int MenuItemHeight { get; private set; }
+  public static int MenuItemSeparatorHeight { get; private set; }
   public static int Spacing { get; private set; }
   public static int TextSize { get; private set; }
 
@@ -16,6 +17,7 @@ public static class DimensU {
     IconSize = res.GetDimensionPixelSize(Resource.Dimension.icon_size);
     IconButtonSize = res.GetDimensionPixelSize(Resource.Dimension.icon_button_size);
     MenuItemHeight = res.GetDimensionPixelSize(Resource.Dimension.menu_item_height);
+    MenuItemSeparatorHeight = res.GetDimensionPixelSize(Resource.Dimension.menu_item_separator_height);
     Spacing = res.GetDimensionPixelSize(Resource.Dimension.spacing);
     TextSize = res.GetDimensionPixelSize(Resource.Dimension.text_size);
   }
