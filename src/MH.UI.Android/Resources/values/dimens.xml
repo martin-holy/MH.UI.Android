@@ -6,6 +6,7 @@
   <dimen name="icon_size">24dp</dimen>
   <dimen name="icon_button_size">32dp</dimen>
   <dimen name="menu_item_height">32dp</dimen>
+	<dimen name="menu_item_separator_height">1dp</dimen>
   <dimen name="border_corner_radius">4dp</dimen>
   <dimen name="border_stroke_width">1dp</dimen>  
 </resources>
