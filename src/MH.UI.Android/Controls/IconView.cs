@@ -10,16 +10,16 @@ public class IconView : ImageView {
   public IconView(Context context) : base(context) { }
 
   public IconView(Context context, string? iconName, int? colorId = null) : base(context) {
-    _setDrawable(Icons.GetIcon(Context, iconName), colorId);
+    _setDrawable(Icons.GetIcon(Context, iconName, colorId));
   }
 
   public IconView Bind(string? iconName, int? colorId = null) =>
-    _setDrawable(Icons.GetIcon(Context, iconName), colorId);
+    _setDrawable(Icons.GetIcon(Context, iconName, colorId));
 
-  public IconView Bind(int? drawableId, int? colorId = null) =>
-    _setDrawable(drawableId == null ? null : ContextCompat.GetDrawable(Context, (int)drawableId), colorId);
+  public IconView Bind(int drawableId, int? colorId = null) =>
+    _setDrawable(Icons.GetIcon(Context, drawableId, colorId));
 
-  private IconView _setDrawable(Drawable? drawable, int? colorId) {
+  private IconView _setDrawable(Drawable? drawable) {
     SetImageDrawable(drawable);
     return this;
   }
