@@ -59,7 +59,7 @@ public abstract class FlatTreeItemVBase : LinearLayout, IBindable<FlatTreeItem> 
     BindIsExpanded(item);
 
     if (_icon != null)
-      _icon.SetImageDrawable(Icons.GetIcon(Context, item.TreeItem.Icon));
+      _icon.SetImageDrawable(IconU.GetIcon(Context, item.TreeItem.Icon));
 
     if (_name != null)
       _name.Text = item.TreeItem.Name;

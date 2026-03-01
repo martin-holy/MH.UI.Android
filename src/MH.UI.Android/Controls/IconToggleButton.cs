@@ -45,8 +45,8 @@ public class IconToggleButton : IconButton, ICheckable {
     Clickable = true;
     Focusable = true;
 
-    if (Icons.GetDrawable(context, iconName) is { } drawable) {
-      _applyTint(drawable, Icons.GetColor(context, iconName, iconNameToColor ?? Icons.IconNameToColor));
+    if (IconU.GetDrawable(context, iconName) is { } drawable) {
+      _applyTint(drawable, IconU.GetColor(context, iconName, iconNameToColor ?? IconU.IconNameToColor));
       SetImageDrawable(drawable);
     }
   }

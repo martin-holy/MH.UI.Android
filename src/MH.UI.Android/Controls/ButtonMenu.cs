@@ -12,7 +12,7 @@ public class ButtonMenu : IconButton {
 
   public ButtonMenu(Context context, TreeView dataContext, string? iconName) : base(context) {
     _dataContext = dataContext;
-    SetImageDrawable(Icons.GetIcon(Context, iconName));
+    SetImageDrawable(IconU.GetIcon(Context, iconName));
     Click += _onClick;
   }
 

@@ -9,7 +9,7 @@ using System.Collections.Generic;
 
 namespace MH.UI.Android.Utils;
 
-public static class Icons {
+public static class IconU {
   private static readonly int[][] _tintStates = [
     [global::Android.Resource.Attribute.StateEnabled],
     [-global::Android.Resource.Attribute.StateEnabled]

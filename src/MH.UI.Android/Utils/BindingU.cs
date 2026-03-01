@@ -21,7 +21,7 @@ public static class BindingU {
     if (useCommandIcon) {
       switch (view) {
         case ImageView imageView:
-          if (Icons.GetIcon(view.Context, cmd.Icon) is { } icon)
+          if (IconU.GetIcon(view.Context, cmd.Icon) is { } icon)
             imageView.SetImageDrawable(icon);
           break;
         case CompactIconTextButton citBtn:
