@@ -4,6 +4,11 @@
 	- [N] BaseViewHolder
 	- [U] TreeView and CollectionView incremental update
 	- [U] InputDialogV: Set focus and show keyboard
+	- [B] IconView: Enabled color change
+	- [N] DimensU: TextSize
+	- [U] TreeMenu refactoring
+	- [N] DimensU: MenuItemSeparatorHeight
+	- [N] TreeMenu: Separator
 
 1.4.0:
 	- [B] CollectionViewRowViewHolder: row height calculation when items are empty
