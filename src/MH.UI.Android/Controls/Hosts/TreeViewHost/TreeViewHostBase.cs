@@ -26,7 +26,7 @@ public abstract class TreeViewHostBase<TView, TAdapter> : RelativeLayout, IAndro
   TreeView IAndroidTreeViewHost.DataContext => DataContext;
   double ITreeViewHost.Width => Width;
 
-  protected TreeViewHostBase(Context context, TView dataContext, Func<object, IEnumerable<MenuItem>>? itemMenuFactory) : base(context) {
+  protected TreeViewHostBase(Context context, TView dataContext, Func<object, IEnumerable<ITreeItem>>? itemMenuFactory) : base(context) {
     DataContext = dataContext;
     if (itemMenuFactory != null) ItemMenu = new(context, itemMenuFactory);
     SetBackgroundResource(Resource.Color.c_static_ba);

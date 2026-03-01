@@ -46,11 +46,12 @@ public class TreeMenuHostSizeObserver : RecyclerView.AdapterDataObserver {
 
   public void UpdatePopupSize() {
     if (MenuAnchor == null) throw new ArgumentNullException(nameof(MenuAnchor));
-    var minHeight = DimensU.MenuItemHeight * 5;
+    var padding = DisplayU.DpToPx(1) * 2;
+    var minHeight = DimensU.MenuItemHeight * 5 + padding;
     var totalWidth = _getTreeMenuWidth(_context, _treeMenu.Adapter!.Items);
-    var totalHeight = _treeMenu.Adapter!.ItemCount * DimensU.MenuItemHeight;
+    var totalHeight = _getTreeMenuHeight(_treeMenu.Adapter!.Items) + padding;
     var maxWidth = DisplayU.Metrics.WidthPixels;
-    var maxHeight = _getTreeMenuHeight(MenuAnchor, _popup);
+    var maxHeight = _getMaxHeight(MenuAnchor, _popup);
     var targetWidth = Math.Min(totalWidth, maxWidth);
     var targetHeight = Math.Min(totalHeight, maxHeight >= minHeight ? maxHeight : minHeight);
 
@@ -104,7 +105,18 @@ public class TreeMenuHostSizeObserver : RecyclerView.AdapterDataObserver {
     return (int)(padding + indent + icon + textPadding + maxTextWidth + expander);
   }
 
-  private static int _getTreeMenuHeight(View anchor, PopupWindow popup) {
+  private static int _getTreeMenuHeight(IEnumerable<FlatTreeItem> items) {
+    var totalHeight = 0;
+
+    foreach (var item in items)
+      totalHeight += item.TreeItem is MenuItemSeparator
+        ? DimensU.MenuItemSeparatorHeight + DimensU.Spacing
+        : DimensU.MenuItemHeight;
+
+    return totalHeight;
+  }
+
+  private static int _getMaxHeight(View anchor, PopupWindow popup) {
     var anchorLoc = new int[2];
     anchor.GetLocationOnScreen(anchorLoc);
     var anchorTop = anchorLoc[1];

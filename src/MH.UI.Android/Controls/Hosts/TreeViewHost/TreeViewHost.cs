@@ -4,6 +4,7 @@ using MH.UI.Android.Extensions;
 using MH.UI.Android.Utils;
 using MH.UI.Controls;
 using MH.Utils.BaseClasses;
+using MH.Utils.Interfaces;
 using System;
 using System.Collections.Generic;
 
@@ -13,7 +14,7 @@ public class TreeViewHost : TreeViewHostBase<TreeView, TreeViewHostAdapter>, ITr
   public TreeViewHost(
     Context context,
     TreeView dataContext,
-    Func<object, IEnumerable<MenuItem>>? itemMenuFactory,
+    Func<object, IEnumerable<ITreeItem>>? itemMenuFactory,
     ITreeItemViewHolderFactory? itemFactory = null)
     : base(context, dataContext, itemMenuFactory) {
 

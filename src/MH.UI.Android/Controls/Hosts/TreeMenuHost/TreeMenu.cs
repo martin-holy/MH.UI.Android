@@ -2,12 +2,13 @@
 using Android.Views;
 using MH.UI.Controls;
 using MH.Utils.BaseClasses;
+using MH.Utils.Interfaces;
 using System;
 using System.Collections.Generic;
 
 namespace MH.UI.Android.Controls.Hosts.TreeMenuHost;
 
-public class TreeMenu(Context _context, Func<object, IEnumerable<MenuItem>> _itemMenuFactory) : IDisposable {
+public class TreeMenu(Context _context, Func<object, IEnumerable<ITreeItem>> _itemMenuFactory) : IDisposable {
   private TreeView? _itemMenuVM;
   private TreeMenuHost? _itemMenuV;
   private bool _disposed;
