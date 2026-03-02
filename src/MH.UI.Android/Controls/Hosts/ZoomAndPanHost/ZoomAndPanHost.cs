@@ -7,7 +7,7 @@ using MH.UI.Controls;
 using MH.Utils.Types;
 using System;
 
-namespace MH.UI.Android.Controls;
+namespace MH.UI.Android.Controls.Hosts.ZoomAndPanHost;
 
 public class ZoomAndPanHost : FrameLayout, IZoomAndPanHost {
   private readonly ImageView _imageView;
