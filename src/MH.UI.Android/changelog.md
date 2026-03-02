@@ -9,6 +9,10 @@
 	- [U] TreeMenu refactoring
 	- [N] DimensU: MenuItemSeparatorHeight
 	- [N] TreeMenu: Separator
+	- [U] Icons: GetIcon methods
+	- [B] IconView: cusotm icon color
+	- [U] Icons: renamed to IconU
+	- [C] TabControlHost: refactoring
 
 1.4.0:
 	- [B] CollectionViewRowViewHolder: row height calculation when items are empty
