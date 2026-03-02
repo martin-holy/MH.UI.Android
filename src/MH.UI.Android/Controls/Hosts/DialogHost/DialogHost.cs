@@ -13,7 +13,7 @@ using System;
 using System.Threading.Tasks;
 using Dialog = MH.UI.Controls.Dialog;
 
-namespace MH.UI.Android.Controls;
+namespace MH.UI.Android.Controls.Hosts.DialogHost;
 
 public class DialogHost : DialogFragment {
   private static WeakReference<FragmentActivity>? _activityRef;
