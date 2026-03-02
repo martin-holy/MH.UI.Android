@@ -13,6 +13,8 @@
 	- [B] IconView: cusotm icon color
 	- [U] Icons: renamed to IconU
 	- [C] TabControlHost: refactoring
+	- [C] SlidePanelsGridHost: in new namespace
+	- [C] ZoomAndPanHost: in new namespace
 
 1.4.0:
 	- [B] CollectionViewRowViewHolder: row height calculation when items are empty
