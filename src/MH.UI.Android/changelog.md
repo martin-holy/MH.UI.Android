@@ -15,6 +15,7 @@
 	- [C] TabControlHost: refactoring
 	- [C] SlidePanelsGridHost: in new namespace
 	- [C] ZoomAndPanHost: in new namespace
+	- [C] DialogHost: in new namespace
 
 1.4.0:
 	- [B] CollectionViewRowViewHolder: row height calculation when items are empty
