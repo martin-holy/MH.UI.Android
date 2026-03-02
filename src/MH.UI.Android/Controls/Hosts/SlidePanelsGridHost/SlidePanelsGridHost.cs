@@ -4,7 +4,7 @@ using Android.Widget;
 using MH.UI.Android.Utils;
 using MH.UI.Controls;
 
-namespace MH.UI.Android.Controls;
+namespace MH.UI.Android.Controls.Hosts.SlidePanelsGridHost;
 
 public class SlidePanelsGridHost : LinearLayout {
   private readonly LoopPager _viewPager;
