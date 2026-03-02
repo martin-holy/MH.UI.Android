@@ -5,15 +5,15 @@ using AndroidX.RecyclerView.Widget;
 using MH.UI.Android.Extensions;
 using MH.UI.Android.Utils;
 using MH.UI.Controls;
+using MH.UI.Interfaces;
 using MH.Utils;
 using MH.Utils.Interfaces;
 using System;
 
-namespace MH.UI.Android.Controls;
+namespace MH.UI.Android.Controls.Hosts.TabControlHost;
 
-public class TabItemHeaderViewHolder : RecyclerView.ViewHolder {
+public class TabItemHeaderV : LinearLayout, IBindable<IListItem> {
   private readonly TabControlHost _tabControlHost;
-  private readonly LinearLayout _container;
   private readonly ImageView _icon;
   private readonly TextView _name;
   private readonly CommandBinding _selectItemCommandBinding;
@@ -21,22 +21,27 @@ public class TabItemHeaderViewHolder : RecyclerView.ViewHolder {
 
   public IListItem? DataContext { get; private set; }
 
-  public TabItemHeaderViewHolder(Context context, TabControlHost tabControlHost) : base(_createContainerView(context)) {
+  public TabItemHeaderV(Context context, TabControlHost tabControlHost) : base(context) {
     _tabControlHost = tabControlHost;
-    _container = (LinearLayout)ItemView;
+    Orientation = Orientation.Horizontal;
+    Clickable = true;
+    Focusable = true;
+    SetGravity(GravityFlags.CenterVertical);
+    SetPadding(0, 0, DimensU.Spacing, 0);
+    SetBackgroundResource(Resource.Drawable.tab_item_header_background);
 
     if (tabControlHost.DataContext.TabStrip.IconTextVisibility.HasFlag(IconTextVisibility.Both)) {
       _icon = new IconButton(context)
         .WithClickAction(this, (o, s) => o._tabControlHost.ItemMenu?.ShowItemMenu(s, o.DataContext));
       _icon.SetPadding(0);
-      _container.AddView(_icon);
+      AddView(_icon);
     }
     else {
       _icon = new IconView(context);
-      _container.AddView(_icon, new LinearLayout.LayoutParams(DimensU.IconSize, DimensU.IconSize)
+      AddView(_icon, new LayoutParams(DimensU.IconSize, DimensU.IconSize)
         .WithMargin(DimensU.Spacing, DimensU.Spacing, 0, DimensU.Spacing));
     }
-    
+
     // TODO BUG text is clipped when rotated 90 or 270
     _name = new TextView(context);
     var rotationAngle = tabControlHost.DataContext.TabStrip.RotationAngle;
@@ -45,46 +50,34 @@ public class TabItemHeaderViewHolder : RecyclerView.ViewHolder {
       _name.SetSingleLine(true);
       _name.Ellipsize = null;
 
-      _container.Orientation = Orientation.Vertical;
-      _container.SetPadding(0, DimensU.Spacing, 0, 0);
-      _container.AddView(_name, 0);
-    } else {
-      _container.AddView(_name);
+      Orientation = Orientation.Vertical;
+      SetPadding(0, DimensU.Spacing, 0, 0);
+      AddView(_name, 0);
     }
+    else AddView(_name);
 
-    _selectItemCommandBinding = _container.Bind(tabControlHost.DataContext.SelectTabCommand);
+    _selectItemCommandBinding = this.Bind(tabControlHost.DataContext.SelectTabCommand);
   }
 
-  public void Bind(IListItem? item, IconTextVisibility itv) {
+  public void Bind(IListItem? item) {
     DataContext = item;
     if (item == null) return;
 
+    var itv = _tabControlHost.DataContext.TabStrip.IconTextVisibility;
     var isIconVisible = itv.HasFlag(IconTextVisibility.Icon);
     var isTextVisible = itv.HasFlag(IconTextVisibility.Text) && !string.IsNullOrEmpty(item.Name);
 
     _icon.Visibility = isIconVisible ? ViewStates.Visible : ViewStates.Gone;
-    _icon.SetImageDrawable(isIconVisible ? Icons.GetIcon(_icon.Context, item.Icon) : null);
+    _icon.SetImageDrawable(isIconVisible ? IconU.GetIcon(_icon.Context, item.Icon) : null);
 
     _name.Visibility = isTextVisible ? ViewStates.Visible : ViewStates.Gone;
     _name.SetPadding(isIconVisible ? DimensU.Spacing : 0);
     _nameBinding?.Dispose();
     _name.BindText(item, nameof(IListItem.Name), x => x.Name, x => x, out _nameBinding);
 
-    ItemView.Selected = item.IsSelected;
+    Selected = item.IsSelected;
     _selectItemCommandBinding.Parameter = item;
   }
 
-  private static LinearLayout _createContainerView(Context context) {
-    var container = new LinearLayout(context) {
-      LayoutParameters = new RecyclerView.LayoutParams(LPU.Wrap, LPU.Wrap),
-      Orientation = Orientation.Horizontal,
-      Clickable = true,
-      Focusable = true
-    };
-    container.SetGravity(GravityFlags.CenterVertical);
-    container.SetPadding(0, 0, DimensU.Spacing, 0);
-    container.SetBackgroundResource(Resource.Drawable.tab_item_header_background);
-
-    return container;
-  }
+  public void Unbind() { }
 }
