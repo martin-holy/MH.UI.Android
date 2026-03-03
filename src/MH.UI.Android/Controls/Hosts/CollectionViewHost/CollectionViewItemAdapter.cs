@@ -57,11 +57,6 @@ public class CollectionViewItemAdapter : RecyclerView.Adapter {
     base.OnViewRecycled(holder);
   }
 
-  public override void OnViewDetachedFromWindow(Java.Lang.Object holder) {
-    ((CollectionViewItemShell)((RecyclerView.ViewHolder)holder).ItemView).Unbind();
-    base.OnViewDetachedFromWindow(holder);
-  }
-
   private ICollectionViewGroup _requireGroup() =>
     _group ?? throw new InvalidOperationException(
       "CollectionViewItemAdapter.Submit() must be called before the adapter is used.");

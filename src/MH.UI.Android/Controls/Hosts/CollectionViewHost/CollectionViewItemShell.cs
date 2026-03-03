@@ -16,6 +16,7 @@ public class CollectionViewItemShell : FrameLayout {
   private ISelectable? _dataContext;
   private IDisposable? _isSelectedBinding;
   private ICollectionViewItemContent _content;
+  private bool _disposed;
 
   public int ShellHeight { get; private set; }
 
@@ -51,9 +52,10 @@ public class CollectionViewItemShell : FrameLayout {
   }
 
   public void Bind(ISelectable dataContext, int itemWidth, int itemHeight) {
+    Unbind();
     _dataContext = dataContext;
-    _isSelectedBinding?.Dispose();
-    _isSelectedBinding = _border.Bind(dataContext, nameof(ISelectable.IsSelected), x => x.IsSelected, (t, p) => t.Selected = p);
+
+    _isSelectedBinding = _border.Bind(dataContext, nameof(ISelectable.IsSelected), x => x.IsSelected, (_, p) => _border.Selected = p);
 
     var borderSize = CollectionView.ItemBorderSize * 2;
     var oldItemWidth = (_border.LayoutParameters?.Width ?? 0) - borderSize;
@@ -71,5 +73,16 @@ public class CollectionViewItemShell : FrameLayout {
     _isSelectedBinding?.Dispose();
     _isSelectedBinding = null;
     _content.Unbind();
+  }
+
+  protected override void Dispose(bool disposing) {
+    if (_disposed) return;
+    if (disposing) {
+      Unbind();
+      Click -= _onClick;
+      LongClick -= _onLongClick;
+    }
+    _disposed = true;
+    base.Dispose(disposing);
   }
 }
