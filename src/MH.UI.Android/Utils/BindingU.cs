@@ -2,9 +2,10 @@
 using Android.Views;
 using Android.Widget;
 using MH.UI.Android.Controls;
+using MH.UI.Binding;
 using MH.UI.Dialogs;
 using MH.Utils;
-using MH.Utils.BaseClasses;
+using MH.Utils.Disposables;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -14,38 +15,16 @@ using System.Windows.Input;
 namespace MH.UI.Android.Utils;
 
 public static class BindingU {
-  public static CommandBinding Bind(this View view, ICommand command, object? parameter, bool useCommandIcon = true, bool useCommandText = true) {
-    if (command is not RelayCommandBase cmd)
-      return new(view, command, parameter);
+  public static T WithClickCommand<T>(
+    this T view,
+    ICommand command,
+    BindingScope bindings,
+    object? parameter = null,
+    bool useCommandIcon = true,
+    bool useCommandText = true) where T : View {
 
-    if (useCommandIcon) {
-      switch (view) {
-        case ImageView imageView:
-          if (IconU.GetIcon(view.Context, cmd.Icon) is { } icon)
-            imageView.SetImageDrawable(icon);
-          break;
-        case CompactIconTextButton citBtn:
-          citBtn.Icon.Bind(cmd.Icon);
-          break;
-      }
-    }
+    bindings.Add(new CommandBinding(view).Bind(command, parameter, useCommandIcon, useCommandText));
 
-    if (useCommandText && view is TextView textView)
-      textView.Text = cmd.Text;
-
-    return new(view, command, parameter);
-  }
-
-  public static CommandBinding Bind(this View view, ICommand command, bool useCommandIcon = true, bool useCommandText = true)
-    => Bind(view, command, null, useCommandIcon, useCommandText);
-
-  public static T WithCommand<T>(this T view, ICommand command, bool useCommandIcon = true, bool useCommandText = true) where T : View {
-    view.Bind(command, null, useCommandIcon, useCommandText);
-    return view;
-  }
-
-  public static T WithCommand<T>(this T view, ICommand command, object? parameter, bool useCommandIcon = true, bool useCommandText = true) where T : View {
-    view.Bind(command, parameter, useCommandIcon, useCommandText);
     return view;
   }
 
@@ -55,11 +34,11 @@ public static class BindingU {
     string propertyName,
     Func<TSource, TProp> getter,
     Func<TProp, string> formatter,
-    out IDisposable? binder)
+    BindingScope bindings)
     where TSource : class, INotifyPropertyChanged {
 
-    binder = new ViewBinder<TextView, TSource, TProp, string>(textView, source, propertyName, getter,
-      (target, v) => target.Text = formatter((TProp)Convert.ChangeType(v, typeof(TProp))!));
+    bindings.Add(new ViewBinder<TSource, TProp, string>(source, propertyName, getter,
+      v => textView.Text = formatter((TProp)Convert.ChangeType(v, typeof(TProp))!)));
 
     return textView;
   }
@@ -70,18 +49,18 @@ public static class BindingU {
     string propertyName,
     Func<TSource, TProp> getter,
     Action<TSource, TProp> setter,
-    out IDisposable? binder)
+    BindingScope bindings)
     where TSource : class, INotifyPropertyChanged {
 
     EventHandler<TextChangedEventArgs>? handler = null;
 
-    binder = new ViewBinder<EditText, TSource, TProp, string>(editText, source, propertyName, getter, setter,
-      (target, v) => { if (!string.Equals(target.Text, v)) target.Text = v; },
+    bindings.Add(new ViewBinder<TSource, TProp, string>(source, propertyName, getter, setter,
+      v => { if (!string.Equals(editText.Text, v)) editText.Text = v; },
       eh => {
         handler = (s, e) => eh(s, e.Text?.ToString() ?? string.Empty);
         editText.TextChanged += handler;
       },
-      eh => { if (handler != null) editText.TextChanged -= handler; });
+      eh => { if (handler != null) editText.TextChanged -= handler; }));
 
     return editText;
   }
@@ -92,18 +71,18 @@ public static class BindingU {
     string propertyName,
     Func<TSource, TProp> getter,
     Action<TSource, TProp> setter,
-    out IDisposable? binder)
+    BindingScope bindings)
     where TSource : class, INotifyPropertyChanged {
 
     EventHandler<CompoundButton.CheckedChangeEventArgs>? handler = null;
 
-    binder = new ViewBinder<CheckBox, TSource, TProp, bool>(checkBox, source, propertyName, getter, setter,
-      (target, v) => { if (v != target.Checked) target.Checked = v; },
+    bindings.Add(new ViewBinder<TSource, TProp, bool>(source, propertyName, getter, setter,
+      v => { if (v != checkBox.Checked) checkBox.Checked = v; },
       eh => {
         handler = (s, e) => eh(s, e.IsChecked);
         checkBox.CheckedChange += handler;
       },
-      eh => { if (handler != null) checkBox.CheckedChange -= handler; });
+      eh => { if (handler != null) checkBox.CheckedChange -= handler; }));
 
     return checkBox;
   }
@@ -114,39 +93,36 @@ public static class BindingU {
     string propertyName,
     Func<TSource, TProp> getter,
     Action<TSource, TProp> setter,
-    out IDisposable? binder)
+    BindingScope bindings)
     where TSource : class, INotifyPropertyChanged {
 
     EventHandler<CompoundButton.CheckedChangeEventArgs>? handler = null;
 
-    binder = new ViewBinder<IconToggleButton, TSource, TProp, bool>(iconToggleButton, source, propertyName, getter, setter,
-      (target, v) => { if (v != target.Checked) target.Checked = v; },
+    bindings.Add(new ViewBinder<TSource, TProp, bool>(source, propertyName, getter, setter,
+      v => { if (v != iconToggleButton.Checked) iconToggleButton.Checked = v; },
       eh => {
         handler = (s, e) => eh(s, e.IsChecked);
         iconToggleButton.CheckedChanged += handler;
       },
-      eh => { if (handler != null) iconToggleButton.CheckedChanged -= handler; });
+      eh => { if (handler != null) iconToggleButton.CheckedChanged -= handler; }));
 
     return iconToggleButton;
   }
 
-  public static ProgressBar BindProgressBar<TSource>(this ProgressBar progressBar, TSource source, out IDisposable? binder)
+  public static ProgressBar BindProgressBar<TSource>(this ProgressBar progressBar, TSource source, BindingScope bindings)
     where TSource : class, INotifyPropertyChanged, IProgressDialog {
 
     progressBar.Max = source.ProgressMax;
-    binder = MH.Utils.BindingU.Bind(progressBar, source, nameof(IProgressDialog.ProgressValue),
-      x => x.ProgressValue, (s, v) => s.Progress = v);
+    source.Bind(nameof(IProgressDialog.ProgressValue), x => x.ProgressValue, x => progressBar.Progress = x).DisposeWith(bindings);
 
     return progressBar;
   }
 
-  public static TextView BindProgressText<TSource>(this TextView progressText, TSource source, out IDisposable? binder)
+  public static TextView BindProgressText<TSource>(this TextView progressText, TSource source, BindingScope bindings)
     where TSource : class, INotifyPropertyChanged, IProgressDialog {
 
-    progressText.BindText(source, nameof(IProgressDialog.ProgressText),
-      x => x.ProgressText, x => x ?? string.Empty, out binder);
-
-    return progressText;
+    return progressText.BindText(source, nameof(IProgressDialog.ProgressText),
+      x => x.ProgressText, x => x ?? string.Empty, bindings);
   }
 
   public static Slider BindProgress<TSource, TProp>(
@@ -155,13 +131,13 @@ public static class BindingU {
     string propertyName,
     Func<TSource, TProp> getter,
     Action<TSource, TProp> setter,
-    out IDisposable? binder)
+    BindingScope bindings)
     where TSource : class, INotifyPropertyChanged {
 
     EventHandler<SeekBar.ProgressChangedEventArgs>? handler = null;
 
-    binder = new ViewBinder<Slider, TSource, TProp, double>(slider, source, propertyName, getter, setter,
-      (target, v) => target.Progress = (int)Math.Round((v - target.MinD) * target.Scale),
+    bindings.Add(new ViewBinder<TSource, TProp, double>(source, propertyName, getter, setter,
+      v => slider.Progress = (int)Math.Round((v - slider.MinD) * slider.Scale),
       eh => {
         handler = (s, e) => {
           if (!e.FromUser) return;
@@ -174,7 +150,7 @@ public static class BindingU {
         };
         slider.ProgressChanged += handler;
       },
-      eh => { if (handler != null) slider.ProgressChanged -= handler; });
+      eh => { if (handler != null) slider.ProgressChanged -= handler; }));
 
     return slider;
   }
@@ -186,17 +162,17 @@ public static class BindingU {
     Func<TSource, TEnum> getter,
     Action<TSource, TEnum> setter,
     TEnum[] values,
-    out IDisposable? binder)
+    BindingScope bindings)
     where TSource : class, INotifyPropertyChanged
     where TEnum : struct, Enum {
 
     EventHandler<RadioGroup.CheckedChangeEventArgs>? handler = null;
 
-    binder = new ViewBinder<RadioGroup, TSource, TEnum, TEnum>(radioGroup, source, propertyName, getter, setter,
-      (target, v) => {
+    bindings.Add(new ViewBinder<TSource, TEnum, TEnum>(source, propertyName, getter, setter,
+      v => {
         for (int i = 0; i < values.Length && i < radioGroup.ChildCount; i++) {
           if (EqualityComparer<TEnum>.Default.Equals(values[i], v)) {
-            if (radioGroup.GetChildAt(i) is RadioButton rb && !rb.Checked) target.Check(rb.Id);
+            if (radioGroup.GetChildAt(i) is RadioButton rb && !rb.Checked) radioGroup.Check(rb.Id);
             break;
           }
         }
@@ -217,7 +193,7 @@ public static class BindingU {
       },
       eh => {
         if (handler != null) radioGroup.CheckedChange -= handler;
-      });
+      }));
 
     return radioGroup;
   }
@@ -229,7 +205,7 @@ public static class BindingU {
     Func<TSource, TProp> getter,
     Action<TSource, TProp> setter,
     KeyValuePair<TKey, string>[] map,
-    out IDisposable? binder)
+    BindingScope bindings)
     where TSource : class, INotifyPropertyChanged {
 
     EventHandler<AdapterView.ItemSelectedEventArgs>? handler = null;
@@ -238,17 +214,17 @@ public static class BindingU {
     adapter.SetDropDownViewResource(Resource.Layout.spinner_dropdown_item);
     spinner.Adapter = adapter;
 
-    binder = new ViewBinder<Spinner, TSource, TProp, TKey>(spinner, source, propertyName, getter, setter,
-      (target, v) => {
+    bindings.Add(new ViewBinder<TSource, TProp, TKey>(source, propertyName, getter, setter,
+      v => {
         var index = Array.FindIndex(map, kvp => Equals(kvp.Key, v));
-        if (index >= 0 && target.SelectedItemPosition != index)
-          target.SetSelection(index);
+        if (index >= 0 && spinner.SelectedItemPosition != index)
+          spinner.SetSelection(index);
       },
       eh => {
         handler = (s, e) => eh(s, map[e.Position].Key);
         spinner.ItemSelected += handler;
       },
-      eh => { if (handler != null) spinner.ItemSelected -= handler; });
+      eh => { if (handler != null) spinner.ItemSelected -= handler; }));
 
     return spinner;
   }
@@ -257,11 +233,12 @@ public static class BindingU {
     this TTarget view,
     TSource source,
     string propertyName,
-    Func<TSource, bool> getter)
+    Func<TSource, bool> getter,
+    BindingScope bindings)
     where TTarget : View
     where TSource : class, INotifyPropertyChanged {
 
-    view.Bind(source, propertyName, getter, (t, p) => t.Visibility = p ? ViewStates.Visible : ViewStates.Gone);
+    bindings.Add(source.Bind(propertyName, getter, p => view.Visibility = p ? ViewStates.Visible : ViewStates.Gone));
     return view;
   }
 }
