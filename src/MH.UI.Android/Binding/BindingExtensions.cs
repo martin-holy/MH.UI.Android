@@ -12,9 +12,9 @@ using System.ComponentModel;
 using System.Linq;
 using System.Windows.Input;
 
-namespace MH.UI.Android.Utils;
+namespace MH.UI.Android.Binding;
 
-public static class BindingU {
+public static class BindingExtensions {
   public static T WithClickCommand<T>(
     this T view,
     ICommand command,
