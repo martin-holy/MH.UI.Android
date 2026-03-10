@@ -16,6 +16,9 @@
 	- [C] SlidePanelsGridHost: in new namespace
 	- [C] ZoomAndPanHost: in new namespace
 	- [C] DialogHost: in new namespace
+	- [U] ViewExtensions: WithClickAction simplified
+	- [C] CommandBinding: refactoring
+	- [C] BindingExtensions: refactoring
 
 1.4.0:
 	- [B] CollectionViewRowViewHolder: row height calculation when items are empty
