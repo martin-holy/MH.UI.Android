@@ -28,17 +28,16 @@ public abstract class FlatTreeItemVBase : LinearLayout, IBindable<FlatTreeItem> 
 
     _treeViewHost = treeViewHost;
     _expandedIcon = _createTreeItemExpandIconView(context)
-      .WithClickAction(this, (o, _) => {
-        if (o.DataContext == null) return;
-        o.DataContext.TreeItem.IsExpanded = !o.DataContext.TreeItem.IsExpanded;
+      .WithClickAction(_ => {
+        if (DataContext == null) return;
+        DataContext.TreeItem.IsExpanded = !DataContext.TreeItem.IsExpanded;
       });
 
     AddView(_expandedIcon, new LayoutParams(DimensU.IconButtonSize, DimensU.IconButtonSize)
       .WithMargin(DimensU.Spacing, 0, DimensU.Spacing, 0));
 
     if (_showIcon) {
-      _icon = new IconButton(context)
-        .WithClickAction(this, (o, s) => o._treeViewHost.ItemMenu?.ShowItemMenu(s, o.DataContext?.TreeItem));
+      _icon = new IconButton(context).WithClickAction(s => _treeViewHost.ItemMenu?.ShowItemMenu(s, DataContext?.TreeItem));
       AddView(_icon);
     }
 

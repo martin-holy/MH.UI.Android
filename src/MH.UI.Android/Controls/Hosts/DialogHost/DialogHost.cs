@@ -4,11 +4,13 @@ using Android.OS;
 using Android.Views;
 using Android.Widget;
 using AndroidX.Fragment.App;
+using MH.UI.Android.Binding;
 using MH.UI.Android.Dialogs;
 using MH.UI.Android.Extensions;
 using MH.UI.Android.Utils;
 using MH.UI.Dialogs;
 using MH.Utils;
+using MH.Utils.Disposables;
 using System;
 using System.Threading.Tasks;
 using Dialog = MH.UI.Controls.Dialog;
@@ -17,17 +19,18 @@ namespace MH.UI.Android.Controls.Hosts.DialogHost;
 
 public class DialogHost : DialogFragment {
   private static WeakReference<FragmentActivity>? _activityRef;
-  private static Func<Context, Dialog, View?>? _contentViewFactory;
+  private static Func<Context, Dialog, BindingScope, View?>? _contentViewFactory;
   private static LinearLayout? _notImplementedDialog;
   private readonly Dialog _dataContext;
+  private readonly BindingScope _bindings = new();
 
   public DialogHost(Dialog dataContext) {
     _dataContext = dataContext;
-    this.Bind(dataContext, nameof(UI.Controls.Dialog.Result), x => x.Result, (_, _) => Dismiss(), false);
+    dataContext.Bind(nameof(UI.Controls.Dialog.Result), x => x.Result, _ => Dismiss(), false).DisposeWith(_bindings);
     Cancelable = false;
   }
 
-  public static void Initialize(FragmentActivity activity, Func<Context, Dialog, View?>? contentViewFactory) {
+  public static void Initialize(FragmentActivity activity, Func<Context, Dialog, BindingScope, View?>? contentViewFactory) {
     _activityRef = new WeakReference<FragmentActivity>(activity);
     _contentViewFactory = contentViewFactory;
   }
@@ -43,17 +46,17 @@ public class DialogHost : DialogFragment {
     return dataContext.TaskCompletionSource.Task;
   }
 
-  private static View? _getDialog(Context context, Dialog dataContext) {
+  private static View? _getDialog(Context context, Dialog dataContext, BindingScope bindings) {
     View? view = dataContext switch {
-      GroupByDialog gbDlg => new GroupByDialogV(context, gbDlg),
-      InputDialog iDlg => new InputDialogV(context, iDlg),
+      GroupByDialog gbDlg => new GroupByDialogV(context, gbDlg, bindings),
+      InputDialog iDlg => new InputDialogV(context, iDlg, bindings),
       MessageDialog mDlg => new MessageDialogV(context, mDlg),
       SelectFromListDialog sflDlg => new SelectFromListDialogV(context, sflDlg),
       ToggleDialog tDlg => new ToggleDialogV(context, tDlg),
       _ => null
     };
 
-    view ??= _contentViewFactory?.Invoke(context, dataContext);
+    view ??= _contentViewFactory?.Invoke(context, dataContext, bindings);
     if (view == null) return _getNotImplementedDialog(context, dataContext);
 
     return view;
@@ -83,7 +86,7 @@ public class DialogHost : DialogFragment {
     titleBar.SetBackgroundResource(Resource.Color.c_black2);
     titleBar.SetPadding(DimensU.Spacing);
 
-    var titleCloseBtn = new IconButton(context).WithCommand(UI.Controls.Dialog.CloseCommand, _dataContext, false);
+    var titleCloseBtn = new IconButton(context).WithClickCommand(UI.Controls.Dialog.CloseCommand, _bindings, _dataContext, false);
     titleCloseBtn.SetImageResource(Resource.Drawable.icon_x_close);
 
     titleBar.AddView(
@@ -96,7 +99,7 @@ public class DialogHost : DialogFragment {
 
     view.AddView(titleBar, new LinearLayout.LayoutParams(LPU.Match, LPU.Wrap));
 
-    if (_getDialog(context, _dataContext) is { } contentView) {
+    if (_getDialog(context, _dataContext, _bindings) is { } contentView) {
       if (contentView.Parent is ViewGroup oldParent)
         oldParent.RemoveView(contentView);
 
@@ -114,13 +117,18 @@ public class DialogHost : DialogFragment {
     return view;
   }
 
-  private static LinearLayout _createButtonsView(Context context, Dialog dataContext) {
+  public override void OnDestroyView() {
+    _bindings.Dispose();
+    base.OnDestroyView();
+  }
+
+  private LinearLayout _createButtonsView(Context context, Dialog dataContext) {
     var margin = DimensU.Spacing * 2;
     var view = new LinearLayout(context) { Orientation = Orientation.Horizontal };
 
     foreach (var button in dataContext.Buttons) {
       var btn = new Button(new ContextThemeWrapper(context, Resource.Style.mh_DialogButton), null, 0)
-        .WithCommand(button.Command, dataContext);
+        .WithClickCommand(button.Command, _bindings, dataContext);
 
       view.AddView(btn, new LinearLayout.LayoutParams(LPU.Wrap, DisplayU.DpToPx(32))
         .WithMargin(0, margin, margin, margin));

@@ -1,14 +1,13 @@
 ﻿using Android.Content;
 using Android.Views;
 using Android.Widget;
-using AndroidX.RecyclerView.Widget;
+using MH.UI.Android.Binding;
 using MH.UI.Android.Extensions;
 using MH.UI.Android.Utils;
 using MH.UI.Controls;
 using MH.UI.Interfaces;
-using MH.Utils;
+using MH.Utils.Disposables;
 using MH.Utils.Interfaces;
-using System;
 
 namespace MH.UI.Android.Controls.Hosts.TabControlHost;
 
@@ -17,7 +16,8 @@ public class TabItemHeaderV : LinearLayout, IBindable<IListItem> {
   private readonly ImageView _icon;
   private readonly TextView _name;
   private readonly CommandBinding _selectItemCommandBinding;
-  private IDisposable? _nameBinding;
+  private readonly BindingScope _bindings = new();
+  private bool _disposed;
 
   public IListItem? DataContext { get; private set; }
 
@@ -32,8 +32,8 @@ public class TabItemHeaderV : LinearLayout, IBindable<IListItem> {
 
     if (tabControlHost.DataContext.TabStrip.IconTextVisibility.HasFlag(IconTextVisibility.Both)) {
       _icon = new IconButton(context)
-        .WithClickAction(this, (o, s) => o._tabControlHost.ItemMenu?.ShowItemMenu(s, o.DataContext));
-      _icon.SetPadding(0);
+        .WithClickAction(s => _tabControlHost.ItemMenu?.ShowItemMenu(s, DataContext))
+        .WithPadding(0);
       AddView(_icon);
     }
     else {
@@ -56,7 +56,7 @@ public class TabItemHeaderV : LinearLayout, IBindable<IListItem> {
     }
     else AddView(_name);
 
-    _selectItemCommandBinding = this.Bind(tabControlHost.DataContext.SelectTabCommand);
+    _selectItemCommandBinding = new(this);
   }
 
   public void Bind(IListItem? item) {
@@ -72,12 +72,24 @@ public class TabItemHeaderV : LinearLayout, IBindable<IListItem> {
 
     _name.Visibility = isTextVisible ? ViewStates.Visible : ViewStates.Gone;
     _name.SetPadding(isIconVisible ? DimensU.Spacing : 0);
-    _nameBinding?.Dispose();
-    _name.BindText(item, nameof(IListItem.Name), x => x.Name, x => x, out _nameBinding);
+    _name.BindText(item, nameof(IListItem.Name), x => x.Name, x => x, _bindings);
 
     Selected = item.IsSelected;
-    _selectItemCommandBinding.Parameter = item;
+    _selectItemCommandBinding.Bind(_tabControlHost.DataContext.SelectTabCommand, item);
   }
 
-  public void Unbind() { }
+  public void Unbind() {
+    _bindings.Dispose();
+    _selectItemCommandBinding.Unbind();
+  }
+
+  protected override void Dispose(bool disposing) {
+    if (_disposed) return;
+    if (disposing) {
+      Unbind();
+      _selectItemCommandBinding.Dispose();
+    }
+    _disposed = true;
+    base.Dispose(disposing);
+  }
 }

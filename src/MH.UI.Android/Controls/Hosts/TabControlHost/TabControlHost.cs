@@ -7,6 +7,7 @@ using MH.UI.Android.Extensions;
 using MH.UI.Android.Utils;
 using MH.UI.Controls;
 using MH.Utils;
+using MH.Utils.Disposables;
 using MH.Utils.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -20,6 +21,7 @@ public class TabControlHost : LinearLayout {
   private readonly FrameLayout _tabContent;
   private readonly TabControlHostHeaderAdapter _adapter;
   private readonly Dictionary<IListItem, View> _contentViews = new(ReferenceEqualityComparer.Instance);
+  private readonly BindingScope _bindings = new();
   private IListItem? _previousSelected;
   private bool _disposed;
 
@@ -51,8 +53,8 @@ public class TabControlHost : LinearLayout {
         dataContext.TabStrip.SlotPlacement is Dock.Left or Dock.Top ? 0 : -1,
         new LinearLayout.LayoutParams(LPU.Wrap, LPU.Wrap));
 
-    this.Bind(DataContext, nameof(TabControl.Tabs), x => x.Tabs, (_, _, e) => _onTabsChanged(null, e), false);
-    this.Bind(DataContext, nameof(TabControl.Selected), x => x.Selected, (_, _) => _onSelectedChanged());
+    DataContext.Bind(nameof(TabControl.Tabs), x => x.Tabs, _onTabsChanged, false).DisposeWith(_bindings);
+    DataContext.Bind(nameof(TabControl.Selected), x => x.Selected, _ => _onSelectedChanged()).DisposeWith(_bindings);
   }
 
   private void _createHorizontal() {
@@ -89,6 +91,7 @@ public class TabControlHost : LinearLayout {
 
       _tabHeaders.SetAdapter(null);
       _adapter.Dispose();
+      _bindings.Dispose();
     }
     _disposed = true;
     base.Dispose(disposing);

@@ -2,6 +2,7 @@
 using Android.Views;
 using Android.Widget;
 using AndroidX.RecyclerView.Widget;
+using MH.UI.Android.Binding;
 using MH.UI.Android.Controls.Items;
 using MH.UI.Android.Extensions;
 using MH.UI.Android.Utils;
@@ -18,6 +19,7 @@ public class LogV : LinearLayout {
   private readonly EditText _detail;
   private readonly CheckBox _wrapText;
   private readonly Button _clearBtn;
+  private readonly CommandBinding _clearBinding;
   private bool _disposed;
 
   public LogV(Context context, LogVM dataContext) : base(context) {
@@ -41,7 +43,7 @@ public class LogV : LinearLayout {
     _wrapText.CheckedChange += _wrapTextCheckedChange;
 
     _clearBtn = new(new ContextThemeWrapper(context, Resource.Style.mh_DialogButton), null, 0);
-    _clearBtn.Bind(dataContext.ClearCommand);
+    _clearBinding = new CommandBinding(_clearBtn).Bind(dataContext.ClearCommand);
 
     var footer = new LinearLayout(context) { Orientation = Orientation.Horizontal };
     footer.AddView(_wrapText, new LayoutParams(0, LPU.Wrap, 1f));
@@ -77,6 +79,7 @@ public class LogV : LinearLayout {
     if (disposing) {
       _dataContext.Items.CollectionChanged -= _onItemsCollectionChanged;
       _wrapText.CheckedChange -= _wrapTextCheckedChange;
+      _clearBinding.Dispose();
     }
     _disposed = true;
     base.Dispose(disposing);

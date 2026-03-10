@@ -14,6 +14,11 @@ public class TabControlHostHeaderAdapter(TabControlHost _tabControlHost) : Recyc
     new BaseViewHolder(new TabItemHeaderV(parent.Context!, _tabControlHost), new(LPU.Wrap, LPU.Wrap));
 
   public override void OnBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-    (holder.ItemView as IBindable<IListItem>)?.Bind(_tabControlHost.DataContext.Tabs[position]);;
+    (holder.ItemView as IBindable<IListItem>)?.Rebind(_tabControlHost.DataContext.Tabs[position]);;
+  }
+
+  public override void OnViewRecycled(Java.Lang.Object holder) {
+    (((RecyclerView.ViewHolder)holder).ItemView as IUnbindable)?.Unbind();
+    base.OnViewRecycled(holder);
   }
 }

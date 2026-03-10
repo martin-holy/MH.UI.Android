@@ -38,7 +38,7 @@ public class TreeMenuItemV : LinearLayout, IBindable<FlatTreeItem> {
     AddView(_icon, new LayoutParams(DimensU.IconSize, DimensU.IconSize).WithMargin(DimensU.Spacing, 0, DimensU.Spacing, 0));
     AddView(_name, new LayoutParams(0, LPU.Wrap, 1f));
     AddView(_expandedIcon, new LayoutParams(DimensU.IconButtonSize, DimensU.IconButtonSize));
-    this.WithClickAction(this, _onContainerClick);
+    this.WithClickAction(_onContainerClick);
   }
 
   public void Bind(FlatTreeItem? item) {
@@ -74,7 +74,7 @@ public class TreeMenuItemV : LinearLayout, IBindable<FlatTreeItem> {
 
   public void Unbind() { }
 
-  private static void _onContainerClick(TreeMenuItemV o, View s) {
+  private static void _onContainerClick(TreeMenuItemV o) {
     if (o.DataContext?.TreeItem is not MenuItem item) return;
 
     if (item.Items.Count == 0) {

@@ -52,10 +52,9 @@ public class CollectionViewItemShell : FrameLayout {
   }
 
   public void Bind(ISelectable dataContext, int itemWidth, int itemHeight) {
-    Unbind();
     _dataContext = dataContext;
 
-    _isSelectedBinding = _border.Bind(dataContext, nameof(ISelectable.IsSelected), x => x.IsSelected, (_, p) => _border.Selected = p);
+    _isSelectedBinding = dataContext.Bind(nameof(ISelectable.IsSelected), x => x.IsSelected, p => _border.Selected = p);
 
     var borderSize = CollectionView.ItemBorderSize * 2;
     var oldItemWidth = (_border.LayoutParameters?.Width ?? 0) - borderSize;

@@ -1,8 +1,10 @@
 ﻿using Android.Content;
 using Android.Views;
 using Android.Widget;
+using MH.UI.Android.Binding;
 using MH.UI.Android.Utils;
 using MH.UI.Controls;
+using MH.Utils.Disposables;
 
 namespace MH.UI.Android.Controls.Hosts.SlidePanelsGridHost;
 
@@ -17,7 +19,9 @@ public class SlidePanelsGridHost : LinearLayout {
   public LoopPager ViewPager { get => _viewPager; }
   public SlidePanelsGrid DataContext { get; }
 
-  public SlidePanelsGridHost(Context context, SlidePanelsGrid dataContext, View left, View top, View right, View bottom, View middle) : base(context) {
+  public SlidePanelsGridHost(Context context, SlidePanelsGrid dataContext, BindingScope bindings,
+    View left, View top, View right, View bottom, View middle) : base(context) {
+
     DataContext = dataContext;
     _panelLeft = left;
     _panelTop = top;
@@ -29,8 +33,8 @@ public class SlidePanelsGridHost : LinearLayout {
     Orientation = Orientation.Vertical;
     SetBackgroundResource(Resource.Color.c_static_ba);
 
-    _panelTop.BindVisibility(dataContext.PanelTop, nameof(SlidePanel.IsPinned), x => x.IsPinned);
-    _panelBottom.BindVisibility(dataContext.PanelBottom, nameof(SlidePanel.IsPinned), x => x.IsPinned);
+    _panelTop.BindVisibility(dataContext.PanelTop, nameof(SlidePanel.IsPinned), x => x.IsPinned, bindings);
+    _panelBottom.BindVisibility(dataContext.PanelBottom, nameof(SlidePanel.IsPinned), x => x.IsPinned, bindings);
 
     AddView(top, new LayoutParams(LPU.Match, LPU.Wrap));
     AddView(_viewPager, new LayoutParams(LPU.Match, 0, 1f));
