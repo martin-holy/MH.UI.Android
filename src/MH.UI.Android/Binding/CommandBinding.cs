@@ -1,12 +1,13 @@
 ﻿using Android.Views;
 using Android.Widget;
 using MH.UI.Android.Controls;
+using MH.UI.Android.Utils;
 using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
 using System;
 using System.Windows.Input;
 
-namespace MH.UI.Android.Utils;
+namespace MH.UI.Android.Binding;
 
 public sealed class CommandBinding : IDisposable {
   private readonly View _view;
