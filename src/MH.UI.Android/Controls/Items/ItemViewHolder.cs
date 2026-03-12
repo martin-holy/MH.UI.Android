@@ -20,4 +20,13 @@ public class ItemViewHolder<T> : RecyclerView.ViewHolder {
     _dataContext = item;
     (ItemView as IBindable<T>)?.Bind(item);
   }
+
+  public void Unbind() {
+    (ItemView as IUnbindable)?.Unbind();
+  }
+
+  public void Rebind(T item) {
+    Unbind();
+    Bind(item);
+  }
 }

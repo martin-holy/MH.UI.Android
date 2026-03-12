@@ -20,5 +20,10 @@ public class ItemsAdapter<T> : RecyclerView.Adapter {
     new ItemViewHolder<T>(_createItemView(parent.Context!), _owner);
 
   public override void OnBindViewHolder(RecyclerView.ViewHolder holder, int position) =>
-    ((ItemViewHolder<T>)holder).Bind(_owner._items![position]);
+    ((ItemViewHolder<T>)holder).Rebind(_owner._items![position]);
+
+  public override void OnViewRecycled(Java.Lang.Object holder) {
+    ((ItemViewHolder<T>)holder).Unbind();
+    base.OnViewRecycled(holder);
+  }
 }
