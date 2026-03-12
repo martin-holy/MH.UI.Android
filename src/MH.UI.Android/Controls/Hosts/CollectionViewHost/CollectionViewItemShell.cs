@@ -74,6 +74,11 @@ public class CollectionViewItemShell : FrameLayout {
     _content.Unbind();
   }
 
+  public void Rebind(ISelectable dataContext, int itemWidth, int itemHeight) {
+    Unbind();
+    Bind(dataContext, itemWidth, itemHeight);
+  }
+
   protected override void Dispose(bool disposing) {
     if (_disposed) return;
     if (disposing) {

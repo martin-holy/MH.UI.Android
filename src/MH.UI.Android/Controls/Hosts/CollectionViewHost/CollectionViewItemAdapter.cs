@@ -49,7 +49,7 @@ public class CollectionViewItemAdapter : RecyclerView.Adapter {
     var item = _items[position];
     var itemWidth = group.GetItemSize(item, true);
     var itemHeight = group.GetItemSize(item, false);
-    ((CollectionViewItemShell)holder.ItemView).Bind(item, itemWidth, itemHeight);
+    ((CollectionViewItemShell)holder.ItemView).Rebind(item, itemWidth, itemHeight);
   }
 
   public override void OnViewRecycled(Java.Lang.Object holder) {
