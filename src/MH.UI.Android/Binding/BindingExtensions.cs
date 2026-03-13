@@ -2,7 +2,6 @@
 using Android.Views;
 using Android.Widget;
 using MH.UI.Android.Controls;
-using MH.UI.Binding;
 using MH.UI.Dialogs;
 using MH.Utils;
 using MH.Utils.Disposables;
