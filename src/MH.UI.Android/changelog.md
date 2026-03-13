@@ -19,6 +19,9 @@
 	- [U] ViewExtensions: WithClickAction simplified
 	- [C] CommandBinding: refactoring
 	- [C] BindingExtensions: refactoring
+	- [N] ViewGroupExtensions: Add
+	- [N] LayoutU: Horizontal and Vertical LinearLayout
+	- [N] LPU: LinearLayout.LayoutParams factory methods
 
 1.4.0:
 	- [B] CollectionViewRowViewHolder: row height calculation when items are empty
