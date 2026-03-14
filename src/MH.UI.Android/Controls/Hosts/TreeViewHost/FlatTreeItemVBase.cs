@@ -33,17 +33,17 @@ public abstract class FlatTreeItemVBase : LinearLayout, IBindable<FlatTreeItem> 
         DataContext.TreeItem.IsExpanded = !DataContext.TreeItem.IsExpanded;
       });
 
-    AddView(_expandedIcon, new LayoutParams(DimensU.IconButtonSize, DimensU.IconButtonSize)
+    AddView(_expandedIcon, LPU.Linear(DimensU.IconButtonSize, DimensU.IconButtonSize)
       .WithMargin(DimensU.Spacing, 0, DimensU.Spacing, 0));
 
     if (_showIcon) {
       _icon = new IconButton(context).WithClickAction(s => _treeViewHost.ItemMenu?.ShowItemMenu(s, DataContext?.TreeItem));
-      AddView(_icon);
+      AddView(_icon, LPU.LinearWrap());
     }
 
     if (_showName) {
       _name = new TextView(context);
-      AddView(_name);
+      AddView(_name, LPU.LinearWrap());
     }
   }
 

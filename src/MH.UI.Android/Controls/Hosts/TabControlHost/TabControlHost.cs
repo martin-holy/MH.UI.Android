@@ -51,7 +51,7 @@ public class TabControlHost : LinearLayout {
       _headerPanel.AddView(
         slot,
         dataContext.TabStrip.SlotPlacement is Dock.Left or Dock.Top ? 0 : -1,
-        new LinearLayout.LayoutParams(LPU.Wrap, LPU.Wrap));
+        LPU.LinearWrap());
 
     DataContext.Bind(nameof(TabControl.Tabs), x => x.Tabs, _onTabsChanged, false).DisposeWith(_bindings);
     DataContext.Bind(nameof(TabControl.Selected), x => x.Selected, _ => _onSelectedChanged()).DisposeWith(_bindings);
@@ -61,18 +61,18 @@ public class TabControlHost : LinearLayout {
     Orientation = Orientation.Horizontal;
     _tabHeaders.SetLayoutManager(new LinearLayoutManager(Context, LinearLayoutManager.Vertical, false));
     _headerPanel.Orientation = Orientation.Vertical;
-    _headerPanel.AddView(_tabHeaders, new LinearLayout.LayoutParams(LPU.Wrap, 0, 1f));
-    AddView(_tabContent, new LayoutParams(0, LPU.Match, 1));
-    AddView(_headerPanel, _getViewIndex(DataContext.TabStrip.Placement), new LayoutParams(LPU.Wrap, LPU.Match));
+    _headerPanel.AddView(_tabHeaders, LPU.Linear(LPU.Wrap, 0, 1f));
+    AddView(_tabContent, LPU.Linear(0, LPU.Match, 1));
+    AddView(_headerPanel, _getViewIndex(DataContext.TabStrip.Placement), LPU.Linear(LPU.Wrap, LPU.Match));
   }
 
   private void _createVertical() {
     Orientation = Orientation.Vertical;
     _tabHeaders.SetLayoutManager(new LinearLayoutManager(Context, LinearLayoutManager.Horizontal, false));
     _headerPanel.Orientation = Orientation.Horizontal;
-    _headerPanel.AddView(_tabHeaders, new LinearLayout.LayoutParams(0, LPU.Wrap, 1f));
-    AddView(_tabContent, new LayoutParams(LPU.Match, 0, 1));
-    AddView(_headerPanel, _getViewIndex(DataContext.TabStrip.Placement), new LayoutParams(LPU.Match, LPU.Wrap));
+    _headerPanel.AddView(_tabHeaders, LPU.Linear(0, LPU.Wrap, 1f));
+    AddView(_tabContent, LPU.Linear(LPU.Match, 0, 1));
+    AddView(_headerPanel, _getViewIndex(DataContext.TabStrip.Placement), LPU.LinearMatchWrap());
   }
 
   private int _getViewIndex(Dock dock) =>
@@ -120,7 +120,7 @@ public class TabControlHost : LinearLayout {
         view = _getItemView(Context!, current.Data);
         if (view != null) {
           _contentViews[current] = view;
-          _tabContent.AddView(view, new FrameLayout.LayoutParams(LPU.Match, LPU.Match));
+          _tabContent.AddView(view, LPU.FrameMatch());
         }
       }
 

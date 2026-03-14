@@ -19,7 +19,7 @@ public class CompactIconTextButton : FrameLayout {
     Text.SetPadding(0, 0, DisplayU.DpToPx(2), 0);
     Text.SetShadowLayer(4f, 2f, 2f, global::Android.Graphics.Color.Black);
 
-    AddView(Icon, new LayoutParams(DimensU.IconButtonSize, DimensU.IconButtonSize) { Gravity = GravityFlags.Center });
-    AddView(Text, new LayoutParams(LPU.Wrap, LPU.Wrap) { Gravity = GravityFlags.Right | GravityFlags.Bottom });
+    AddView(Icon, LPU.Frame(DimensU.IconButtonSize, DimensU.IconButtonSize, GravityFlags.Center));
+    AddView(Text, LPU.Frame(LPU.Wrap, LPU.Wrap, GravityFlags.Right | GravityFlags.Bottom));
   }
 }

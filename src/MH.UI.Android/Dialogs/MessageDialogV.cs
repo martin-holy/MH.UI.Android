@@ -15,8 +15,10 @@ public class MessageDialogV : LinearLayout {
     SetPadding(0, DisplayU.DpToPx(10), 0, DisplayU.DpToPx(10));
     SetGravity(GravityFlags.CenterVertical);
 
-    AddView(new IconView(context, dataContext.Icon),
-      new LayoutParams(DisplayU.DpToPx(32), DisplayU.DpToPx(32)).WithDpMargin(10));
-    AddView(new TextView(context) { Text = dataContext.Message }, new LayoutParams(0, LPU.Wrap, 1f));
+    var icon = new IconView(context, dataContext.Icon);
+    var text = new TextView(context) { Text = dataContext.Message };
+
+    AddView(icon, LPU.Linear(DisplayU.DpToPx(32), DisplayU.DpToPx(32)).WithDpMargin(10));
+    AddView(text, LPU.Linear(0, LPU.Wrap, 1f));
   }
 }

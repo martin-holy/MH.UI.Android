@@ -36,8 +36,8 @@ public class SlidePanelsGridHost : LinearLayout {
     _panelTop.BindVisibility(dataContext.PanelTop, nameof(SlidePanel.IsPinned), x => x.IsPinned, bindings);
     _panelBottom.BindVisibility(dataContext.PanelBottom, nameof(SlidePanel.IsPinned), x => x.IsPinned, bindings);
 
-    AddView(top, new LayoutParams(LPU.Match, LPU.Wrap));
-    AddView(_viewPager, new LayoutParams(LPU.Match, 0, 1f));
-    AddView(bottom, new LayoutParams(LPU.Match, LPU.Wrap));
+    AddView(top, LPU.LinearMatchWrap());
+    AddView(_viewPager, LPU.Linear(LPU.Match, 0, 1f));
+    AddView(bottom, LPU.LinearMatchWrap());
   }
 }

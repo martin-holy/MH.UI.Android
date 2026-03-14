@@ -45,8 +45,8 @@ public class ZoomAndPanHost : FrameLayout, IZoomAndPanHost {
     _scaleDetector = new ScaleGestureDetector(context, new ScaleListener(this));
     _gestureDetector = new GestureDetector(context, new GestureListener(this));
 
-    AddView(_imageView, new LayoutParams(LPU.Match, LPU.Match));
-    AddView(_videoView, new LayoutParams(LPU.Match, LPU.Match));
+    AddView(_imageView, LPU.FrameMatch());
+    AddView(_videoView, LPU.FrameMatch());
   }
 
   public void SetImagePath(string? path, MH.Utils.Imaging.Orientation orientation = MH.Utils.Imaging.Orientation.Normal) {

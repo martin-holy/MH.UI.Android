@@ -19,11 +19,11 @@ public class ToggleDialogV : LinearLayout {
     var item = new IconTextView(context, dataContext.Item!.Icon, dataContext.Item.Name) { Background = BackgroundFactory.RoundDark() };
     var message = new TextView(context) { Text = dataContext.Message };
 
-    var itemAndMessage = new LinearLayout(context) { Orientation = Orientation.Vertical };
-    itemAndMessage.AddView(item, new LayoutParams(LPU.Wrap, LPU.Wrap).WithDpMargin(5));
-    itemAndMessage.AddView(message, new LayoutParams(LPU.Wrap, LPU.Wrap).WithDpMargin(5, 5, 10, 5));
+    var itemAndMessage = LayoutU.Vertical(context)
+      .Add(item, LPU.LinearWrap().WithDpMargin(5))
+      .Add(message, LPU.LinearWrap().WithDpMargin(5, 5, 10, 5));
 
-    AddView(icon, new LayoutParams(DisplayU.DpToPx(32), DisplayU.DpToPx(32)).WithDpMargin(10));
-    AddView(itemAndMessage, new LayoutParams(LPU.Wrap, LPU.Wrap, 1f));
+    AddView(icon, LPU.Linear(DisplayU.DpToPx(32), DisplayU.DpToPx(32)).WithDpMargin(10));
+    AddView(itemAndMessage, LPU.Linear(LPU.Wrap, LPU.Wrap, 1f));
   }
 }

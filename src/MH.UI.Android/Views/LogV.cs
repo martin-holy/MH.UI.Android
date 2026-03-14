@@ -45,13 +45,13 @@ public class LogV : LinearLayout {
     _clearBtn = new(new ContextThemeWrapper(context, Resource.Style.mh_DialogButton), null, 0);
     _clearBinding = new CommandBinding(_clearBtn).Bind(dataContext.ClearCommand);
 
-    var footer = new LinearLayout(context) { Orientation = Orientation.Horizontal };
-    footer.AddView(_wrapText, new LayoutParams(0, LPU.Wrap, 1f));
-    footer.AddView(_clearBtn, new LayoutParams(LPU.Wrap, DisplayU.DpToPx(32)).WithMargin(DimensU.Spacing));
+    var footer = LayoutU.Horizontal(context)
+      .Add(_wrapText, LPU.Linear(0, LPU.Wrap, 1f))
+      .Add(_clearBtn, LPU.Linear(LPU.Wrap, DisplayU.DpToPx(32)).WithMargin(DimensU.Spacing));
 
-    AddView(_items, new LayoutParams(LPU.Match, 0, 0.4f).WithMargin(DimensU.Spacing));
-    AddView(_detail, new LayoutParams(LPU.Match, 0, 1f).WithMargin(DimensU.Spacing));
-    AddView(footer, new LayoutParams(LPU.Match, LPU.Wrap));
+    AddView(_items, LPU.Linear(LPU.Match, 0, 0.4f).WithMargin(DimensU.Spacing));
+    AddView(_detail, LPU.Linear(LPU.Match, 0, 1f).WithMargin(DimensU.Spacing));
+    AddView(footer, LPU.LinearMatchWrap());
 
     _dataContext.Items.CollectionChanged += _onItemsCollectionChanged;
   }

@@ -16,9 +16,10 @@ public class ProgressDialogV : LinearLayout {
     SetPadding(0, DisplayU.DpToPx(10), 0, DisplayU.DpToPx(10));
     SetGravity(GravityFlags.CenterVertical);
 
-    AddView(new ProgressBar(context).BindProgressBar(dataContext, bindings),
-      new LayoutParams(LPU.Match, LPU.Wrap).WithDpMargin(6, 0, 6, 0));
-    AddView(new TextView(context).BindProgressText(dataContext, bindings),
-      new LayoutParams(LPU.Wrap, LPU.Wrap).WithDpMargin(0, 0, 0, 6));
+    var bar = new ProgressBar(context).BindProgressBar(dataContext, bindings);
+    var text = new TextView(context).BindProgressText(dataContext, bindings);
+
+    AddView(bar, LPU.LinearMatchWrap().WithDpMargin(6, 0, 6, 0));
+    AddView(text, LPU.LinearWrap().WithDpMargin(0, 0, 0, 6));
   }
 }

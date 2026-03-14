@@ -1,6 +1,7 @@
 ﻿using Android.Content;
 using Android.Views;
 using Android.Widget;
+using MH.UI.Android.Utils;
 using System;
 using System.Collections.Generic;
 
@@ -17,7 +18,7 @@ public class ToolBar : LinearLayout {
   public void RegisterPanel(string key, Func<View> factory) {
     _panels[key] = new Lazy<View>(() => {
       var v = factory();
-      AddView(v);
+      AddView(v, LPU.LinearWrap());
       return v;
     });
   }

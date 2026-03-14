@@ -29,8 +29,8 @@ public class SelectionBar : LinearLayout {
     Background = BackgroundFactory.RoundSolidDark();
     SetGravity(GravityFlags.CenterVertical);
     SetPadding(DimensU.Spacing, 0, DimensU.Spacing, 0);
-    AddView(_selectedCount);
-    AddView(_clearSelectionBtn);
+    AddView(_selectedCount, LPU.LinearWrap());
+    AddView(_clearSelectionBtn, LPU.LinearWrap());
   }
 
   private void _onSelectedTreeItemsChanged(object? sender, ITreeItem[] e) =>

@@ -24,8 +24,8 @@ public class LogItemV : LinearLayout, IBindable<LogItem> {
 
     _level = new View(context);
     _text = new TextView(context);
-    AddView(_level, new LayoutParams(DisplayU.DpToPx(10), LPU.Match));
-    AddView(_text);
+    AddView(_level, LPU.Linear(DisplayU.DpToPx(10), LPU.Match));
+    AddView(_text, LPU.LinearWrap());
   }
 
   public void Bind(LogItem item) {

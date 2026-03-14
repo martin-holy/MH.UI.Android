@@ -20,7 +20,6 @@ namespace MH.UI.Android.Controls.Hosts.DialogHost;
 public class DialogHost : DialogFragment {
   private static WeakReference<FragmentActivity>? _activityRef;
   private static Func<Context, Dialog, BindingScope, View?>? _contentViewFactory;
-  private static LinearLayout? _notImplementedDialog;
   private readonly Dialog _dataContext;
   private readonly BindingScope _bindings = new();
 
@@ -57,7 +56,7 @@ public class DialogHost : DialogFragment {
     };
 
     view ??= _contentViewFactory?.Invoke(context, dataContext, bindings);
-    if (view == null) return _getNotImplementedDialog(context, dataContext);
+    if (view == null) return _createNotImplementedDialog(context, dataContext);
 
     return view;
   }
@@ -77,27 +76,10 @@ public class DialogHost : DialogFragment {
   public override View OnCreateView(LayoutInflater? inflater, ViewGroup? container, Bundle? savedInstanceState) {
     var context = container?.Context ?? Activity!;
 
-    var view = new LinearLayout(context) { Orientation = Orientation.Vertical };
+    var view = LayoutU.Vertical(context);
     view.SetBackgroundResource(Resource.Drawable.dialog_background);
     view.SetPadding(DisplayU.DpToPx(1));
-
-    var titleBar = new LinearLayout(context) { Orientation = Orientation.Horizontal };
-    titleBar.SetGravity(GravityFlags.CenterVertical);
-    titleBar.SetBackgroundResource(Resource.Color.c_black2);
-    titleBar.SetPadding(DimensU.Spacing);
-
-    var titleCloseBtn = new IconButton(context).WithClickCommand(UI.Controls.Dialog.CloseCommand, _bindings, _dataContext, false);
-    titleCloseBtn.SetImageResource(Resource.Drawable.icon_x_close);
-
-    titleBar.AddView(
-      new IconView(context, _dataContext.Icon),
-      new LinearLayout.LayoutParams(DimensU.IconSize, DimensU.IconSize));
-    titleBar.AddView(
-      new TextView(context) { Text = _dataContext.Title, TextSize = 18 },
-      new LinearLayout.LayoutParams(0, LPU.Wrap, 1f));
-    titleBar.AddView(titleCloseBtn);
-
-    view.AddView(titleBar, new LinearLayout.LayoutParams(LPU.Match, LPU.Wrap));
+    view.AddView(_titleBarLayout(context), LPU.LinearMatchWrap());
 
     if (_getDialog(context, _dataContext, _bindings) is { } contentView) {
       if (contentView.Parent is ViewGroup oldParent)
@@ -106,13 +88,10 @@ public class DialogHost : DialogFragment {
       if (contentView.LayoutParameters?.Width == LPU.Match && Dialog?.Window is { } window)
         window.SetLayout(LPU.Match, LPU.Wrap);
 
-      view.AddView(contentView, contentView.LayoutParameters ?? new LinearLayout.LayoutParams(LPU.Wrap, LPU.Wrap));
+      view.AddView(contentView, contentView.LayoutParameters ?? LPU.LinearWrap());
     }
 
-    view.AddView(_createButtonsView(context, _dataContext),
-      new LinearLayout.LayoutParams(LPU.Wrap, LPU.Wrap) {
-        Gravity = GravityFlags.End
-      });
+    view.AddView(_buttonsLayout(context), LPU.Linear(LPU.Wrap, LPU.Wrap, GravityFlags.End));
 
     return view;
   }
@@ -122,34 +101,43 @@ public class DialogHost : DialogFragment {
     base.OnDestroyView();
   }
 
-  private LinearLayout _createButtonsView(Context context, Dialog dataContext) {
+  private LinearLayout _titleBarLayout(Context context) {
+    var icon = new IconView(context, _dataContext.Icon);
+    var title = new TextView(context) { Text = _dataContext.Title, TextSize = 18 };
+    var closeBtn = new IconButton(context).WithClickCommand(UI.Controls.Dialog.CloseCommand, _bindings, _dataContext, false);
+    closeBtn.SetImageResource(Resource.Drawable.icon_x_close);
+
+    var bar = LayoutU.Horizontal(context);
+    bar.SetGravity(GravityFlags.CenterVertical);
+    bar.SetBackgroundResource(Resource.Color.c_black2);
+    bar.SetPadding(DimensU.Spacing);
+
+    bar.AddView(icon, LPU.Linear(DimensU.IconSize, DimensU.IconSize));
+    bar.AddView(title, LPU.Linear(0, LPU.Wrap, 1f));
+    bar.AddView(closeBtn, LPU.LinearWrap());
+
+    return bar;
+  }
+
+  private LinearLayout _buttonsLayout(Context context) {
     var margin = DimensU.Spacing * 2;
-    var view = new LinearLayout(context) { Orientation = Orientation.Horizontal };
+    var view = LayoutU.Horizontal(context);
 
-    foreach (var button in dataContext.Buttons) {
+    foreach (var button in _dataContext.Buttons) {
       var btn = new Button(new ContextThemeWrapper(context, Resource.Style.mh_DialogButton), null, 0)
-        .WithClickCommand(button.Command, _bindings, dataContext);
+        .WithClickCommand(button.Command, _bindings, _dataContext);
 
-      view.AddView(btn, new LinearLayout.LayoutParams(LPU.Wrap, DisplayU.DpToPx(32))
+      view.AddView(btn, LPU.Linear(LPU.Wrap, DisplayU.DpToPx(32))
         .WithMargin(0, margin, margin, margin));
     }
 
     return view;
   }
 
-  private static LinearLayout _getNotImplementedDialog(Context context, Dialog dataContext) {
-    _notImplementedDialog ??= _createNotImplementedDialog(context);
-    if (_notImplementedDialog.GetChildAt(0) is TextView text)
-      text.Text = $"Dialog {dataContext.GetType()} not implemented";
-
-    return _notImplementedDialog;
-  }
-
-  private static LinearLayout _createNotImplementedDialog(Context context) {
-    var container = new LinearLayout(context) { Orientation = Orientation.Vertical };
-    var text = new TextView(context) { Gravity = GravityFlags.Center };
-    container.AddView(text);
-
-    return container;
-  }
+  private static FrameLayout _createNotImplementedDialog(Context context, Dialog dataContext) =>
+    new FrameLayout(context)
+      .Add(new TextView(context) {
+        Text = $"{dataContext.GetType()}\nnot implemented",
+        Gravity = GravityFlags.Center
+      }, LPU.FrameMatch());
 }

@@ -14,7 +14,7 @@ public class PopupSlider : FrameLayout {
     Slider = new(context, minD, maxD, tickFrequency);
     Popup = new PopupWindow(Slider, DisplayU.DpToPx(160), LPU.Wrap, true);
 
-    AddView(content, new LayoutParams(LPU.Wrap, LPU.Wrap));
+    AddView(content, LPU.FrameMatch());
 
     Slider.StopTrackingTouch += (_, _) => Popup.Dismiss();
     content.WithClickAction(Popup.ShowAsDropDown);

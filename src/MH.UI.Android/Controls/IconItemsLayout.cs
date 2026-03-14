@@ -15,15 +15,13 @@ public class IconItemsLayout : LinearLayout {
     Orientation = Orientation.Horizontal;
     SetGravity(GravityFlags.CenterVertical);
 
-    AddView(new IconView(context, iconName), new LayoutParams(DimensU.IconSize, DimensU.IconSize)
-      .WithMargin(DimensU.Spacing, 0, DimensU.Spacing, 0));
-
     WrapLayout = new WrapLayout(context, itemFactory);
-
+    var icon = new IconView(context, iconName);
     var scroll = new ScrollView(context) { FillViewport = true };
-    scroll.AddView(WrapLayout, new LayoutParams(LPU.Match, LPU.Wrap));
 
-    AddView(scroll, new LayoutParams(0, LPU.Wrap, 1f));
+    scroll.AddView(WrapLayout, LPU.LinearMatchWrap());
+    AddView(icon, LPU.Linear(DimensU.IconSize, DimensU.IconSize).WithMargin(DimensU.Spacing, 0, DimensU.Spacing, 0));
+    AddView(scroll, LPU.Linear(0, LPU.Wrap, 1f));
   }
 
   protected override void OnMeasure(int widthMeasureSpec, int heightMeasureSpec) =>

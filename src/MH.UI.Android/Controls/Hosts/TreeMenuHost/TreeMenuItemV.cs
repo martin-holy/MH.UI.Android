@@ -35,9 +35,9 @@ public class TreeMenuItemV : LinearLayout, IBindable<FlatTreeItem> {
     _expandedIcon.SetScaleType(ImageView.ScaleType.Center);
     _expandedIcon.SetImageResource(Resource.Drawable.tree_item_expanded_selector);
 
-    AddView(_icon, new LayoutParams(DimensU.IconSize, DimensU.IconSize).WithMargin(DimensU.Spacing, 0, DimensU.Spacing, 0));
-    AddView(_name, new LayoutParams(0, LPU.Wrap, 1f));
-    AddView(_expandedIcon, new LayoutParams(DimensU.IconButtonSize, DimensU.IconButtonSize));
+    AddView(_icon, LPU.Linear(DimensU.IconSize, DimensU.IconSize).WithMargin(DimensU.Spacing, 0, DimensU.Spacing, 0));
+    AddView(_name, LPU.Linear(0, LPU.Wrap, 1f));
+    AddView(_expandedIcon, LPU.Linear(DimensU.IconButtonSize, DimensU.IconButtonSize));
     this.WithClickAction(_onContainerClick);
   }
 

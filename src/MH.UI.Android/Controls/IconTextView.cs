@@ -22,9 +22,9 @@ public class IconTextView : LinearLayout {
     _icon = new IconView(context);
     _text = new TextView(context);
 
-    AddView(_icon, new LayoutParams(DimensU.IconSize, DimensU.IconSize)
+    AddView(_icon, LPU.Linear(DimensU.IconSize, DimensU.IconSize)
       .WithMargin(DimensU.Spacing, 0, DimensU.Spacing, 0));
-    AddView(_text);
+    AddView(_text, LPU.LinearWrap());
 
     _defaultTextColors = _text.TextColors;
     _textPadding = _text.PaddingLeft;

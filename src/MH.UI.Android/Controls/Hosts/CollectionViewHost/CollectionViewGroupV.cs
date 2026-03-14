@@ -12,7 +12,7 @@ public class CollectionViewGroupV : FlatTreeItemVBase {
 
   public CollectionViewGroupV(Context context, IAndroidTreeViewHost treeViewHost) : base(context, treeViewHost) {
     _sourceCount = new TextView(context);
-    AddView(_sourceCount);
+    AddView(_sourceCount, LPU.LinearWrap());
     Background = BackgroundFactory.Dark();
   }
 

@@ -34,11 +34,11 @@ public class TabItemHeaderV : LinearLayout, IBindable<IListItem> {
       _icon = new IconButton(context)
         .WithClickAction(s => _tabControlHost.ItemMenu?.ShowItemMenu(s, DataContext))
         .WithPadding(0);
-      AddView(_icon);
+      AddView(_icon, LPU.LinearWrap());
     }
     else {
       _icon = new IconView(context);
-      AddView(_icon, new LayoutParams(DimensU.IconSize, DimensU.IconSize)
+      AddView(_icon, LPU.Linear(DimensU.IconSize, DimensU.IconSize)
         .WithMargin(DimensU.Spacing, DimensU.Spacing, 0, DimensU.Spacing));
     }
 
@@ -52,9 +52,9 @@ public class TabItemHeaderV : LinearLayout, IBindable<IListItem> {
 
       Orientation = Orientation.Vertical;
       SetPadding(0, DimensU.Spacing, 0, 0);
-      AddView(_name, 0);
+      AddView(_name, 0, LPU.LinearWrap());
     }
-    else AddView(_name);
+    else AddView(_name, LPU.LinearWrap());
 
     _selectItemCommandBinding = new(this);
   }

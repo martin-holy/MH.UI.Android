@@ -18,15 +18,20 @@ public sealed class GroupByDialogV : LinearLayout {
     SetPadding(0, 0, 0, DisplayU.DpToPx(10));
     SetGravity(GravityFlags.CenterVertical);
 
+    var tree = new TreeViewHost(context, dataContext.TreeView, null);
+
     var groupMode = new RadioGroup(context) { Orientation = Orientation.Horizontal };
     groupMode.SetPadding(DimensU.Spacing);
     groupMode.AddView(new RadioButton(context) { Text = "Group by" });
     groupMode.AddView(new RadioButton(context) { Text = "Group by - Then by" });
-    groupMode.BindChecked(dataContext, nameof(GroupByDialog.GroupMode), x => x.GroupMode, (s, v) => s.GroupMode = v, [GroupMode.GroupBy, GroupMode.ThenBy], bindings);
+    groupMode.BindChecked(dataContext, nameof(GroupByDialog.GroupMode), x => x.GroupMode,
+      (s, v) => s.GroupMode = v, [GroupMode.GroupBy, GroupMode.ThenBy], bindings);
 
-    AddView(new TreeViewHost(context, dataContext.TreeView, null), new LayoutParams(LPU.Match, DisplayU.DpToPx(300), 1f));
-    AddView(groupMode, new LayoutParams(LPU.Wrap, LPU.Wrap));
-    AddView(new CheckBox(context) { Text = "Group recursive" }
-      .BindChecked(dataContext, nameof(GroupByDialog.IsRecursive), x => x.IsRecursive, (s, v) => s.IsRecursive = v, bindings));
+    var recursive = new CheckBox(context) { Text = "Group recursive" }
+      .BindChecked(dataContext, nameof(GroupByDialog.IsRecursive), x => x.IsRecursive, (s, v) => s.IsRecursive = v, bindings);
+
+    AddView(tree, LPU.Linear(LPU.Match, DisplayU.DpToPx(300), 1f));
+    AddView(groupMode, LPU.LinearWrap());
+    AddView(recursive, LPU.LinearWrap());
   }
 }

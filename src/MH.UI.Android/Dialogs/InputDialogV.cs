@@ -36,12 +36,12 @@ public sealed class InputDialogV : LinearLayout {
         answer.Background!.ClearColorFilter();
     }).DisposeWith(bindings);
 
-    var messageAndAnswer = new LinearLayout(context) { Orientation = Orientation.Vertical };
-    messageAndAnswer.AddView(message, new LayoutParams(LPU.Wrap, LPU.Wrap).WithDpMargin(5));
-    messageAndAnswer.AddView(answer, new LayoutParams(LPU.Match, LPU.Wrap).WithDpMargin(5, 5, 10, 5));
+    var messageAndAnswer = LayoutU.Vertical(context)
+      .Add(message, LPU.LinearWrap().WithDpMargin(5))
+      .Add(answer, LPU.LinearMatchWrap().WithDpMargin(5, 5, 10, 5));
 
-    AddView(icon, new LayoutParams(DisplayU.DpToPx(32), DisplayU.DpToPx(32)).WithDpMargin(10));
-    AddView(messageAndAnswer, new LayoutParams(LPU.Wrap, LPU.Wrap, 1f));
+    AddView(icon, LPU.Linear(DisplayU.DpToPx(32), DisplayU.DpToPx(32)).WithDpMargin(10));
+    AddView(messageAndAnswer, LPU.Linear(LPU.Wrap, LPU.Wrap, 1f));
 
     Post(() => {
       answer.RequestFocus();
