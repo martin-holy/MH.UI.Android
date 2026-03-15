@@ -23,6 +23,7 @@
 	- [N] LayoutU: Horizontal and Vertical LinearLayout
 	- [N] LPU: LinearLayout.LayoutParams factory methods
 	- [N] LPU: FrameLayout.LayoutParams factory methods
+	- [U] ZoomAndPanHost: Async image loading
 
 1.4.0:
 	- [B] CollectionViewRowViewHolder: row height calculation when items are empty
