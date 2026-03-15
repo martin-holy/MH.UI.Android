@@ -1,4 +1,5 @@
 ﻿using Android.Content;
+using Android.Graphics;
 using Android.Graphics.Drawables;
 using Android.Views;
 using Android.Widget;
@@ -6,6 +7,8 @@ using MH.UI.Android.Utils;
 using MH.UI.Controls;
 using MH.Utils.Types;
 using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace MH.UI.Android.Controls.Hosts.ZoomAndPanHost;
 
@@ -49,18 +52,75 @@ public class ZoomAndPanHost : FrameLayout, IZoomAndPanHost {
     AddView(_videoView, LPU.FrameMatch());
   }
 
-  public void SetImagePath(string? path, MH.Utils.Imaging.Orientation orientation = MH.Utils.Imaging.Orientation.Normal) {
-    var bitmap = string.IsNullOrEmpty(path)
-      ? null
-      : global::Android.Graphics.BitmapFactory.DecodeFile(path);
-
+  public async Task SetImagePathAsync(string path, double width, double height, MH.Utils.Imaging.Orientation orientation, CancellationToken token, Context context) {
     _showingVideo = false;
     _videoView.Visibility = ViewStates.Gone;
     _imageView.Visibility = ViewStates.Visible;
 
+    try {
+      var thumb = await MediaStoreU.GetImageThumbnail(path, context, 512);
+      if (token.IsCancellationRequested) return;
+      thumb ??= await Task.Run(() => ImagingU.CreateImageThumbnail(path, 512), token);
+      if (thumb == null || token.IsCancellationRequested) return;
+      thumb = thumb.ApplyOrientation(orientation);
+
+      _imageView.Post(() => {
+        if (token.IsCancellationRequested) return;
+        _applyThumbnailMatrix(thumb, width, height);
+        _setImageBitmap(thumb);
+      });
+
+      if (!token.IsCancellationRequested)
+        _ = _loadFullImageAsync(path, width, height, orientation, token);
+    }
+    catch (Exception ex) {
+      MH.Utils.Log.Error(ex);
+    }
+  }
+
+  private async Task _loadFullImageAsync(string path, double width, double height, MH.Utils.Imaging.Orientation orientation, CancellationToken token) {
+    try {
+      var bitmap = await Task.Run(() => {
+        token.ThrowIfCancellationRequested();
+        var bmp = BitmapFactory.DecodeFile(path);
+        token.ThrowIfCancellationRequested();
+        return bmp?.ApplyOrientation(orientation);
+      }, token);
+
+      if (bitmap == null || token.IsCancellationRequested) return;
+
+      _imageView.Post(() => {
+        if (token.IsCancellationRequested) return;
+        _imageView.ImageMatrix = null;
+        _setImageBitmap(bitmap);
+        DataContext.ScaleToFitContent(width, height);
+        UpdateImageTransform();
+      });
+    }
+    catch (OperationCanceledException) { }
+  }
+
+  public void UnsetImage() =>
+    _setImageBitmap(null);
+
+  private void _setImageBitmap(Bitmap? bitmap) {
     var oldBitmap = _imageView.Drawable is BitmapDrawable bd ? bd.Bitmap : null;
-    _imageView.SetImageBitmap(bitmap?.ApplyOrientation(orientation));
+    _imageView.SetImageBitmap(bitmap);
     if (oldBitmap?.IsRecycled == false && bitmap != oldBitmap) oldBitmap.Recycle();
+  }
+
+  private void _applyThumbnailMatrix(Bitmap thumb, double imgW, double imgH) {
+    var scale = DataContext.GetFitScale(Width, Height, imgW, imgH);
+    var ratio = (imgW * scale) / thumb.Width;
+
+    var tx = (Width - (thumb.Width * ratio)) / 2;
+    var ty = (Height - (thumb.Height * ratio)) / 2;
+
+    _matrix.Reset();
+    _matrix.SetScale((float)ratio, (float)ratio);
+    _matrix.PostTranslate((float)tx, (float)ty);
+
+    _imageView.ImageMatrix = _matrix;
   }
 
   public void SetVideoPath(string? path) {
@@ -82,6 +142,7 @@ public class ZoomAndPanHost : FrameLayout, IZoomAndPanHost {
   public void UpdateImageTransform() {
     if (_showingVideo) return; // Skip zoom transform for now
 
+    _matrix.Reset();
     _matrix.SetScale((float)DataContext.ScaleX, (float)DataContext.ScaleY);
     _matrix.PostTranslate((float)DataContext.TransformX, (float)DataContext.TransformY);
     _imageView.ImageMatrix = _matrix;
