@@ -13,7 +13,6 @@ public sealed class CommandBinding : IDisposable {
   private readonly View _view;
   private ICommand? _command;
   private object? _parameter;
-  private bool _isBound;
 
   public object? Parameter {
     get => _parameter;
@@ -32,13 +31,11 @@ public sealed class CommandBinding : IDisposable {
     Bind(command, null, useCommandIcon, useCommandText);
 
   public CommandBinding Bind(ICommand command, object? parameter, bool useCommandIcon = true, bool useCommandText = true) {
-    if (_isBound) Unbind();
+    Unbind();
 
     _command = command;
     _parameter = parameter;
-
     _command.CanExecuteChanged += _onCanExecuteChanged;
-    _isBound = true;
 
     _setIconAndText(useCommandIcon, useCommandText);
     _updateEnabledState();
@@ -47,14 +44,11 @@ public sealed class CommandBinding : IDisposable {
   }
 
   public void Unbind() {
-    if (!_isBound) return;
-
     if (_command != null)
       _command.CanExecuteChanged -= _onCanExecuteChanged;
 
     _command = null;
     _parameter = null;
-    _isBound = false;
   }
 
   private void _setIconAndText(bool useCommandIcon, bool useCommandText) {
@@ -85,7 +79,7 @@ public sealed class CommandBinding : IDisposable {
   }
 
   private void _updateEnabledState() {
-    if (_view.Handle != IntPtr.Zero)
+    if (_view.IsAttachedToWindow)
       _view.Enabled = _command?.CanExecute(_parameter) ?? false;
   }
 
