@@ -1,5 +1,4 @@
-﻿using Android.Content;
-using Android.Views;
+﻿using Android.Views;
 using AndroidX.RecyclerView.Widget;
 using MH.UI.Android.Controls.Hosts.TreeViewHost;
 using MH.UI.Android.Controls.Recycler;
@@ -20,7 +19,7 @@ public class CollectionViewHostAdapter : TreeViewHostAdapterBase {
   private static readonly Java.Lang.Object _sourceCountPayload = new Java.Lang.String("SourceCount");
   private readonly CollectionViewHost host;
 
-  public CollectionViewHostAdapter(Context _context, CollectionViewHost _host) : base(_context, _host.DataContext.RootHolder) {
+  public CollectionViewHostAdapter(CollectionViewHost _host) : base(_host.DataContext.RootHolder) {
     host = _host;
     _flatTree.TreeItemPropertyChangedEvent += _onTreeItemPropertyChanged;
   }

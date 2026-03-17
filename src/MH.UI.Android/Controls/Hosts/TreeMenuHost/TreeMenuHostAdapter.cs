@@ -1,5 +1,4 @@
-﻿using Android.Content;
-using Android.Views;
+﻿using Android.Views;
 using AndroidX.RecyclerView.Widget;
 using MH.UI.Android.Controls.Hosts.TreeViewHost;
 using MH.UI.Android.Controls.Recycler;
@@ -11,8 +10,7 @@ using System.Collections.Generic;
 
 namespace MH.UI.Android.Controls.Hosts.TreeMenuHost;
 
-public class TreeMenuHostAdapter(Context _context, TreeMenuHost _host)
-  : TreeViewHostAdapterBase(_context, _host.DataContext.RootHolder) {
+public class TreeMenuHostAdapter(TreeMenuHost _host) : TreeViewHostAdapterBase(_host.DataContext.RootHolder) {
 
   public override int GetItemViewType(int position) =>
     Items[position].TreeItem is MenuItemSeparator ? 1 : 0;

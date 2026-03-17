@@ -1,5 +1,4 @@
-﻿using Android.Content;
-using Android.Views;
+﻿using Android.Views;
 using AndroidX.RecyclerView.Widget;
 using MH.UI.Interfaces;
 using MH.Utils.BaseClasses;
@@ -15,8 +14,7 @@ public class TreeViewHostAdapter : TreeViewHostAdapterBase {
   private readonly ITreeItemViewHolderFactory _factory;
   private static readonly Java.Lang.Object _isSelectedPayload = new Java.Lang.String("IsSelected");
 
-  public TreeViewHostAdapter(Context context, TreeViewHost host, ITreeItemViewHolderFactory? factory = null)
-    : base(context, host.DataContext.RootHolder) {
+  public TreeViewHostAdapter(TreeViewHost host, ITreeItemViewHolderFactory? factory = null) : base(host.DataContext.RootHolder) {
     _host = host;
     _factory = factory ?? new DefaultTreeItemViewHolderFactory();
     _flatTree.TreeItemPropertyChangedEvent += _onTreeItemPropertyChanged;

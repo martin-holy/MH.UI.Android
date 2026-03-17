@@ -23,7 +23,7 @@ public class CollectionViewHost : TreeViewHostBase<CollectionView, CollectionVie
     CreateItemContent = createItemContent;
     DataContext.Host = this;
     ((TreeView)DataContext).Host = this;
-    Adapter = new CollectionViewHostAdapter(context, this);
+    Adapter = new CollectionViewHostAdapter(this);
     _recyclerView.SetAdapter(Adapter);
   }
 

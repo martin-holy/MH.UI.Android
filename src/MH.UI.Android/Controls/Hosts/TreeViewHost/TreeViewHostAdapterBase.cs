@@ -9,7 +9,6 @@ using System.Collections.ObjectModel;
 namespace MH.UI.Android.Controls.Hosts.TreeViewHost;
 
 public abstract class TreeViewHostAdapterBase : RecyclerView.Adapter {
-  protected readonly Context _context;
   internal FlatTree _flatTree;
   protected bool _disposed;
   protected static readonly Java.Lang.Object _isExpandedPayload = new Java.Lang.String("IsExpanded");
@@ -18,8 +17,7 @@ public abstract class TreeViewHostAdapterBase : RecyclerView.Adapter {
   public override int ItemCount => _flatTree.Items.Count;
   public IReadOnlyList<FlatTreeItem> Items => _flatTree.Items;
 
-  protected TreeViewHostAdapterBase(Context context, ObservableCollection<ITreeItem> rootHolder) {
-    _context = context;
+  protected TreeViewHostAdapterBase(ObservableCollection<ITreeItem> rootHolder) {
     _flatTree = new(rootHolder);
     _flatTree.ResetEvent += () => NotifyDataSetChanged();
     _flatTree.RangeInsertedEvent += (index, count) => NotifyItemRangeInserted(index, count);

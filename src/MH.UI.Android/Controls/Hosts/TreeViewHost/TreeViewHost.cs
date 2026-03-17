@@ -19,7 +19,7 @@ public class TreeViewHost : TreeViewHostBase<TreeView, TreeViewHostAdapter>, ITr
     : base(context, dataContext, itemMenuFactory) {
 
     DataContext.Host = this;
-    Adapter = new TreeViewHostAdapter(context, this, itemFactory);
+    Adapter = new TreeViewHostAdapter(this, itemFactory);
     _recyclerView.SetAdapter(Adapter);
 
     AddView(new SelectionBar(context, DataContext.SelectedTreeItems), new LayoutParams(LPU.Wrap, LPU.Wrap)
