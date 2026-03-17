@@ -3,6 +3,7 @@ using Android.Views;
 using AndroidX.RecyclerView.Widget;
 using MH.UI.Android.Controls.Recycler;
 using MH.UI.Android.Utils;
+using MH.UI.Controls;
 using MH.UI.Interfaces;
 using MH.Utils.Interfaces;
 using System;
@@ -13,7 +14,7 @@ namespace MH.UI.Android.Controls.Hosts.CollectionViewHost;
 public class CollectionViewItemAdapter : RecyclerView.Adapter {
   private readonly Action<ISelectable> _onClick;
   private readonly Action<ISelectable> _onLongClick;
-  private readonly Func<Context, ICollectionViewGroup, ICollectionViewItemContent> _createItemContent;
+  private readonly Func<Context, CollectionView.ViewMode, ICollectionViewItemContent> _createItemContent;
   private ICollectionViewGroup? _group;
   private IReadOnlyList<ISelectable> _items = Array.Empty<ISelectable>();
 
@@ -22,7 +23,7 @@ public class CollectionViewItemAdapter : RecyclerView.Adapter {
   public CollectionViewItemAdapter(
     Action<ISelectable> onClick,
     Action<ISelectable> onLongClick,
-    Func<Context, ICollectionViewGroup, ICollectionViewItemContent> createItemContent) {
+    Func<Context, CollectionView.ViewMode, ICollectionViewItemContent> createItemContent) {
 
     _onClick = onClick;
     _onLongClick = onLongClick;
@@ -39,7 +40,7 @@ public class CollectionViewItemAdapter : RecyclerView.Adapter {
     (int)_requireGroup().ViewMode;
 
   public override RecyclerView.ViewHolder OnCreateViewHolder(ViewGroup parent, int viewType) {
-    var content = _createItemContent(parent.Context!, _requireGroup());
+    var content = _createItemContent(parent.Context!, (CollectionView.ViewMode)viewType);
     var shell = new CollectionViewItemShell(parent.Context!, content, _onClick, _onLongClick);
     return new BaseViewHolder(shell, new(LPU.Wrap, LPU.Wrap));
   }

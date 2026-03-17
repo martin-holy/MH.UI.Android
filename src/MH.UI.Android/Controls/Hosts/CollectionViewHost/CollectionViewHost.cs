@@ -11,13 +11,13 @@ namespace MH.UI.Android.Controls.Hosts.CollectionViewHost;
 
 public class CollectionViewHost : TreeViewHostBase<CollectionView, CollectionViewHostAdapter>, ICollectionViewHost {
   public bool IsMultiSelectOn { get; set; }
-  public Func<Context, ICollectionViewGroup, ICollectionViewItemContent> CreateItemContent { get; }
+  public Func<Context, CollectionView.ViewMode, ICollectionViewItemContent> CreateItemContent { get; }
   public readonly RecyclerView.RecycledViewPool ItemViewPool = new RecyclerView.RecycledViewPool();
 
   public CollectionViewHost(
     Context context,
     CollectionView dataContext,
-    Func<Context, ICollectionViewGroup, ICollectionViewItemContent> createItemContent) :
+    Func<Context, CollectionView.ViewMode, ICollectionViewItemContent> createItemContent) :
     base(context, dataContext, dataContext.GetMenu) {
 
     CreateItemContent = createItemContent;
