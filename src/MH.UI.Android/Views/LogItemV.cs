@@ -14,6 +14,8 @@ public class LogItemV : LinearLayout, IBindable<LogItem> {
   private readonly View _level;
   private readonly TextView _text;
 
+  public LogItem? DataContext { get; private set; }
+
   public LogItemV(Context? context) : base(context) {
     SetBackgroundResource(Resource.Drawable.selectable_item);
     SetGravity(GravityFlags.CenterVertical);
@@ -29,6 +31,7 @@ public class LogItemV : LinearLayout, IBindable<LogItem> {
   }
 
   public void Bind(LogItem item) {
+    DataContext = item;
     _level.SetBackgroundResource(item.Level switch {
       LogLevel.Info => Resource.Color.c_log_info,
       LogLevel.Warning => Resource.Color.c_log_warning,

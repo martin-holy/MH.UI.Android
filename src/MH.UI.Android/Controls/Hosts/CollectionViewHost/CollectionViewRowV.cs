@@ -15,11 +15,12 @@ namespace MH.UI.Android.Controls.Hosts.CollectionViewHost;
 
 public class CollectionViewRowV : RelativeLayout, IBindable<FlatTreeItem> {
   private bool _disposed;
-  private FlatTreeItem? _dataContext;
   private ICollectionViewRow? _row;
   private readonly RecyclerView _items;
   private readonly CollectionViewItemAdapter _adapter;
   private int _rowHeight;
+
+  public FlatTreeItem? DataContext { get; private set; }
 
   public CollectionViewRowV(Context context, CollectionViewHost cvHost) : base(context) {
     _adapter = new CollectionViewItemAdapter(
@@ -38,7 +39,7 @@ public class CollectionViewRowV : RelativeLayout, IBindable<FlatTreeItem> {
   }
 
   public void Bind(FlatTreeItem item) {
-    _dataContext = item;
+    DataContext = item;
     BindItems(item);
   }
 

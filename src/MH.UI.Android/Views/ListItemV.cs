@@ -9,6 +9,8 @@ using MH.Utils.Interfaces;
 namespace MH.UI.Android.Views;
 
 public class ListItemV : IconTextView, IBindable<IListItem> {
+  public IListItem? DataContext { get; private set; }
+
   public ListItemV(Context context) : base(context) {
     SetBackgroundResource(Resource.Drawable.selectable_item);
     SetGravity(GravityFlags.CenterVertical);
@@ -17,7 +19,9 @@ public class ListItemV : IconTextView, IBindable<IListItem> {
     Focusable = true;
   }
 
+
   public void Bind(IListItem item) {
+    DataContext = item;
     BindIcon(item.Icon).BindText(item.Name);
   }
 
