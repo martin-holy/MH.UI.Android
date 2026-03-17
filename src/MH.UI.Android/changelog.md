@@ -24,6 +24,7 @@
 	- [N] LPU: LinearLayout.LayoutParams factory methods
 	- [N] LPU: FrameLayout.LayoutParams factory methods
 	- [U] ZoomAndPanHost: Async image loading
+	- [N] BindableAdapter
 
 1.4.0:
 	- [B] CollectionViewRowViewHolder: row height calculation when items are empty
