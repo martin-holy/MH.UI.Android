@@ -44,9 +44,12 @@ public class CollectionViewRowV : RelativeLayout, IBindable<FlatTreeItem> {
   }
 
   public void BindItems(FlatTreeItem item) {
-    _adapter.Submit(null, Array.Empty<ISelectable>());
     _row = item.TreeItem as ICollectionViewRow;
-    if (_row == null || _dataContext?.TreeItem is not ITreeItem { Parent: ICollectionViewGroup group }) return;
+
+    if (_row == null || DataContext?.TreeItem is not ITreeItem { Parent: ICollectionViewGroup group }) {
+      _adapter.Submit(null, Array.Empty<ISelectable>());
+      return;
+    }
 
     var items = _row.Leaves.ToArray();
     _rowHeight = items.Length == 0 ? 0 : items.Max(x => group.GetItemSize(x, false)) + CollectionView.ItemBorderSize * 2;
