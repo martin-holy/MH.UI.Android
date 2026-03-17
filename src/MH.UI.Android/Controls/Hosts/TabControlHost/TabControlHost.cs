@@ -3,6 +3,7 @@ using Android.Views;
 using Android.Widget;
 using AndroidX.RecyclerView.Widget;
 using MH.UI.Android.Controls.Hosts.TreeMenuHost;
+using MH.UI.Android.Controls.Recycler;
 using MH.UI.Android.Extensions;
 using MH.UI.Android.Utils;
 using MH.UI.Controls;
@@ -19,7 +20,7 @@ public class TabControlHost : LinearLayout {
   private readonly LinearLayout _headerPanel;
   private readonly RecyclerView _tabHeaders;
   private readonly FrameLayout _tabContent;
-  private readonly TabControlHostHeaderAdapter _adapter;
+  private readonly BindableAdapter<IListItem> _adapter;
   private readonly Dictionary<IListItem, View> _contentViews = new(ReferenceEqualityComparer.Instance);
   private readonly BindingScope _bindings = new();
   private IListItem? _previousSelected;
@@ -35,7 +36,7 @@ public class TabControlHost : LinearLayout {
 
     _headerPanel = new LinearLayout(context);
     _tabContent = new FrameLayout(context);
-    _adapter = new TabControlHostHeaderAdapter(this);
+    _adapter = new(() => DataContext.Tabs, ctx => new TabItemHeaderV(ctx, this), () => new(LPU.Wrap, LPU.Wrap));
 
     _tabHeaders = new RecyclerView(context) { ScrollBarStyle = ScrollbarStyles.OutsideOverlay };
     _tabHeaders.SetPadding(DimensU.Spacing);

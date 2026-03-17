@@ -1,13 +1,23 @@
 ﻿using Android.Content;
 using Android.Views;
 using AndroidX.RecyclerView.Widget;
+using MH.UI.Android.Controls.Recycler;
 using System;
 using System.Collections.Generic;
 
 namespace MH.UI.Android.Controls.Items;
 
-public class SelectableItemsAdapter<T> : ItemsAdapter<T> where T : class {
-  public SelectableItemsAdapter(SelectableItemsView<T> owner, Func<Context, View> createItemView) : base(owner, createItemView) { }
+public class SelectableItemsAdapter<T> : BindableAdapter<T> where T : class {
+  private readonly SelectableItemsView<T> _owner;
+
+  public SelectableItemsAdapter(
+    SelectableItemsView<T> owner,
+    Func<Context, View> createItemView,
+    Func<RecyclerView.LayoutParams> createLayoutParams,
+    Action<View> onViewCreated)
+    : base(() => owner._items, createItemView, createLayoutParams, onViewCreated) {
+      _owner = owner;
+    }
 
   public override void OnBindViewHolder(RecyclerView.ViewHolder holder, int position, IList<Java.Lang.Object> payloads) {
     if (payloads.Count == 0) {
@@ -15,11 +25,9 @@ public class SelectableItemsAdapter<T> : ItemsAdapter<T> where T : class {
       return;
     }
 
-    var selection = ((SelectableItemsView<T>)_owner).Selection;
-
     foreach (var payload in payloads) {
       if (Equals(payload, SelectableItemsView<T>._selectionPayload))
-        holder.ItemView.Selected = selection.IsSelected(_owner._items![position]);
+        holder.ItemView.Selected = _owner.Selection.IsSelected(_owner._items![position]);
     }
   }
 }

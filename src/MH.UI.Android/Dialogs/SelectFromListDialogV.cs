@@ -10,9 +10,10 @@ namespace MH.UI.Android.Dialogs;
 public class SelectFromListDialogV : SelectableItemsView<IListItem> {
   private readonly SelectFromListDialog _dataContext;
 
-  public SelectFromListDialogV(Context context, SelectFromListDialog dataContext) : base(context, x => new ListItemV(x)) {
+  public SelectFromListDialogV(Context context, SelectFromListDialog dataContext)
+    : base(context, dataContext.Items, x => new ListItemV(x)) {
+
     SetMinimumWidth(DisplayU.DpToPx(300));
-    BindItems(dataContext.Items);
     _dataContext = dataContext;
     Selection.ItemSelectionChanged += _onItemSelectionChanged;
   }

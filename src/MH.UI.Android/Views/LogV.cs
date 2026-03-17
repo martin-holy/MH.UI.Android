@@ -7,7 +7,6 @@ using MH.UI.Android.Controls.Items;
 using MH.UI.Android.Extensions;
 using MH.UI.Android.Utils;
 using MH.UI.ViewModels;
-using MH.Utils;
 using MH.Utils.BaseClasses;
 using System.Collections.Specialized;
 
@@ -26,9 +25,8 @@ public class LogV : LinearLayout {
     _dataContext = dataContext;
     Orientation = Orientation.Vertical;
 
-    _items = new(context, x => new LogItemV(x));
+    _items = new(context, dataContext.Items, x => new LogItemV(x));
     _items.SetLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.Vertical, false));
-    _items.BindItems(dataContext.Items);
     _items.ItemClickedEvent += item => _setDetailText(item?.Detail);
 
     _detail = new(context) {

@@ -1,9 +1,11 @@
 ﻿using Android.Content;
 using Android.Views;
 using AndroidX.RecyclerView.Widget;
+using MH.UI.Android.Utils;
 using MH.Utils;
 using MH.Utils.Collections;
 using System;
+using System.Collections.Generic;
 
 namespace MH.UI.Android.Controls.Items;
 
@@ -12,8 +14,8 @@ public class SelectableItemsView<T> : ItemsViewBase<T> where T : class {
 
   public SelectionManager<T> Selection { get; }
 
-  public SelectableItemsView(Context context, Func<Context, View> createItemView) : base(context) {
-    ItemsAdapter = new SelectableItemsAdapter<T>(this, createItemView);
+  public SelectableItemsView(Context context, IReadOnlyList<T> items, Func<Context, View> createItemView) : base(context, items) {
+    ItemsAdapter = new SelectableItemsAdapter<T>(this, createItemView, () => new(LPU.Match, LPU.Wrap), _onViewCreated);
     SetLayoutManager(new LinearLayoutManager(context));
     SetAdapter(ItemsAdapter);
 
@@ -27,7 +29,8 @@ public class SelectableItemsView<T> : ItemsViewBase<T> where T : class {
   }
 
   private void _notifyItemSelectionChange(T item) {
-    var index = _items!.IndexOf(item);
+    if (_items is not IList<T> list) return;
+    var index = list.IndexOf(item);
     if (index >= 0)
       ItemsAdapter?.NotifyItemChanged(index, _selectionPayload);
   }

@@ -1,5 +1,8 @@
 ﻿using Android.Content;
+using Android.Views;
 using AndroidX.RecyclerView.Widget;
+using MH.UI.Android.Controls.Recycler;
+using MH.UI.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -8,14 +11,19 @@ using System.Collections.Specialized;
 namespace MH.UI.Android.Controls.Items;
 
 public abstract class ItemsViewBase<T> : RecyclerView {
-  internal IList<T>? _items;
+  internal IReadOnlyList<T> _items;
   protected bool _disposed;
 
-  public ItemsAdapter<T>? ItemsAdapter { get; set; }
+  public BindableAdapter<T>? ItemsAdapter { get; set; }
 
   public event Action<T>? ItemClickedEvent;
 
-  protected ItemsViewBase(Context context) : base(context) { }
+  protected ItemsViewBase(Context context, IReadOnlyList<T> items) : base(context) {
+    _items = items;
+
+    if (_items is ObservableCollection<T> newCol)
+      newCol.CollectionChanged += _onCollectionChanged;
+  }
 
   private void _raiseItemClicked(T item) =>
     ItemClickedEvent?.Invoke(item);
@@ -24,16 +32,11 @@ public abstract class ItemsViewBase<T> : RecyclerView {
     _raiseItemClicked(item);
   }
 
-  public void BindItems(IList<T> items) {
-    if (_items is ObservableCollection<T> oldCol)
-      oldCol.CollectionChanged -= _onCollectionChanged;
-
-    _items = items;
-
-    if (_items is ObservableCollection<T> newCol)
-      newCol.CollectionChanged += _onCollectionChanged;
-
-    ItemsAdapter?.NotifyDataSetChanged();
+  internal void _onViewCreated(View view) {
+    view.Click += (o, _) => {
+      if (o is IBindable<T> { DataContext: { } dc })
+        HandleItemClick(dc);
+    };
   }
 
   private void _onCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e) {
@@ -49,6 +52,9 @@ public abstract class ItemsViewBase<T> : RecyclerView {
   protected override void Dispose(bool disposing) {
     if (_disposed) return;
     if (disposing) {
+      if (_items is ObservableCollection<T> oldCol)
+        oldCol.CollectionChanged -= _onCollectionChanged;
+
       SetAdapter(null);
       ItemsAdapter?.Dispose();
     }
