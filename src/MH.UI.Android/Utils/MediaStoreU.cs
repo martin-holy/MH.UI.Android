@@ -237,45 +237,50 @@ public static class MediaStoreU {
     return null;
   }
 
-  public static void DeleteFiles(List<string> filePaths, Context context) {
-    if (context.ContentResolver is not { } resolver) return;
+#pragma warning disable CS0618 // DATA is deprecated but required for path-based deletion
+  private const string _dataColumn = MediaStore.Files.FileColumns.Data;
+#pragma warning restore CS0618
 
-    foreach (var filePath in filePaths) {
-      if (string.IsNullOrWhiteSpace(filePath)) continue;
+  public static void DeleteFiles(IList<string> filePaths, Context context) {
+    if (context.ContentResolver is not { } resolver ||
+      MediaStore.Files.GetContentUri("external") is not { } uri) return;
+
+    for (int i = 0; i < filePaths.Count; i++) {
+      var path = filePaths[i];
+
+      if (string.IsNullOrEmpty(path)) continue;
 
       try {
-        if (!File.Exists(filePath)) continue;
+        if (!File.Exists(path)) continue;
 
-        if (Build.VERSION.SdkInt < BuildVersionCodes.R) {
-          File.Delete(filePath);
-          continue;
+        int rows = 0;
+
+        try {
+          rows = resolver.Delete(uri, _dataColumn + "=?", new[] { path });
+        }
+        catch (Exception ex) {
+          MH.Utils.Log.Error(ex, $"MediaStore delete failed: {path}");
         }
 
-        var isImage = (_getMimeType(filePath) ?? string.Empty).StartsWith("image/");
-        var collection = isImage
-          ? MediaStore.Images.Media.ExternalContentUri
-          : MediaStore.Video.Media.ExternalContentUri;
-        var id = isImage
-          ? _getImageId(filePath, context)
-          : _getVideoId(filePath, context);
+        if (rows > 0) continue;
 
-        if (id <= 0) {
-          // unknown type or not indexed — try both
-          id = _getImageId(filePath, context);
-          if (id <= 0) id = _getVideoId(filePath, context);
+        try {
+          File.Delete(path);
         }
-
-        if (id > 0) {
-          var uri = ContentUris.WithAppendedId(collection, id);
-          resolver.Delete(uri, null, null);
-        }
-        else {
-          File.Delete(filePath);
+        catch (Exception ex) {
+          MH.Utils.Log.Error(ex, $"File delete failed: {path}");
         }
       }
       catch (Exception ex) {
-        MH.Utils.Log.Error(ex, $"Delete failed for {filePath}");
+        MH.Utils.Log.Error(ex, $"Delete failed: {path}");
       }
+    }
+
+    try {
+      MediaScannerConnection.ScanFile(context, filePaths.ToArray(), null, null);
+    }
+    catch (Exception ex) {
+      MH.Utils.Log.Error(ex, "Scan failed");
     }
   }
 
