@@ -284,26 +284,53 @@ public static class MediaStoreU {
     }
   }
 
+  private static HashSet<string> _mimeTypes = ["audio", "image", "text", "video"];
+
   public static void ShareFiles(Context context, IEnumerable<string> filePaths) {
     try {
       var uris = new List<global::Android.Net.Uri>();
+      var mimeTypes = new HashSet<string>();
+
       foreach (var path in filePaths) {
         var file = new Java.IO.File(path);
         if (!file.Exists()) continue;
+
+        var mime = _getMimeType(path);
+        if (!string.IsNullOrEmpty(mime))
+          mimeTypes.Add(mime.Split('/')[0]);
+        else
+          mimeTypes.Add("unknown");
+
         if (FileProvider.GetUriForFile(context, context.PackageName + ".fileprovider", file) is { } uri)
           uris.Add(uri);
       }
 
       if (uris.Count == 0) return;
 
-      var intent = new Intent(Intent.ActionSendMultiple);
-      intent.SetType("*/*");
-      intent.PutParcelableArrayListExtra(Intent.ExtraStream, [.. uris.Cast<IParcelable>()]);
+      var intentType = "*/*";
+      if (mimeTypes.Count == 1) {
+        var mainType = mimeTypes.First();
+
+        if (_mimeTypes.Contains(mainType))
+          intentType = $"{mainType}/*";
+      }
+
+      Intent intent;
+      if (uris.Count == 1) {
+        intent = new Intent(Intent.ActionSend);
+        intent.PutExtra(Intent.ExtraStream, uris[0]);
+      }
+      else {
+        intent = new Intent(Intent.ActionSendMultiple);
+        intent.PutParcelableArrayListExtra(Intent.ExtraStream, [.. uris.Cast<IParcelable>()]);
+      }
+      intent.SetType(intentType);
       intent.AddFlags(ActivityFlags.GrantReadUriPermission);
 
-      var chooser = Intent.CreateChooser(intent, "Share via");
-      chooser.AddFlags(ActivityFlags.NewTask);
-      context.StartActivity(chooser);
+      if (Intent.CreateChooser(intent, "Share via") is { } chooser) {
+        chooser.AddFlags(ActivityFlags.NewTask);
+        context.StartActivity(chooser);
+      }
     }
     catch (Exception ex) {
       MH.Utils.Log.Error(ex, "Failed to share files");
