@@ -1,6 +1,7 @@
 2.1.0:
 	- [B] MediaStoreU: DeleteFiles MediaScanner
 	- [U] MediaStoreU: ShareFiles mime types
+	- [N] TabControlHost: NoTabsText
 
 2.0.0:
 	- [N] WindowExtensions: Enter and exit full screen methods
