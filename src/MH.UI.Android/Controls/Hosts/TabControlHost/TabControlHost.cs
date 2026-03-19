@@ -2,6 +2,7 @@
 using Android.Views;
 using Android.Widget;
 using AndroidX.RecyclerView.Widget;
+using MH.UI.Android.Binding;
 using MH.UI.Android.Controls.Hosts.TreeMenuHost;
 using MH.UI.Android.Controls.Recycler;
 using MH.UI.Android.Extensions;
@@ -12,11 +13,14 @@ using MH.Utils.Disposables;
 using MH.Utils.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 
 namespace MH.UI.Android.Controls.Hosts.TabControlHost;
 
-public class TabControlHost : LinearLayout {
+public class TabControlHost : FrameLayout {
+  private readonly LinearLayout _container;
+  private readonly TextView _noTabsText;
   private readonly LinearLayout _headerPanel;
   private readonly RecyclerView _tabHeaders;
   private readonly FrameLayout _tabContent;
@@ -34,6 +38,12 @@ public class TabControlHost : LinearLayout {
     ItemMenu = new TreeMenu(context, dataContext.ItemMenuFactory);
     SetBackgroundResource(Resource.Color.c_static_ba);
 
+    _noTabsText = new TextView(context) { TextSize = 26 }
+      .WithTextColor(Resource.Color.gray3)
+      .BindText(dataContext, nameof(TabControl.NoTabsText), x => x.NoTabsText, x => x, _bindings)
+      .BindVisibility(dataContext.Tabs, "Count", x => x.Count == 0, _bindings);
+    _noTabsText.SetTypeface(null, global::Android.Graphics.TypefaceStyle.Bold);
+
     _headerPanel = new LinearLayout(context);
     _tabContent = new FrameLayout(context);
     _adapter = new(() => DataContext.Tabs, ctx => new TabItemHeaderV(ctx, this), () => new(LPU.Wrap, LPU.Wrap));
@@ -43,10 +53,9 @@ public class TabControlHost : LinearLayout {
     _tabHeaders.SetAdapter(_adapter);
     _tabHeaders.SetItemAnimator(null);
 
-    if (dataContext.TabStrip.Placement is Dock.Top or Dock.Bottom)
-      _createVertical();
-    else
-      _createHorizontal();
+    _container = dataContext.TabStrip.Placement is Dock.Top or Dock.Bottom
+      ? _createVertical()
+      : _createHorizontal();
 
     if (slotFactory?.Invoke(dataContext.TabStrip.Slot) is View slot)
       _headerPanel.AddView(
@@ -54,26 +63,33 @@ public class TabControlHost : LinearLayout {
         dataContext.TabStrip.SlotPlacement is Dock.Left or Dock.Top ? 0 : -1,
         LPU.LinearWrap());
 
+    AddView(_noTabsText, LPU.Frame(LPU.Wrap, LPU.Wrap, GravityFlags.Center));
+    AddView(_container, LPU.FrameMatch());
+
     DataContext.Bind(nameof(TabControl.Tabs), x => x.Tabs, _onTabsChanged, false).DisposeWith(_bindings);
     DataContext.Bind(nameof(TabControl.Selected), x => x.Selected, _ => _onSelectedChanged()).DisposeWith(_bindings);
   }
 
-  private void _createHorizontal() {
-    Orientation = Orientation.Horizontal;
+  private LinearLayout _createHorizontal() {
     _tabHeaders.SetLayoutManager(new LinearLayoutManager(Context, LinearLayoutManager.Vertical, false));
     _headerPanel.Orientation = Orientation.Vertical;
     _headerPanel.AddView(_tabHeaders, LPU.Linear(LPU.Wrap, 0, 1f));
-    AddView(_tabContent, LPU.Linear(0, LPU.Match, 1));
-    AddView(_headerPanel, _getViewIndex(DataContext.TabStrip.Placement), LPU.Linear(LPU.Wrap, LPU.Match));
+
+    var layout = LayoutU.Horizontal(Context);
+    layout.AddView(_tabContent, LPU.Linear(0, LPU.Match, 1));
+    layout.AddView(_headerPanel, _getViewIndex(DataContext.TabStrip.Placement), LPU.Linear(LPU.Wrap, LPU.Match));
+    return layout;
   }
 
-  private void _createVertical() {
-    Orientation = Orientation.Vertical;
+  private LinearLayout _createVertical() {
     _tabHeaders.SetLayoutManager(new LinearLayoutManager(Context, LinearLayoutManager.Horizontal, false));
     _headerPanel.Orientation = Orientation.Horizontal;
     _headerPanel.AddView(_tabHeaders, LPU.Linear(0, LPU.Wrap, 1f));
-    AddView(_tabContent, LPU.Linear(LPU.Match, 0, 1));
-    AddView(_headerPanel, _getViewIndex(DataContext.TabStrip.Placement), LPU.LinearMatchWrap());
+
+    var layout = LayoutU.Vertical(Context);
+    layout.AddView(_tabContent, LPU.Linear(LPU.Match, 0, 1));
+    layout.AddView(_headerPanel, _getViewIndex(DataContext.TabStrip.Placement), LPU.LinearMatchWrap());
+    return layout;
   }
 
   private int _getViewIndex(Dock dock) =>
@@ -98,14 +114,14 @@ public class TabControlHost : LinearLayout {
     base.Dispose(disposing);
   }
 
-  private void _onTabsChanged(object? sender, NotifyCollectionChangedEventArgs e) {
+  private void _onTabsChanged(ObservableCollection<IListItem>? sender, NotifyCollectionChangedEventArgs e) {
     if (e.Action is NotifyCollectionChangedAction.Remove or NotifyCollectionChangedAction.Reset && e.OldItems != null)
       foreach (IListItem item in e.OldItems)
         if (_contentViews.Remove(item, out var view)) {
           _tabContent.RemoveView(view);
           view.Dispose();
         }
-
+    
     _adapter.NotifyDataSetChanged();
   }
 
