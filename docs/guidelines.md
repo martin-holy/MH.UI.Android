@@ -110,3 +110,22 @@ When implementing `Dispose(bool disposing)` in a custom view/control:
 4. If you removed any views, dispose them too.
 5. Do not dispose children still managed by the parent hierarchy.
 
+
+
+# Binding
+- in RecyclerView.Adapter do in:
+  - OnBindViewHolder: IBindable.Rebind
+  - OnViewRecycled: IUnbindable.Unbind
+
+
+View lifetime
+  ctor
+    attach permanent handlers (click, gestures, etc.)
+  Dispose
+    remove permanent handlers
+
+Binding lifetime
+  Bind(data)
+    create property bindings
+  Unbind()
+    dispose property bindings
