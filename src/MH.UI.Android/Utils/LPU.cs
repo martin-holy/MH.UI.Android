@@ -22,6 +22,9 @@ public static class LPU {
   public static LinearLayout.LayoutParams LinearWrap() =>
     new(Wrap, Wrap);
 
+  public static LinearLayout.LayoutParams LinearWrap(GravityFlags gravity) =>
+    new(Wrap, Wrap) { Gravity = gravity };
+
   public static FrameLayout.LayoutParams Frame(int w, int h) =>
     new(w, h);
 
