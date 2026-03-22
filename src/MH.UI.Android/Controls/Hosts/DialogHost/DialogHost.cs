@@ -91,7 +91,7 @@ public class DialogHost : DialogFragment {
       view.AddView(contentView, contentView.LayoutParameters ?? LPU.LinearWrap());
     }
 
-    view.AddView(_buttonsLayout(context), LPU.Linear(LPU.Wrap, LPU.Wrap, GravityFlags.End));
+    view.AddView(_buttonsLayout(context), LPU.LinearWrap(GravityFlags.End));
 
     return view;
   }
