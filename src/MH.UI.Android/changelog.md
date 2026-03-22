@@ -2,6 +2,7 @@
 	- [B] MediaStoreU: DeleteFiles MediaScanner
 	- [U] MediaStoreU: ShareFiles mime types
 	- [N] TabControlHost: NoTabsText
+	- [N] LPU: LinearWrap(GravityFlags gravity)
 
 2.0.0:
 	- [N] WindowExtensions: Enter and exit full screen methods
