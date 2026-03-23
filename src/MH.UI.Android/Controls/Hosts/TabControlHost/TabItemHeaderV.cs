@@ -6,6 +6,7 @@ using MH.UI.Android.Extensions;
 using MH.UI.Android.Utils;
 using MH.UI.Controls;
 using MH.UI.Interfaces;
+using MH.Utils;
 using MH.Utils.Disposables;
 using MH.Utils.Interfaces;
 
@@ -74,7 +75,7 @@ public class TabItemHeaderV : LinearLayout, IBindable<IListItem> {
     _name.SetPadding(isIconVisible ? DimensU.Spacing : 0);
     _name.BindText(item, nameof(IListItem.Name), x => x.Name, x => x, _bindings);
 
-    Selected = item.IsSelected;
+    item.Bind(nameof(IListItem.IsSelected), x => x.IsSelected, x => Selected = x).DisposeWith(_bindings);
     _selectItemCommandBinding.Bind(_tabControlHost.DataContext.SelectTabCommand, item);
   }
 

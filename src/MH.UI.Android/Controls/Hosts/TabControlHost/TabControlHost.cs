@@ -145,7 +145,6 @@ public class TabControlHost : FrameLayout {
         view.Visibility = ViewStates.Visible;
     }
 
-    _adapter.NotifyDataSetChanged();
     _previousSelected = current;
   }
 }
