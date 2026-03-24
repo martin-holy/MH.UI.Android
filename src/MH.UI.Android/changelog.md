@@ -3,6 +3,7 @@
 	- [U] MediaStoreU: ShareFiles mime types
 	- [N] TabControlHost: NoTabsText
 	- [N] LPU: LinearWrap(GravityFlags gravity)
+	- [C] TabControlHost: Tab selection
 
 2.0.0:
 	- [N] WindowExtensions: Enter and exit full screen methods
