@@ -52,7 +52,11 @@ public class ZoomAndPanHost : FrameLayout, IZoomAndPanHost {
     AddView(_videoView, LPU.FrameMatch());
   }
 
-  public async Task SetImagePathAsync(string path, double width, double height, MH.Utils.Imaging.Orientation orientation, CancellationToken token, Context context) {
+  [Obsolete("Use overload without width and height")]
+  public async Task SetImagePathAsync(string path, double width, double height, MH.Utils.Imaging.Orientation orientation, CancellationToken token, Context context) =>
+    await SetImagePathAsync(path, orientation, token, context);
+
+  public async Task SetImagePathAsync(string path, MH.Utils.Imaging.Orientation orientation, CancellationToken token, Context context) {
     _showingVideo = false;
     _videoView.Visibility = ViewStates.Gone;
     _imageView.Visibility = ViewStates.Visible;
@@ -66,19 +70,19 @@ public class ZoomAndPanHost : FrameLayout, IZoomAndPanHost {
 
       _imageView.Post(() => {
         if (token.IsCancellationRequested) return;
-        _applyThumbnailMatrix(thumb, width, height);
+        _applyThumbnailMatrix(thumb);
         _setImageBitmap(thumb);
       });
 
       if (!token.IsCancellationRequested)
-        _ = _loadFullImageAsync(path, width, height, orientation, token);
+        _ = _loadFullImageAsync(path, orientation, token);
     }
     catch (Exception ex) {
       MH.Utils.Log.Error(ex);
     }
   }
 
-  private async Task _loadFullImageAsync(string path, double width, double height, MH.Utils.Imaging.Orientation orientation, CancellationToken token) {
+  private async Task _loadFullImageAsync(string path, MH.Utils.Imaging.Orientation orientation, CancellationToken token) {
     try {
       var bitmap = await Task.Run(() => {
         token.ThrowIfCancellationRequested();
@@ -93,7 +97,7 @@ public class ZoomAndPanHost : FrameLayout, IZoomAndPanHost {
         if (token.IsCancellationRequested) return;
         _imageView.ImageMatrix = null;
         _setImageBitmap(bitmap);
-        DataContext.ScaleToFitContent(width, height);
+        DataContext.ScaleToFit();
         UpdateImageTransform();
       });
     }
@@ -109,9 +113,9 @@ public class ZoomAndPanHost : FrameLayout, IZoomAndPanHost {
     if (oldBitmap?.IsRecycled == false && bitmap != oldBitmap) oldBitmap.Recycle();
   }
 
-  private void _applyThumbnailMatrix(Bitmap thumb, double imgW, double imgH) {
-    var scale = DataContext.GetFitScale(Width, Height, imgW, imgH);
-    var ratio = (imgW * scale) / thumb.Width;
+  private void _applyThumbnailMatrix(Bitmap thumb) {
+    var scale = DataContext.GetFitScale(Width, Height, DataContext.ContentWidth, DataContext.ContentHeight);
+    var ratio = (DataContext.ContentWidth * scale) / thumb.Width;
 
     var tx = (Width - (thumb.Width * ratio)) / 2;
     var ty = (Height - (thumb.Height * ratio)) / 2;
