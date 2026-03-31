@@ -5,6 +5,7 @@
 	- [N] LPU: LinearWrap(GravityFlags gravity)
 	- [C] TabControlHost: Tab selection
 	- [U] ZoomAndPanHost: SetImagePathAsync without width and height
+	- [C] ZoomAndPanHost: Refactor to new ZoomAndPan
 
 2.0.0:
 	- [N] WindowExtensions: Enter and exit full screen methods
