@@ -24,14 +24,7 @@ public class ZoomAndPanHost : FrameLayout, IZoomAndPanHost {
   private bool _showingVideo;
 
   public ZoomAndPan DataContext { get; }
-  double IZoomAndPanHost.Width => Width;
-  double IZoomAndPanHost.Height => Height;
 
-  public event EventHandler? HostSizeChangedEvent;
-  public event EventHandler<PointD>? HostMouseMoveEvent;
-  public event EventHandler<(PointD, PointD)>? HostMouseDownEvent;
-  public event EventHandler? HostMouseUpEvent;
-  public event EventHandler<(int, PointD)>? HostMouseWheelEvent;
   public event EventHandler? SingleTapConfirmedEvent;
   public event EventHandler? ImageTransformUpdatedEvent;
 
@@ -65,7 +58,7 @@ public class ZoomAndPanHost : FrameLayout, IZoomAndPanHost {
       var thumb = await MediaStoreU.GetImageThumbnail(path, context, 512);
       if (token.IsCancellationRequested) return;
       thumb ??= await Task.Run(() => ImagingU.CreateImageThumbnail(path, 512), token);
-      if (thumb == null || token.IsCancellationRequested) return;
+      if (thumb is not { Width: > 0, Height: > 0 } || token.IsCancellationRequested) return;
       thumb = thumb.ApplyOrientation(orientation);
 
       _imageView.Post(() => {
@@ -95,9 +88,7 @@ public class ZoomAndPanHost : FrameLayout, IZoomAndPanHost {
 
       _imageView.Post(() => {
         if (token.IsCancellationRequested) return;
-        _imageView.ImageMatrix = null;
         _setImageBitmap(bitmap);
-        DataContext.ScaleToFit();
         UpdateImageTransform();
       });
     }
@@ -114,8 +105,8 @@ public class ZoomAndPanHost : FrameLayout, IZoomAndPanHost {
   }
 
   private void _applyThumbnailMatrix(Bitmap thumb) {
-    var scale = DataContext.GetFitScale(Width, Height, DataContext.ContentWidth, DataContext.ContentHeight);
-    var ratio = (DataContext.ContentWidth * scale) / thumb.Width;
+    var scale = DataContext.GetFitScale();
+    var ratio = scale * (DataContext.ContentWidth / thumb.Width);
 
     var tx = (Width - (thumb.Width * ratio)) / 2;
     var ty = (Height - (thumb.Height * ratio)) / 2;
@@ -165,14 +156,13 @@ public class ZoomAndPanHost : FrameLayout, IZoomAndPanHost {
     switch (e.Action) {
       case MotionEventActions.Down:
         _isPanning = true;
-        // TODO contentPos, but it is not used anyway in android
-        HostMouseDownEvent?.Invoke(this, new(new(e.GetX(), e.GetY()), new()));
+        DataContext.PointerDown(new(e.GetX(), e.GetY()));
         return true;
 
       case MotionEventActions.Move:
         if (_scaleDetector.IsInProgress) _isScaling = true;
         if (_isPanning && !_isScaling && DataContext.IsZoomed) {
-          HostMouseMoveEvent?.Invoke(this, new PointD(e.GetX(), e.GetY()));
+          DataContext.PointerMove(new(e.GetX(), e.GetY()));
           UpdateImageTransform();
           return true;
         }
@@ -183,12 +173,12 @@ public class ZoomAndPanHost : FrameLayout, IZoomAndPanHost {
         _isScaling = false;
         return true;
     }
-    return base.OnTouchEvent(e);
+    return DataContext.IsZoomed || _isScaling;
   }
 
   protected override void OnSizeChanged(int w, int h, int oldw, int oldh) {
     base.OnSizeChanged(w, h, oldw, oldh);
-    HostSizeChangedEvent?.Invoke(this, EventArgs.Empty);
+    DataContext.SetHostSize(w, h);
     UpdateImageTransform();
   }
 
@@ -217,7 +207,7 @@ public class ZoomAndPanHost : FrameLayout, IZoomAndPanHost {
 
   private class ScaleListener(ZoomAndPanHost _host) : ScaleGestureDetector.SimpleOnScaleGestureListener {
     public override bool OnScale(ScaleGestureDetector d) {
-      _host.DataContext.Zoom(_host.DataContext.ScaleX + d.ScaleFactor - 1, new PointD(d.FocusX, d.FocusY));
+      _host.DataContext.Zoom(d.ScaleFactor, new PointD(d.FocusX, d.FocusY));
       _host.UpdateImageTransform();
       return true;
     }
@@ -232,11 +222,7 @@ public class ZoomAndPanHost : FrameLayout, IZoomAndPanHost {
     public override bool OnDoubleTap(MotionEvent e) {
       if (_host._showingVideo) return false; // Skip zoom toggle on video for now
 
-      if (_host.DataContext.IsZoomed)
-        _host.DataContext.ScaleToFit();
-      else
-        _host.DataContext.Zoom(1, new PointD(e.GetX(), e.GetY()));
-
+      _host.DataContext.ToggleZoom(new PointD(e.GetX(), e.GetY()));
       _host.UpdateImageTransform();
       return true;
     }
