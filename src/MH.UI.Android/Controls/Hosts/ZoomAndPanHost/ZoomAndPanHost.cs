@@ -161,7 +161,7 @@ public class ZoomAndPanHost : FrameLayout, IZoomAndPanHost {
 
       case MotionEventActions.Move:
         if (_scaleDetector.IsInProgress) _isScaling = true;
-        if (_isPanning && !_isScaling && DataContext.IsZoomed) {
+        if (_isPanning && !_isScaling && DataContext.IsOverflowing) {
           DataContext.PointerMove(new(e.GetX(), e.GetY()));
           UpdateImageTransform();
           return true;
@@ -173,7 +173,7 @@ public class ZoomAndPanHost : FrameLayout, IZoomAndPanHost {
         _isScaling = false;
         return true;
     }
-    return DataContext.IsZoomed || _isScaling;
+    return DataContext.IsOverflowing || _isScaling;
   }
 
   protected override void OnSizeChanged(int w, int h, int oldw, int oldh) {
