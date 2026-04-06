@@ -6,6 +6,7 @@
 	- [C] TabControlHost: Tab selection
 	- [U] ZoomAndPanHost: SetImagePathAsync without width and height
 	- [C] ZoomAndPanHost: Refactor to new ZoomAndPan
+	- [N] ImageViewExtensions: UpdateImageBitmap
 
 2.0.0:
 	- [N] WindowExtensions: Enter and exit full screen methods
