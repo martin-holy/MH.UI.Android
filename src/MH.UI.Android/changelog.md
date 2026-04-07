@@ -7,6 +7,7 @@
 	- [U] ZoomAndPanHost: SetImagePathAsync without width and height
 	- [C] ZoomAndPanHost: Refactor to new ZoomAndPan
 	- [N] ImageViewExtensions: UpdateImageBitmap
+	- [N] ViewportMatrixBuilder: BuildForBitmap
 
 2.0.0:
 	- [N] WindowExtensions: Enter and exit full screen methods
