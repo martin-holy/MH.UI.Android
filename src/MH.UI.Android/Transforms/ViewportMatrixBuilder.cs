@@ -4,7 +4,7 @@ using MH.UI.Primitives;
 namespace MH.UI.Android.Transforms;
 
 public static class ViewportMatrixBuilder {
-  public static Matrix Build(ViewportState state, double sourceW, double sourceH) {
+  public static Matrix BuildForBitmap(ViewportState state, double sourceW, double sourceH) {
     var matrix = new Matrix();
 
     if (!state.HasArea || sourceW <= 0 || sourceH <= 0) return matrix;
