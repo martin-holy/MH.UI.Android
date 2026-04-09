@@ -1,13 +1,17 @@
-2.1.0:
+3.0.0:
 	- [B] MediaStoreU: DeleteFiles MediaScanner
 	- [U] MediaStoreU: ShareFiles mime types
 	- [N] TabControlHost: NoTabsText
 	- [N] LPU: LinearWrap(GravityFlags gravity)
 	- [C] TabControlHost: Tab selection
-	- [U] ZoomAndPanHost: SetImagePathAsync without width and height
-	- [C] ZoomAndPanHost: Refactor to new ZoomAndPan
+	- [U] ZoomAndPanHost: Content removed, now it is just gesture detector
 	- [N] ImageViewExtensions: UpdateImageBitmap
 	- [N] ViewportMatrixBuilder: BuildForBitmap
+	- [N] ViewportMatrixBuilder: BuildForTextureView
+	- [N] ZoomableImageView
+	- [N] AndroidMediaPlayer
+	- [N] ZoomableVideoSurface
+	- [N] ZoomableVideoView
 
 2.0.0:
 	- [N] WindowExtensions: Enter and exit full screen methods
