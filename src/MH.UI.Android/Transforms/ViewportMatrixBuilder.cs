@@ -20,4 +20,21 @@ public static class ViewportMatrixBuilder {
 
     return matrix;
   }
+
+  public static Matrix BuildForTextureView(ViewportState state) {
+    var matrix = new Matrix();
+
+    if (!state.HasArea) return matrix;
+
+    // undo TextureView stretch (host → content)
+    var sx = (float)(state.ContentWidth / state.HostWidth);
+    var sy = (float)(state.ContentHeight / state.HostHeight);
+    matrix.SetScale(sx, sy);
+
+    // apply viewport
+    matrix.PostScale(state.ScaleX, state.ScaleY);
+    matrix.PostTranslate(state.TranslateX, state.TranslateY);
+
+    return matrix;
+  }
 }
