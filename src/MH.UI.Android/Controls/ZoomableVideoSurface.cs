@@ -17,15 +17,10 @@ public class ZoomableVideoSurface : TextureView {
   public void ApplyTransform(ViewportState state) =>
     SetTransform(ViewportMatrixBuilder.BuildForTextureView(state));
 
-  public void StartPlayback(string? videoPath, MH.UI.Controls.MediaPlayer mediaPlayer, AndroidMediaPlayer androidMediaPlayer) {
-    if (string.IsNullOrEmpty(videoPath) || _surface == null) return;
-
+  public void StartPlayback(MH.UI.Controls.MediaPlayer mediaPlayer, AndroidMediaPlayer androidMediaPlayer) {
     _player = androidMediaPlayer;
+    mediaPlayer.SetView(_player);
     _player.SetSurface(_surface);
-
-    mediaPlayer.SetView(androidMediaPlayer);
-
-    mediaPlayer.Source = videoPath;
     mediaPlayer.IsPlaying = true;
   }
 
