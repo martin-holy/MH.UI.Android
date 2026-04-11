@@ -12,6 +12,7 @@
 	- [N] AndroidMediaPlayer
 	- [N] ZoomableVideoSurface
 	- [N] ZoomableVideoView
+	- [N] BindableAdapter: Payloads handling
 
 2.0.0:
 	- [N] WindowExtensions: Enter and exit full screen methods
