@@ -27,7 +27,7 @@ public class ZoomableVideoView : FrameLayout {
 
   public bool PreviewOnly {
     get => _previewOnly;
-    private set {
+    set {
       _previewOnly = value;
 
       if (_previewOnly) {
@@ -64,11 +64,6 @@ public class ZoomableVideoView : FrameLayout {
     AddView(_playBtn, LPU.Frame(LPU.Wrap, LPU.Wrap, GravityFlags.Center));
 
     _zoomAndPan.ViewportChangedEvent += _onViewportChanged;
-    // TODO now this doesn't work. when switched to next item the old page needs to be in PreviewOnly
-    _mediaPlayer.Bind(nameof(MediaPlayer.Source), x => x.Source, x => {
-      if (string.IsNullOrEmpty(x))
-        PreviewOnly = true;
-    });
   }
 
   public async Task SetPath(string videoPath, MH.Utils.Imaging.Orientation orientation, CancellationToken token, Context context) {
