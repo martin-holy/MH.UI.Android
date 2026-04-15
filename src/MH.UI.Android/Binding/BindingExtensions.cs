@@ -136,16 +136,11 @@ public static class BindingExtensions {
     EventHandler<SeekBar.ProgressChangedEventArgs>? handler = null;
 
     bindings.Add(new ViewBinder<TSource, TProp, double>(source, propertyName, getter, setter,
-      v => slider.Progress = (int)Math.Round((v - slider.MinD) * slider.Scale),
+      v => slider.Selector.Value = v,
       eh => {
         handler = (s, e) => {
           if (!e.FromUser) return;
-          var sl = (Slider)s!;
-          var value = e.Progress / sl.Scale + sl.MinD;
-          var snapped = Math.Round(value / sl.TickFrequency) * sl.TickFrequency;
-          var snappedProgress = (int)Math.Round((snapped - sl.MinD) * sl.Scale);
-          if (snappedProgress != e.Progress) sl.Progress = snappedProgress;
-          eh(s, snapped);
+          eh(s, ((Slider)s!).Selector.Value);
         };
         slider.ProgressChanged += handler;
       },
