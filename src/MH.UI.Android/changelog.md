@@ -13,6 +13,10 @@
 	- [N] ZoomableVideoSurface
 	- [N] ZoomableVideoView
 	- [N] BindableAdapter: Payloads handling
+	- [N] Resources: pause, play and timeline-shift icons
+	- [U] Slider: using ValueSelector
+	- [N] BindingExtensions: Slider BindMaximum
+	- [N] MediaPlayerControlPanel
 
 2.0.0:
 	- [N] WindowExtensions: Enter and exit full screen methods
