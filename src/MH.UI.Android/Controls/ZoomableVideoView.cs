@@ -16,11 +16,14 @@ namespace MH.UI.Android.Controls;
 
 public class ZoomableVideoView : FrameLayout {
   private readonly ZoomAndPan _zoomAndPan;
-  private readonly ImageView _videoPreview;
   private readonly MediaPlayer _mediaPlayer;
   private readonly AndroidMediaPlayer _androidMediaPlayer;
-  private readonly IconButton _playBtn;
+
   private readonly ZoomableVideoSurface _videoView;
+  private readonly MediaPlayerControlPanel _controlPanel;
+  private readonly ImageView _videoPreview;
+  private readonly IconButton _playBtn;
+
   private double _thumbW;
   private double _thumbH;
   private bool _previewOnly;
@@ -32,10 +35,12 @@ public class ZoomableVideoView : FrameLayout {
 
       if (_previewOnly) {
         _videoView.Visibility = ViewStates.Gone;
+        _controlPanel.Visibility = ViewStates.Gone;
         _playBtn.Visibility = ViewStates.Visible;
         _videoPreview.Visibility = ViewStates.Visible;
       } else {
         _videoView.Visibility = ViewStates.Visible;
+        _controlPanel.Visibility = ViewStates.Visible;
         _playBtn.Visibility = ViewStates.Gone;
         _videoPreview.Visibility = ViewStates.Gone;
       }
@@ -46,13 +51,14 @@ public class ZoomableVideoView : FrameLayout {
     _zoomAndPan = zoomAndPan;
     _mediaPlayer = mediaPlayer;
     _androidMediaPlayer = androidMediaPlayer;
-    _videoView = new(context);
 
     _androidMediaPlayer.VideoSizeChanged += (_, e) => {
       if (_zoomAndPan.ContentWidth == 0)
         _zoomAndPan.SetContentSize(e.Width, e.Height);
     };
 
+    _videoView = new(context);
+    _controlPanel = new(context, mediaPlayer);
     _videoPreview = new(context);
     _videoPreview.SetScaleType(ScaleType.Matrix);
 
@@ -60,6 +66,7 @@ public class ZoomableVideoView : FrameLayout {
     _playBtn.SetImageResource(Resource.Drawable.icon_question); // TODO icon
 
     AddView(_videoView, LPU.FrameMatch());
+    AddView(_controlPanel, LPU.Frame(LPU.Match, LPU.Wrap, GravityFlags.CenterHorizontal | GravityFlags.Bottom));
     AddView(_videoPreview, LPU.FrameMatch());
     AddView(_playBtn, LPU.Frame(LPU.Wrap, LPU.Wrap, GravityFlags.Center));
 
@@ -115,6 +122,7 @@ public class ZoomableVideoView : FrameLayout {
   protected override void Dispose(bool disposing) {
     if (disposing) {
       _zoomAndPan.ViewportChangedEvent -= _onViewportChanged;
+      _controlPanel.Dispose();
       UnsetImage();
     }
     base.Dispose(disposing);
