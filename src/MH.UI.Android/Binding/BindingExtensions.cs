@@ -149,6 +149,20 @@ public static class BindingExtensions {
     return slider;
   }
 
+  public static Slider BindMaximum<TSource, TProp>(
+    this Slider slider,
+    TSource source,
+    string propertyName,
+    Func<TSource, TProp> getter,
+    BindingScope bindings)
+    where TSource : class, INotifyPropertyChanged {
+
+    bindings.Add(new ViewBinder<TSource, TProp, double>(source, propertyName, getter,
+      v => slider.Selector.Maximum = v));
+
+    return slider;
+  }
+
   public static RadioGroup BindChecked<TSource, TEnum>(
     this RadioGroup radioGroup,
     TSource source,
