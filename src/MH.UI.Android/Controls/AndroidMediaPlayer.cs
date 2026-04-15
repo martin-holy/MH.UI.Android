@@ -85,6 +85,7 @@ public class AndroidMediaPlayer : Java.Lang.Object, IPlatformSpecificUiMediaPlay
 
   private void _onPrepared(object? sender, EventArgs e) {
     _isPrepared = true;
+    ViewModel?.OnMediaOpened(_player.Duration);
 
     if (_playWhenReady)
       _player.Start();
