@@ -1,27 +1,20 @@
 ﻿using Android.Content;
 using Android.Graphics;
 using Android.Views;
-using MH.UI.Android.Transforms;
-using MH.UI.Primitives;
 
 namespace MH.UI.Android.Controls;
 
-public class ZoomableVideoSurface : TextureView {
+public class VideoSurface : TextureView {
   private Surface? _surface;
   private AndroidMediaPlayer? _player;
 
-  public ZoomableVideoSurface(Context ctx) : base(ctx) {
+  public VideoSurface(Context ctx) : base(ctx) {
     SurfaceTextureListener = new SurfaceListener(this);
   }
 
-  public void ApplyTransform(ViewportState state) =>
-    SetTransform(ViewportMatrixBuilder.BuildForTextureView(state));
-
-  public void StartPlayback(MH.UI.Controls.MediaPlayer mediaPlayer, AndroidMediaPlayer androidMediaPlayer) {
+  public void SetSurface(AndroidMediaPlayer androidMediaPlayer) {
     _player = androidMediaPlayer;
-    mediaPlayer.SetView(_player);
     _player.SetSurface(_surface);
-    mediaPlayer.IsPlaying = true;
   }
 
   protected override void Dispose(bool disposing) {
@@ -33,9 +26,9 @@ public class ZoomableVideoSurface : TextureView {
   }
 
   private class SurfaceListener : Java.Lang.Object, ISurfaceTextureListener {
-    private readonly ZoomableVideoSurface _view;
+    private readonly VideoSurface _view;
 
-    public SurfaceListener(ZoomableVideoSurface view) {
+    public SurfaceListener(VideoSurface view) {
       _view = view;
     }
 
@@ -48,7 +41,6 @@ public class ZoomableVideoSurface : TextureView {
 
     public bool OnSurfaceTextureDestroyed(SurfaceTexture surface) {
       _view._player?.SetSurface(null);
-
       _view._surface?.Release();
       _view._surface = null;
       return true;
