@@ -10,7 +10,7 @@
 	- [N] ViewportMatrixBuilder: BuildForTextureView
 	- [N] ZoomableImageView
 	- [N] AndroidMediaPlayer
-	- [N] ZoomableVideoSurface
+	- [N] VideoSurface
 	- [N] ZoomableVideoView
 	- [N] BindableAdapter: Payloads handling
 	- [N] Resources: pause, play and timeline-shift icons
