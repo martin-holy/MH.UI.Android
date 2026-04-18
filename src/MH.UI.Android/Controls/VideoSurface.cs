@@ -1,26 +1,23 @@
 ﻿using Android.Content;
 using Android.Graphics;
 using Android.Views;
+using System;
 
 namespace MH.UI.Android.Controls;
 
 public class VideoSurface : TextureView {
-  private Surface? _surface;
-  private AndroidMediaPlayer? _player;
+  public Surface? Surface { get; private set; }
 
-  public VideoSurface(Context ctx) : base(ctx) {
+  public event Action<Surface?>? SurfaceChanged;
+
+  public VideoSurface(Context context) : base(context) {
     SurfaceTextureListener = new SurfaceListener(this);
-  }
-
-  public void SetSurface(AndroidMediaPlayer androidMediaPlayer) {
-    _player = androidMediaPlayer;
-    _player.SetSurface(_surface);
   }
 
   protected override void Dispose(bool disposing) {
     if (disposing) {
-      _surface?.Release();
-      _surface = null;
+      Surface?.Release();
+      Surface = null;
     }
     base.Dispose(disposing);
   }
@@ -33,16 +30,14 @@ public class VideoSurface : TextureView {
     }
 
     public void OnSurfaceTextureAvailable(SurfaceTexture surface, int w, int h) {
-      _view._surface = new Surface(surface);
-
-      if (_view._player != null)
-        _view._player.SetSurface(_view._surface);
+      _view.Surface = new Surface(surface);
+      _view.SurfaceChanged?.Invoke(_view.Surface);
     }
 
     public bool OnSurfaceTextureDestroyed(SurfaceTexture surface) {
-      _view._player?.SetSurface(null);
-      _view._surface?.Release();
-      _view._surface = null;
+      _view.SurfaceChanged?.Invoke(null);
+      _view.Surface?.Release();
+      _view.Surface = null;
       return true;
     }
 
