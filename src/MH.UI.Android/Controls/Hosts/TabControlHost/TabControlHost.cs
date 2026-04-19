@@ -97,6 +97,13 @@ public class TabControlHost : FrameLayout {
 
   protected virtual View? _getItemView(Context context, object? item) => null;
 
+  public View? GetTabView(IListItem? tab) =>
+    tab == null
+      ? null
+      : _contentViews.TryGetValue(tab, out var view)
+        ? view
+        : null;
+
   protected override void Dispose(bool disposing) {
     if (_disposed) return;
     if (disposing) {
