@@ -1,80 +1,55 @@
 ﻿using Android.Content;
 using Android.Views;
 using Android.Widget;
-using MH.UI.Android.Extensions;
 using MH.UI.Android.Transforms;
 using MH.UI.Android.Utils;
 using MH.UI.Controls;
-using MH.UI.Primitives;
-using MH.Utils;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using static Android.Widget.ImageView;
 
 namespace MH.UI.Android.Controls;
 
 public class ZoomableVideoView : FrameLayout {
   private readonly ZoomAndPan _zoomAndPan;
-  private readonly MediaPlayer _mediaPlayer;
   private readonly AndroidMediaPlayer _androidMediaPlayer;
 
-  private readonly ZoomableVideoSurface _videoView;
-  private readonly MediaPlayerControlPanel _controlPanel;
-  private readonly ImageView _videoPreview;
-  private readonly IconButton _playBtn;
+  private readonly LazyVideoView _video;
 
   private double _thumbW;
   private double _thumbH;
-  private bool _previewOnly;
+  private int? _lockedHeight;
 
-  public bool PreviewOnly {
-    get => _previewOnly;
-    set {
-      _previewOnly = value;
+  public bool PreviewOnly => _video.PreviewOnly;
+  public bool AutoHeightFromAspectRatio { get; set; }
 
-      if (_previewOnly) {
-        _videoView.Visibility = ViewStates.Gone;
-        _controlPanel.Visibility = ViewStates.Gone;
-        _playBtn.Visibility = ViewStates.Visible;
-        _videoPreview.Visibility = ViewStates.Visible;
-      } else {
-        _videoView.Visibility = ViewStates.Visible;
-        _controlPanel.Visibility = ViewStates.Visible;
-        _playBtn.Visibility = ViewStates.Gone;
-        _videoPreview.Visibility = ViewStates.Gone;
-      }
-    }
-  }
+  public event Action? PlayRequested;
+  public event Action<bool>? PreviewOnlyChanged;
 
-  public ZoomableVideoView(Context context, ZoomAndPan zoomAndPan, MediaPlayer mediaPlayer, AndroidMediaPlayer androidMediaPlayer) : base(context) {
+  public ZoomableVideoView(Context context, ZoomAndPan zoomAndPan, AndroidMediaPlayer androidMediaPlayer) : base(context) {
     _zoomAndPan = zoomAndPan;
-    _mediaPlayer = mediaPlayer;
-    _androidMediaPlayer = androidMediaPlayer;
-
-    _androidMediaPlayer.VideoSizeChanged += (_, e) => {
-      if (_zoomAndPan.ContentWidth == 0)
-        _zoomAndPan.SetContentSize(e.Width, e.Height);
-    };
-
-    _videoView = new(context);
-    _controlPanel = new(context, mediaPlayer);
-    _videoPreview = new(context);
-    _videoPreview.SetScaleType(ScaleType.Matrix);
-
-    _playBtn = new IconButton(context).WithClickAction(_ => _onPlay());
-    _playBtn.SetImageResource(Resource.Drawable.icon_question); // TODO icon
-
-    AddView(_videoView, LPU.FrameMatch());
-    AddView(_controlPanel, LPU.Frame(LPU.Match, LPU.Wrap, GravityFlags.CenterHorizontal | GravityFlags.Bottom));
-    AddView(_videoPreview, LPU.FrameMatch());
-    AddView(_playBtn, LPU.Frame(LPU.Wrap, LPU.Wrap, GravityFlags.Center));
-
     _zoomAndPan.ViewportChangedEvent += _onViewportChanged;
+
+    _androidMediaPlayer = androidMediaPlayer;
+    _androidMediaPlayer.VideoSizeChanged += _onVideoSizeChanged;
+
+    _video = new LazyVideoView(context);
+    _video.PlayRequested += _onPlayRequested;
+    _video.PreviewOnlyChanged += _onPreviewOnlyChanged;
+    _video.VideoSurface.SurfaceChanged += _onSurfaceChanged;
+
+    AddView(_video, LPU.FrameMatch());
   }
+
+  public void ShowPreview() => _video.ShowPreview();
+
+  public void RequestPlay() => _video.RequestPlay();
+
+  public void Clear() => _video.Clear();
 
   public async Task SetPath(string videoPath, MH.Utils.Imaging.Orientation orientation, CancellationToken token, Context context) {
-    PreviewOnly = true;
+    _video.ShowPreview();
+    _lockedHeight = null;
 
     try {
       var thumb = await MediaStoreU.GetVideoThumbnail(videoPath, context, 512);
@@ -87,8 +62,8 @@ public class ZoomableVideoView : FrameLayout {
         if (token.IsCancellationRequested) return;
         _thumbW = thumb.Width;
         _thumbH = thumb.Height;
-        _applyPreviewTransform(_zoomAndPan.GetViewportState());
-        _videoPreview.UpdateImageBitmap(thumb);
+        _video.SetPreviewMatrix(ViewportMatrixBuilder.BuildForBitmap(_zoomAndPan.GetViewportState(), _thumbW, _thumbH));
+        _video.SetPreview(thumb);
       });
     }
     catch (Exception ex) {
@@ -96,34 +71,82 @@ public class ZoomableVideoView : FrameLayout {
     }
   }
 
-  private void _applyPreviewTransform(ViewportState state) =>
-    _videoPreview.ImageMatrix = ViewportMatrixBuilder.BuildForBitmap(state, _thumbW, _thumbH);
+  private void _onVideoSizeChanged(object? sender, (int Width, int Height) e) {
+    if (e.Width <= 0 || e.Height <= 0) return;
 
-  public void UnsetImage() =>
-    _videoPreview.UpdateImageBitmap(null);
+    if (_lockedHeight.HasValue) {
+      var expected = (int)Math.Round((double)Width * e.Height / e.Width);
+
+      if (expected != _lockedHeight.Value)
+        _lockedHeight = expected;
+    }
+
+    _zoomAndPan.SetContentSize(e.Width, e.Height);
+  }
+
+  protected override void OnMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+    if (!AutoHeightFromAspectRatio) {
+      base.OnMeasure(widthMeasureSpec, heightMeasureSpec);
+      return;
+    }
+
+    int width = MeasureSpec.GetSize(widthMeasureSpec);
+
+    if (width <= 0) {
+      base.OnMeasure(widthMeasureSpec, heightMeasureSpec);
+      return;
+    }
+
+    int height;
+
+    if (_lockedHeight.HasValue) {
+      height = _lockedHeight.Value;
+    }
+    else if (_zoomAndPan.ContentWidth > 0 && _zoomAndPan.ContentHeight > 0) {
+      double aspect = _zoomAndPan.ContentHeight / _zoomAndPan.ContentWidth;
+      height = (int)Math.Round(width * aspect);
+
+      _lockedHeight = height;
+    }
+    else {
+      height = MeasureSpec.GetSize(heightMeasureSpec);
+    }
+
+    SetMeasuredDimension(width, height);
+    MeasureChildren(
+      MeasureSpec.MakeMeasureSpec(width, MeasureSpecMode.Exactly),
+      MeasureSpec.MakeMeasureSpec(height, MeasureSpecMode.Exactly));
+  }
 
   private void _onViewportChanged(object? sender, EventArgs e) {
     var state = _zoomAndPan.GetViewportState();
 
-    if (PreviewOnly)
-      _applyPreviewTransform(state);
+    if (_video.PreviewOnly)
+      _video.SetPreviewMatrix(ViewportMatrixBuilder.BuildForBitmap(state, _thumbW, _thumbH));
     else
-      _videoView.ApplyTransform(state);
+      _video.SetVideoMatrix(ViewportMatrixBuilder.BuildForTextureView(state));
   }
 
-  private void _onPlay() {
-    PreviewOnly = false;
-    _videoView.Post(() => {
-      _videoView.ApplyTransform(_zoomAndPan.GetViewportState());
-      _videoView.StartPlayback(_mediaPlayer, _androidMediaPlayer);
-    });
+  private void _onPlayRequested() {
+    _lockedHeight = Height;
+    _video.SetVideoMatrix(ViewportMatrixBuilder.BuildForTextureView(_zoomAndPan.GetViewportState()));
+    PlayRequested?.Invoke();
   }
+
+  private void _onPreviewOnlyChanged(bool value) =>
+    PreviewOnlyChanged?.Invoke(value);
+
+  private void _onSurfaceChanged(Surface? surface) =>
+    _androidMediaPlayer.SetSurface(surface);
 
   protected override void Dispose(bool disposing) {
     if (disposing) {
       _zoomAndPan.ViewportChangedEvent -= _onViewportChanged;
-      _controlPanel.Dispose();
-      UnsetImage();
+      _androidMediaPlayer.VideoSizeChanged -= _onVideoSizeChanged;
+      _video.PlayRequested -= _onPlayRequested;
+      _video.PreviewOnlyChanged -= _onPreviewOnlyChanged;
+      _video.VideoSurface.SurfaceChanged -= _onSurfaceChanged;
+      _video.Clear();
     }
     base.Dispose(disposing);
   }
