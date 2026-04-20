@@ -6,6 +6,7 @@ using MH.UI.Android.Extensions;
 using MH.UI.Android.Utils;
 using MH.UI.Controls;
 using MH.Utils.Disposables;
+using System.Windows.Input;
 
 namespace MH.UI.Android.Controls;
 
@@ -13,7 +14,7 @@ public class MediaPlayerControlPanel : LinearLayout {
   private readonly MediaPlayer _mediaPlayer;
   private readonly BindingScope _bindings = new();
 
-  public MediaPlayerControlPanel(Context? context, MediaPlayer mediaPlayer) : base(context) {
+  public MediaPlayerControlPanel(Context? context, MediaPlayer mediaPlayer, ICommand? playCommand = null) : base(context) {
     Orientation = Orientation.Vertical;
     _mediaPlayer = mediaPlayer;
 
@@ -22,15 +23,15 @@ public class MediaPlayerControlPanel : LinearLayout {
       .BindMaximum(_mediaPlayer, nameof(MediaPlayer.TimelineMaximum), x => x.TimelineMaximum, _bindings);
 
     AddView(trackBar, LPU.LinearMatchWrap());
-    AddView(_createNavigationButtons(), LPU.LinearWrap(GravityFlags.CenterHorizontal));
+    AddView(_createNavigationButtons(playCommand), LPU.LinearWrap(GravityFlags.CenterHorizontal));
   }
 
-  private LinearLayout _createNavigationButtons() =>
+  private LinearLayout _createNavigationButtons(ICommand? playCommand = null) =>
     LayoutU.Horizontal(Context)
       .Add(new IconButton(Context).WithClickCommand(_mediaPlayer.TimelineShiftBeginningCommand, _bindings), LPU.LinearWrap())
       .Add(new IconButton(Context).WithClickCommand(_mediaPlayer.TimelineShiftLargeBackCommand, _bindings), LPU.LinearWrap())
       .Add(new IconButton(Context).WithClickCommand(_mediaPlayer.TimelineShiftSmallBackCommand, _bindings), LPU.LinearWrap())
-      .Add(new IconButton(Context).WithClickCommand(_mediaPlayer.PlayCommand, _bindings)
+      .Add(new IconButton(Context).WithClickCommand(playCommand ?? _mediaPlayer.PlayCommand, _bindings)
         .BindVisibility(_mediaPlayer, nameof(MediaPlayer.IsPlaying), x => !x.IsPlaying, _bindings), LPU.LinearWrap())
       .Add(new IconButton(Context).WithClickCommand(_mediaPlayer.PauseCommand, _bindings)
         .BindVisibility(_mediaPlayer, nameof(MediaPlayer.IsPlaying), x => x.IsPlaying, _bindings), LPU.LinearWrap())
