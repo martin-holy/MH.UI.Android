@@ -20,6 +20,7 @@
 	- [N] icon_movie_clapper
 	- [N] icon_play_circle
 	- [N] TabControlHost: GetTabView
+	- [N] LazyVideoView
 
 2.0.0:
 	- [N] WindowExtensions: Enter and exit full screen methods
