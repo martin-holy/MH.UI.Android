@@ -12,7 +12,7 @@ public class AndroidMediaPlayer : Java.Lang.Object, IPlatformSpecificUiMediaPlay
   private Surface? _surface;
   private string? _source;
   private bool _isPrepared;
-  private bool _playWhenReady;
+  private int? _pendingPositionMs;
 
   public MH.UI.Controls.MediaPlayer? ViewModel { get; set; }
 
@@ -40,7 +40,14 @@ public class AndroidMediaPlayer : Java.Lang.Object, IPlatformSpecificUiMediaPlay
 
   public TimeSpan Position {
     get => TimeSpan.FromMilliseconds(_player.CurrentPosition);
-    set => _player.SeekTo((int)value.TotalMilliseconds);
+    set {
+      var ms = (int)value.TotalMilliseconds;
+
+      if (_isPrepared)
+        _player.SeekTo(ms);
+      else
+        _pendingPositionMs = ms;
+    }
   }
 
   public Uri? Source {
@@ -49,7 +56,6 @@ public class AndroidMediaPlayer : Java.Lang.Object, IPlatformSpecificUiMediaPlay
       Stop();
       _source = value?.ToString();
       _isPrepared = false;
-      _tryPrepare();
     }
   }
 
@@ -63,7 +69,6 @@ public class AndroidMediaPlayer : Java.Lang.Object, IPlatformSpecificUiMediaPlay
   public void SetSurface(Surface? surface) {
     _surface = surface;
     _player.SetSurface(surface);
-    _tryPrepare();
   }
 
   private void _tryPrepare() {
@@ -83,12 +88,17 @@ public class AndroidMediaPlayer : Java.Lang.Object, IPlatformSpecificUiMediaPlay
     }
   }
 
+  // TODO OnMediaEnded
   private void _onPrepared(object? sender, EventArgs e) {
     _isPrepared = true;
-    ViewModel?.OnMediaOpened(_player.Duration);
 
-    if (_playWhenReady)
-      _player.Start();
+    if (_pendingPositionMs.HasValue) {
+      _player.SeekTo(_pendingPositionMs.Value);
+      _pendingPositionMs = null;
+    }
+
+    ViewModel?.OnMediaOpened(_player.Duration);
+    _player.Start();
   }
 
   private void _onVideoSizeChanged(object? sender, VideoSizeChangedEventArgs e) {
@@ -96,34 +106,22 @@ public class AndroidMediaPlayer : Java.Lang.Object, IPlatformSpecificUiMediaPlay
   }
 
   public void Play() {
-    _playWhenReady = true;
-
-    if (_isPrepared)
+    if (_isPrepared) {
       _player.Start();
+      return;
+    }
+
+    _tryPrepare();
   }
 
   public void Pause() {
-    _playWhenReady = false;
-
     if (_player.IsPlaying)
       _player.Pause();
   }
 
   public void Stop() {
-    _playWhenReady = false;
-
     try {
       _player.Stop();
-    }
-    catch { }
-  }
-
-  public void Reset() {
-    _playWhenReady = false;
-    _isPrepared = false;
-
-    try {
-      _player.Reset();
     }
     catch { }
   }
