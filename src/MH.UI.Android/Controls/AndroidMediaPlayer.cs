@@ -6,7 +6,7 @@ using static Android.Media.MediaPlayer;
 
 namespace MH.UI.Android.Controls;
 
-public class AndroidMediaPlayer : Java.Lang.Object, IPlatformSpecificUiMediaPlayer {
+public class AndroidMediaPlayer : Java.Lang.Object, IUiMediaPlayer {
   private readonly MediaPlayer _player = new();
 
   private Surface? _surface;
