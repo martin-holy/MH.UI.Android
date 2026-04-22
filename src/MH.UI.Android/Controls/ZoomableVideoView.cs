@@ -47,7 +47,7 @@ public class ZoomableVideoView : FrameLayout {
 
   public void Clear() => _video.Clear();
 
-  public async Task SetPath(string videoPath, MH.Utils.Imaging.Orientation orientation, CancellationToken token, Context context) {
+  public async Task SetPath(string videoPath, MH.Utils.Imaging.Orientation orientation, Context context, CancellationToken token) {
     _video.ShowPreview();
     _lockedHeight = null;
 
