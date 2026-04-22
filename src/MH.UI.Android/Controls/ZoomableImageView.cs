@@ -20,7 +20,7 @@ public class ZoomableImageView : ImageView {
     _zoomAndPan.ViewportChangedEvent += _onViewportChanged;
   }
 
-  public async Task SetPath(string path, MH.Utils.Imaging.Orientation orientation, CancellationToken token, Context context) {
+  public async Task SetPath(string path, MH.Utils.Imaging.Orientation orientation, Context context, CancellationToken token) {
     try {
       var thumb = await MediaStoreU.GetImageThumbnail(path, context, 512);
       if (token.IsCancellationRequested) return;
