@@ -13,6 +13,7 @@ public class LazyVideoView : FrameLayout {
   private readonly IconButton _playBtn;
 
   private bool _previewOnly = true;
+  private bool _canPlay = true;
 
   public bool PreviewOnly {
     get => _previewOnly;
@@ -22,6 +23,16 @@ public class LazyVideoView : FrameLayout {
       _previewOnly = value;
       _updateVisibility();
       PreviewOnlyChanged?.Invoke(value);
+    }
+  }
+
+  public bool CanPlay {
+    get => _canPlay;
+    set {
+      if (_canPlay == value) return;
+
+      _canPlay = value;
+      _updateVisibility();
     }
   }
 
@@ -76,7 +87,7 @@ public class LazyVideoView : FrameLayout {
   private void _updateVisibility() {
     if (_previewOnly) {
       _preview.Visibility = ViewStates.Visible;
-      _playBtn.Visibility = ViewStates.Visible;
+      _playBtn.Visibility = _canPlay ? ViewStates.Visible : ViewStates.Gone;
       VideoSurface.Visibility = ViewStates.Gone;
     }
     else {
