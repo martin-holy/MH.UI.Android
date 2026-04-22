@@ -21,6 +21,7 @@ public class ZoomableVideoView : FrameLayout {
   private int? _lockedHeight;
 
   public bool PreviewOnly => _video.PreviewOnly;
+  public bool CanPlay { get => _video.CanPlay; set => _video.CanPlay = value; }
   public bool AutoHeightFromAspectRatio { get; set; }
 
   public event Action? PlayRequested;
