@@ -63,6 +63,7 @@ public class AndroidMediaPlayer : Java.Lang.Object, IUiMediaPlayer {
 
   public AndroidMediaPlayer() {
     _player.Prepared += _onPrepared;
+    _player.Completion += _onCompletion;
     _player.VideoSizeChanged += _onVideoSizeChanged;
   }
 
@@ -88,7 +89,6 @@ public class AndroidMediaPlayer : Java.Lang.Object, IUiMediaPlayer {
     }
   }
 
-  // TODO OnMediaEnded
   private void _onPrepared(object? sender, EventArgs e) {
     _isPrepared = true;
 
@@ -99,6 +99,10 @@ public class AndroidMediaPlayer : Java.Lang.Object, IUiMediaPlayer {
 
     ViewModel?.OnMediaOpened(_player.Duration);
     _player.Start();
+  }
+
+  private void _onCompletion(object? sender, EventArgs e) {
+    ViewModel?.OnMediaEnded();
   }
 
   private void _onVideoSizeChanged(object? sender, VideoSizeChangedEventArgs e) {
