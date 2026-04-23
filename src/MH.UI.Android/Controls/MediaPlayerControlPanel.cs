@@ -5,7 +5,9 @@ using MH.UI.Android.Binding;
 using MH.UI.Android.Extensions;
 using MH.UI.Android.Utils;
 using MH.UI.Controls;
+using MH.Utils;
 using MH.Utils.Disposables;
+using MH.Utils.EventsArgs;
 using System.Windows.Input;
 
 namespace MH.UI.Android.Controls;
@@ -21,6 +23,11 @@ public class MediaPlayerControlPanel : LinearLayout {
     var trackBar = new Slider(context, new() { TickFrequency = _mediaPlayer.TimelineSmallChange })
       .BindProgress(_mediaPlayer, nameof(MediaPlayer.TimelinePosition), x => x.TimelinePosition, (s, p) => s.TimelinePosition = p, _bindings)
       .BindMaximum(_mediaPlayer, nameof(MediaPlayer.TimelineMaximum), x => x.TimelineMaximum, _bindings);
+
+    trackBar.StartTrackingTouch += (_, _) => _mediaPlayer.TimelineSliderChangeStartedCommand.Execute(null);
+    trackBar.Selector.Bind(nameof(ValueSelector.Value), x => x.Value,
+      x => _mediaPlayer.TimelineSliderValueChangedCommand.Execute(new PropertyChangedEventArgs<double>(0, x)), false);
+    trackBar.StopTrackingTouch += (_, _) => _mediaPlayer.TimelineSliderChangeEndedCommand.Execute(null);
 
     AddView(trackBar, LPU.LinearMatchWrap());
     AddView(_createNavigationButtons(playCommand), LPU.LinearWrap(GravityFlags.CenterHorizontal));
