@@ -24,14 +24,22 @@ public class MediaPlayerControlPanel : LinearLayout {
       .BindProgress(_mediaPlayer, nameof(MediaPlayer.TimelinePosition), x => x.TimelinePosition, (s, p) => s.TimelinePosition = p, _bindings)
       .BindMaximum(_mediaPlayer, nameof(MediaPlayer.TimelineMaximum), x => x.TimelineMaximum, _bindings);
 
-    trackBar.StartTrackingTouch += (_, _) => _mediaPlayer.TimelineSliderChangeStartedCommand.Execute(null);
-    trackBar.Selector.Bind(nameof(ValueSelector.Value), x => x.Value,
-      x => _mediaPlayer.TimelineSliderValueChangedCommand.Execute(new PropertyChangedEventArgs<double>(0, x)), false);
-    trackBar.StopTrackingTouch += (_, _) => _mediaPlayer.TimelineSliderChangeEndedCommand.Execute(null);
+    trackBar.StartTrackingTouch += _onTimelineSliderChangeStarted;
+    trackBar.Selector.Bind(nameof(ValueSelector.Value), x => x.Value, _onTimelineSliderValueChanged, false);
+    trackBar.StopTrackingTouch += _onTimelineSliderChangeEnded;
 
     AddView(trackBar, LPU.LinearMatchWrap());
     AddView(_createNavigationButtons(playCommand), LPU.LinearWrap(GravityFlags.CenterHorizontal));
   }
+
+  private void _onTimelineSliderChangeStarted(object? sender, SeekBar.StartTrackingTouchEventArgs e) =>
+    _mediaPlayer.TimelineSliderChangeStartedCommand.Execute(null);
+
+  private void _onTimelineSliderValueChanged(double position) =>
+    _mediaPlayer.TimelineSliderValueChangedCommand.Execute(new PropertyChangedEventArgs<double>(0, position));
+
+  private void _onTimelineSliderChangeEnded(object? sender, SeekBar.StopTrackingTouchEventArgs e) =>
+    _mediaPlayer.TimelineSliderChangeEndedCommand.Execute(null);
 
   private LinearLayout _createNavigationButtons(ICommand? playCommand = null) =>
     LayoutU.Horizontal(Context)
