@@ -21,6 +21,8 @@
 	- [N] icon_play_circle
 	- [N] TabControlHost: GetTabView
 	- [N] LazyVideoView
+	- [U] LoopPager: GetCurrentItem replaced by GetCurrentIndex
+	- [U] LoopPager: PageChanged event contains index instead of view
 
 2.0.0:
 	- [N] WindowExtensions: Enter and exit full screen methods
