@@ -24,6 +24,7 @@
 	- [U] LoopPager: GetCurrentItem replaced by GetCurrentIndex
 	- [U] LoopPager: PageChanged event contains index instead of view
 	- [C] SlidePanelsGrid: refactoring
+	- [N] LPU: FrameWrap
 
 2.0.0:
 	- [N] WindowExtensions: Enter and exit full screen methods
