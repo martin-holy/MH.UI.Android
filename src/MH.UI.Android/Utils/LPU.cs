@@ -33,4 +33,7 @@ public static class LPU {
 
   public static FrameLayout.LayoutParams FrameMatch() =>
     new(Match, Match);
+
+  public static FrameLayout.LayoutParams FrameWrap() =>
+    new(Wrap, Wrap);
 }
