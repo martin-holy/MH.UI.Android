@@ -11,15 +11,13 @@ using MH.UI.Controls;
 using MH.Utils;
 using MH.Utils.Disposables;
 using MH.Utils.Interfaces;
-using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 
 namespace MH.UI.Android.Controls.Hosts.TabControlHost;
 
-public class TabControlHost : FrameLayout {
-  private readonly LinearLayout _container;
+public abstract class TabControlHost : FrameLayout {
   private readonly TextView _noTabsText;
   private readonly LinearLayout _headerPanel;
   private readonly RecyclerView _tabHeaders;
@@ -33,7 +31,7 @@ public class TabControlHost : FrameLayout {
   public TabControl DataContext { get; }
   public TreeMenu ItemMenu { get; }
 
-  public TabControlHost(Context context, TabControl dataContext, Func<object?, View?>? slotFactory = null) : base(context) {
+  public TabControlHost(Context context, TabControl dataContext) : base(context) {
     DataContext = dataContext;
     ItemMenu = new TreeMenu(context, dataContext.ItemMenuFactory);
     SetBackgroundResource(Resource.Color.c_static_ba);
@@ -53,20 +51,23 @@ public class TabControlHost : FrameLayout {
     _tabHeaders.SetAdapter(_adapter);
     _tabHeaders.SetItemAnimator(null);
 
-    _container = dataContext.TabStrip.Placement is Dock.Top or Dock.Bottom
+    DataContext.Bind(nameof(TabControl.Tabs), x => x.Tabs, _onTabsChanged, false).DisposeWith(_bindings);
+  }
+
+  protected void _initialize() {
+    if (_slotFactory(Context!, DataContext.TabStrip.StartSlot) is View startSlot)
+      _headerPanel.AddView(startSlot, LPU.LinearWrap());
+
+    var container = DataContext.TabStrip.Placement is Dock.Top or Dock.Bottom
       ? _createVertical()
       : _createHorizontal();
 
-    if (slotFactory?.Invoke(dataContext.TabStrip.Slot) is View slot)
-      _headerPanel.AddView(
-        slot,
-        dataContext.TabStrip.SlotPlacement is Dock.Left or Dock.Top ? 0 : -1,
-        LPU.LinearWrap());
+    if (_slotFactory(Context!, DataContext.TabStrip.EndSlot) is View endSlot)
+      _headerPanel.AddView(endSlot, LPU.LinearWrap());
 
     AddView(_noTabsText, LPU.Frame(LPU.Wrap, LPU.Wrap, GravityFlags.Center));
-    AddView(_container, LPU.FrameMatch());
+    AddView(container, LPU.FrameMatch());
 
-    DataContext.Bind(nameof(TabControl.Tabs), x => x.Tabs, _onTabsChanged, false).DisposeWith(_bindings);
     DataContext.Bind(nameof(TabControl.Selected), x => x.Selected, _ => _onSelectedChanged()).DisposeWith(_bindings);
   }
 
@@ -92,10 +93,12 @@ public class TabControlHost : FrameLayout {
     return layout;
   }
 
-  private int _getViewIndex(Dock dock) =>
+  private static int _getViewIndex(Dock dock) =>
     dock is Dock.Left or Dock.Top ? 0 : -1;
 
-  protected virtual View? _getItemView(Context context, object? item) => null;
+  protected abstract View? _viewFactory(Context context, object? item);
+
+  protected virtual View? _slotFactory(Context context, object? item) => null;
 
   public View? GetTabView(IListItem? tab) =>
     tab == null
@@ -141,7 +144,7 @@ public class TabControlHost : FrameLayout {
 
     if (current != null) {
       if (!_contentViews.TryGetValue(current, out var view)) {
-        view = _getItemView(Context!, current.Data);
+        view = _viewFactory(Context!, current.Data);
         if (view != null) {
           _contentViews[current] = view;
           _tabContent.AddView(view, LPU.FrameMatch());
