@@ -9,6 +9,7 @@ public static class DimensU {
   public static int MenuItemHeight { get; private set; }
   public static int MenuItemSeparatorHeight { get; private set; }
   public static int Spacing { get; private set; }
+  public static int CompactSpacing { get; private set; }
   public static int TextSize { get; private set; }
 
   public static void Init(Context context) {
@@ -19,6 +20,7 @@ public static class DimensU {
     MenuItemHeight = res.GetDimensionPixelSize(Resource.Dimension.menu_item_height);
     MenuItemSeparatorHeight = res.GetDimensionPixelSize(Resource.Dimension.menu_item_separator_height);
     Spacing = res.GetDimensionPixelSize(Resource.Dimension.spacing);
+    CompactSpacing = res.GetDimensionPixelSize(Resource.Dimension.compact_spacing);
     TextSize = res.GetDimensionPixelSize(Resource.Dimension.text_size);
   }
 }

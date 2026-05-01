@@ -3,6 +3,7 @@
 	<dimen name="text_size">15sp</dimen>
 	<dimen name="flat_tree_item_indent_size">16dp</dimen>
 	<dimen name="spacing">4dp</dimen>
+	<dimen name="compact_spacing">2dp</dimen>
   <dimen name="icon_size">24dp</dimen>
   <dimen name="icon_button_size">32dp</dimen>
   <dimen name="menu_item_height">32dp</dimen>
