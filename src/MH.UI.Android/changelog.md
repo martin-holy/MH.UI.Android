@@ -26,6 +26,8 @@
 	- [C] SlidePanelsGrid: refactoring
 	- [N] LPU: FrameWrap
 	- [U] TabControlHost: Slot replaced by StartSlot and EndSlot
+	- [N] DimensU: CompactSpacing
+	- [N] IconItemsViewBase
 
 2.0.0:
 	- [N] WindowExtensions: Enter and exit full screen methods
