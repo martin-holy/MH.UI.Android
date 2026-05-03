@@ -28,6 +28,8 @@
 	- [U] TabControlHost: Slot replaced by StartSlot and EndSlot
 	- [N] DimensU: CompactSpacing
 	- [N] IconItemsViewBase
+	- [N] IconWrappedItemsView
+	- [N] IconItemsView
 
 2.0.0:
 	- [N] WindowExtensions: Enter and exit full screen methods
