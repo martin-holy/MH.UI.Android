@@ -30,6 +30,8 @@
 	- [N] IconItemsViewBase
 	- [N] IconWrappedItemsView
 	- [N] IconItemsView
+	- [C] IconItemsLayout renamed to IconItemsView
+	- [U] WrapLayout: Items and ItemFactory removed
 
 2.0.0:
 	- [N] WindowExtensions: Enter and exit full screen methods
