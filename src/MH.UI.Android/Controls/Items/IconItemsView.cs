@@ -8,15 +8,11 @@ using System;
 namespace MH.UI.Android.Controls.Items;
 
 public class IconItemsView : IconItemsViewBase {
-  private readonly Func<object, View?> _itemFactory;
   private readonly LinearLayout _container;
-  private object[]? _items;
 
   public int Spacing { get; set; } = DimensU.CompactSpacing;
-  public object[]? Items { get => _items; set { _items = value; _populateItems(value); } }
 
-  public IconItemsView(Context context, string iconName, Func<object, View?> itemFactory) : base(context, iconName) {
-    _itemFactory = itemFactory;
+  public IconItemsView(Context context, string iconName, Func<object, View?> itemFactory) : base(context, iconName, itemFactory) {
     _container = LayoutU.Horizontal(context);
 
     var scroll = new HorizontalScrollView(context) {
@@ -29,7 +25,7 @@ public class IconItemsView : IconItemsViewBase {
     AddView(scroll, LPU.Linear(0, LPU.Wrap, 1f));
   }
 
-  private void _populateItems(object[]? items) {
+  protected override void _populateItems(object[]? items) {
     _container.RemoveAllViews();
     if (items == null) return;
 
