@@ -5,26 +5,9 @@ using System;
 
 namespace MH.UI.Android.Controls;
 
-public class WrapLayout : ViewGroup {
-  private object[]? _items;
-
-  public object[]? Items { get => _items; set { _items = value; _populateItems(); } }
-  public Func<object, View?> ItemFactory { get; set; }
-  public int HorizontalSpacing { get; set; } = 4;
-  public int VerticalSpacing { get; set; } = 4;
-
-  public WrapLayout(Context context, Func<object, View?> itemFactory) : base(context) {
-    ItemFactory = itemFactory;
-  }
-
-  private void _populateItems() {
-    RemoveAllViews();
-    if (_items == null) return;
-
-    foreach (var item in _items)
-      if (ItemFactory(item) is { } view)
-        AddView(view, new LayoutParams(LPU.Wrap, LPU.Wrap));
-  }
+public class WrapLayout(Context context) : ViewGroup(context) {
+  public int HorizontalSpacing { get; set; } = DimensU.CompactSpacing;
+  public int VerticalSpacing { get; set; } = DimensU.CompactSpacing;
 
   protected override void OnMeasure(int widthMeasureSpec, int heightMeasureSpec) {
     var width = MeasureSpec.GetSize(widthMeasureSpec);
