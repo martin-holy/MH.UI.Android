@@ -10,15 +10,24 @@ public class IconWrappedItemsView : IconItemsViewBase {
   private readonly WrapLayout _wrapLayout;
 
   public int MaxHeight { get; set; } = int.MaxValue;
-  public object[]? Items { get => _wrapLayout.Items; set => _wrapLayout.Items = value; }
   public int HorizontalSpacing { get => _wrapLayout.HorizontalSpacing; set => _wrapLayout.HorizontalSpacing = value; }
   public int VerticalSpacing { get => _wrapLayout.VerticalSpacing; set => _wrapLayout.VerticalSpacing = value; }
 
-  public IconWrappedItemsView(Context context, string iconName, Func<object, View?> itemFactory) : base(context, iconName) {
-    _wrapLayout = new WrapLayout(context, itemFactory);
+  public IconWrappedItemsView(Context context, string iconName, Func<object, View?> itemFactory) : base(context, iconName, itemFactory) {
+    _wrapLayout = new WrapLayout(context);
     var scroll = new ScrollView(context) { FillViewport = true };
     scroll.AddView(_wrapLayout, LPU.LinearMatchWrap());
     AddView(scroll, LPU.Linear(0, LPU.Wrap, 1f));
+  }
+
+  protected override void _populateItems(object[]? items) {
+    _wrapLayout.RemoveAllViews();
+    if (items == null) return;
+
+    foreach (var item in items) {
+      if (_itemFactory(item) is { } view)
+        _wrapLayout.AddView(view, new ViewGroup.LayoutParams(LPU.Wrap, LPU.Wrap));
+    }
   }
 
   protected override void OnMeasure(int widthMeasureSpec, int heightMeasureSpec) =>
