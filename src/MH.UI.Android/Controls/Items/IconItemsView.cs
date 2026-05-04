@@ -4,6 +4,7 @@ using Android.Widget;
 using MH.UI.Android.Extensions;
 using MH.UI.Android.Utils;
 using System;
+using System.Collections.Generic;
 
 namespace MH.UI.Android.Controls.Items;
 
@@ -25,19 +26,16 @@ public class IconItemsView : IconItemsViewBase {
     AddView(scroll, LPU.Linear(0, LPU.Wrap, 1f));
   }
 
-  protected override void _populateItems(object[]? items) {
+  protected override void _populateItems(IEnumerable<object>? items) {
     _container.RemoveAllViews();
     if (items == null) return;
 
-    for (int i = 0; i < items.Length; i++) {
-      if (_itemFactory(items[i]) is not { } view) continue;
+    int half = Spacing / 2;
 
-      var lp = LPU.LinearWrap();
+    foreach (var item in items)
+      if (_itemFactory(item) is { } view)
+        _container.AddView(view, LPU.LinearWrap().WithMargin(half));
 
-      if (i < items.Length - 1)
-        lp.WithMargin(0, 0, Spacing, 0);
-
-      _container.AddView(view, lp);
-    }
+    _container.SetPadding(half);
   }
 }
