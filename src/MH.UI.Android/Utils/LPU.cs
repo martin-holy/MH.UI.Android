@@ -36,4 +36,7 @@ public static class LPU {
 
   public static FrameLayout.LayoutParams FrameWrap() =>
     new(Wrap, Wrap);
+
+  public static ViewGroup.MarginLayoutParams ViewGroupWrap() =>
+    new(Wrap, Wrap);
 }
