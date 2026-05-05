@@ -45,6 +45,13 @@ public class TreeMenuItemV : LinearLayout, IBindable<FlatTreeItem> {
     DataContext = item;
     if (item == null || item.TreeItem is not MenuItem menuItem) return;
 
+    if (menuItem.IsHidden) {
+      LayoutParameters!.Height = 0;
+      Visibility = ViewStates.Gone;
+      return;
+    }
+
+    Visibility = ViewStates.Visible;
     LayoutParameters!.Height = DimensU.MenuItemHeight;
 
     int indent = item.Level * DimensU.FlatTreeItemIndentSize;

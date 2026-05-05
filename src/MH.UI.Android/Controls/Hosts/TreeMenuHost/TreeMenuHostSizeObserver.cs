@@ -1,5 +1,4 @@
-﻿using Android.Content;
-using Android.Graphics;
+﻿using Android.Graphics;
 using Android.Views;
 using Android.Widget;
 using AndroidX.RecyclerView.Widget;
@@ -11,13 +10,11 @@ using System.Collections.Generic;
 namespace MH.UI.Android.Controls.Hosts.TreeMenuHost;
 
 public class TreeMenuHostSizeObserver : RecyclerView.AdapterDataObserver {
-  private readonly Context _context;
   private readonly TreeMenuHost _treeMenu;
   private readonly PopupWindow _popup;
-  private static Paint _paint = new Paint { TextSize = DimensU.TextSize };
+  private static readonly Paint _paint = new() { TextSize = DimensU.TextSize };
 
-  public TreeMenuHostSizeObserver(Context context, TreeMenuHost treeMenu, PopupWindow popup) {
-    _context = context;
+  public TreeMenuHostSizeObserver(TreeMenuHost treeMenu, PopupWindow popup) {
     _treeMenu = treeMenu;
     _popup = popup;
   }
@@ -48,7 +45,7 @@ public class TreeMenuHostSizeObserver : RecyclerView.AdapterDataObserver {
     if (MenuAnchor == null) throw new ArgumentNullException(nameof(MenuAnchor));
     var padding = DisplayU.DpToPx(1) * 2;
     var minHeight = DimensU.MenuItemHeight * 5 + padding;
-    var totalWidth = _getTreeMenuWidth(_context, _treeMenu.Adapter!.Items);
+    var totalWidth = _getTreeMenuWidth(_treeMenu.Adapter!.Items);
     var totalHeight = _getTreeMenuHeight(_treeMenu.Adapter!.Items) + padding;
     var maxWidth = DisplayU.Metrics.WidthPixels;
     var maxHeight = _getMaxHeight(MenuAnchor, _popup);
@@ -87,12 +84,12 @@ public class TreeMenuHostSizeObserver : RecyclerView.AdapterDataObserver {
     _treeMenu.LayoutParameters = lp;
   }
 
-  private static int _getTreeMenuWidth(Context context, IEnumerable<FlatTreeItem> items) {
+  private static int _getTreeMenuWidth(IEnumerable<FlatTreeItem> items) {
     float maxTextWidth = 0;
     var maxLevel = 0;
     foreach (var item in items) {
       maxLevel = Math.Max(maxLevel, item.Level);
-      if (item.TreeItem is MenuItem menuItem && !string.IsNullOrEmpty(menuItem.Text))
+      if (item.TreeItem is MenuItem { IsHidden: false } menuItem && !string.IsNullOrEmpty(menuItem.Text))
         maxTextWidth = Math.Max(maxTextWidth, _paint.MeasureText(menuItem.Text));
     }
 
@@ -108,10 +105,13 @@ public class TreeMenuHostSizeObserver : RecyclerView.AdapterDataObserver {
   private static int _getTreeMenuHeight(IEnumerable<FlatTreeItem> items) {
     var totalHeight = 0;
 
-    foreach (var item in items)
-      totalHeight += item.TreeItem is MenuItemSeparator
-        ? DimensU.MenuItemSeparatorHeight + DimensU.Spacing
-        : DimensU.MenuItemHeight;
+    foreach (var item in items) {
+      totalHeight += item.TreeItem switch {
+        MenuItem mi => mi.IsHidden ? 0 : DimensU.MenuItemHeight,
+        MenuItemSeparator => DimensU.MenuItemSeparatorHeight + DimensU.Spacing,
+        _ => 0
+      };
+    }
 
     return totalHeight;
   }

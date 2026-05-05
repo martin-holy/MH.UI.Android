@@ -18,7 +18,7 @@ public class TreeMenuHost : TreeViewHostBase<TreeView, TreeMenuHostAdapter> {
     Adapter = new TreeMenuHostAdapter(this);
     _recyclerView.SetAdapter(Adapter);
     Popup = new PopupWindow(this, LPU.Wrap, LPU.Wrap, true);
-    Observer = new TreeMenuHostSizeObserver(Context!, this, Popup);
+    Observer = new TreeMenuHostSizeObserver(this, Popup);
     Adapter!.RegisterAdapterDataObserver(Observer);
   }
 
