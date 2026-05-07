@@ -1,4 +1,5 @@
 ﻿using Android.Graphics;
+using Android.OS;
 using Android.Views;
 using Android.Widget;
 using AndroidX.RecyclerView.Widget;
@@ -126,8 +127,16 @@ public class TreeMenuHostSizeObserver : RecyclerView.AdapterDataObserver {
     popup.ContentView?.GetLocationOnScreen(popupLoc);
     var popupY = popupLoc[1];
 
+    var screenHeight = DisplayU.Metrics.HeightPixels;
+    if (Build.VERSION.SdkInt >= BuildVersionCodes.R) {
+      if (anchor.RootWindowInsets is { } insets) {
+        var bars = insets.GetInsets(WindowInsets.Type.SystemBars());
+        screenHeight -= bars.Bottom;
+      }
+    }
+
     return popupY == 0
-      ? Math.Max(anchorTop, DisplayU.Metrics.HeightPixels - anchorBottom)
-      : DisplayU.Metrics.HeightPixels - popupY;
+      ? Math.Max(anchorTop, screenHeight - anchorBottom)
+      : screenHeight - popupY;
   }
 }
