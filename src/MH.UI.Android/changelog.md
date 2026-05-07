@@ -1,3 +1,8 @@
+3.1.0:
+	- [U] WindowExtensions: EnterFullScreen keepStatusBarOnCutoutDevices option
+	- [U] TreeMenuHost: Popup height
+	- [N] ViewExtensions: ApplySystemBarInsets
+
 3.0.0:
 	- [B] MediaStoreU: DeleteFiles MediaScanner
 	- [U] MediaStoreU: ShareFiles mime types
