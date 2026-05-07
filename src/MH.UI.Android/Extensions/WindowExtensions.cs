@@ -4,11 +4,21 @@ using Android.Views;
 namespace MH.UI.Android.Extensions;
 
 public static class WindowExtensions {
-  public static void EnterFullScreen(this Window window) {
+  public static void EnterFullScreen(this Window window, bool keepStatusBarOnCutoutDevices = true) {
     if (Build.VERSION.SdkInt >= BuildVersionCodes.R) {
-      window.SetDecorFitsSystemWindows(false);
+      var hasCutout = window.DecorView.RootWindowInsets?.DisplayCutout?.SafeInsetTop > 0;
+      var keepSafeInsets = keepStatusBarOnCutoutDevices && hasCutout;
+
+      window.SetDecorFitsSystemWindows(keepSafeInsets);
+
       if (window.InsetsController is { } controller) {
-        controller.Hide(WindowInsets.Type.SystemBars());
+        if (keepSafeInsets) {
+          controller.Show(WindowInsets.Type.StatusBars());
+          controller.Hide(WindowInsets.Type.NavigationBars());
+        }
+        else
+          controller.Hide(WindowInsets.Type.SystemBars());
+
         controller.SystemBarsBehavior = (int)WindowInsetsControllerBehavior.ShowTransientBarsBySwipe;
       }
     }
@@ -18,8 +28,6 @@ public static class WindowExtensions {
         SystemUiFlags.ImmersiveSticky |
         SystemUiFlags.HideNavigation |
         SystemUiFlags.Fullscreen |
-        SystemUiFlags.LayoutFullscreen |
-        SystemUiFlags.LayoutHideNavigation |
         SystemUiFlags.LayoutStable);
     }
   }
