@@ -2,6 +2,8 @@
 	- [U] WindowExtensions: EnterFullScreen keepStatusBarOnCutoutDevices option
 	- [U] TreeMenuHost: Popup height
 	- [N] ViewExtensions: ApplySystemBarInsets
+	- [B] ImagingU: ApplyOrientation
+	- [N] BitmapExtensions: Resize
 
 3.0.0:
 	- [B] MediaStoreU: DeleteFiles MediaScanner
