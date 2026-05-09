@@ -27,4 +27,17 @@ public static class BitmapExtensions {
     using var fs = File.Open(filePath, FileMode.Create, FileAccess.Write);
     bmp.Compress(Bitmap.CompressFormat.Jpeg!, quality, fs);
   }
+
+  public static Bitmap Resize(this Bitmap bitmap, int size) {
+    var scale = (float)size / Math.Max(bitmap.Width, bitmap.Height);
+
+    if (scale >= 1f) return bitmap;
+
+    var targetWidth = (int)(bitmap.Width * scale);
+    var targetHeight = (int)(bitmap.Height * scale);
+    var resized = Bitmap.CreateScaledBitmap(bitmap, targetWidth, targetHeight, true);
+    bitmap.Recycle();
+
+    return resized;
+  }
 }
