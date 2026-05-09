@@ -19,7 +19,10 @@ public static class ImagingU {
       InSampleSize = _calculateSampleSize(max, desiredSize),
       InPreferredConfig = Bitmap.Config.Rgb565
     };
-    return BitmapFactory.DecodeFile(srcPath, decodeOpts);
+
+    if (BitmapFactory.DecodeFile(srcPath, decodeOpts) is not { } bitmap) return null;
+
+    return bitmap.Resize(desiredSize);
   }
 
   public static Bitmap? CreateImageRegionThumbnail(string srcPath, int x, int y, int size, int desiredSize) {
