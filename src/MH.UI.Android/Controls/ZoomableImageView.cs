@@ -20,6 +20,45 @@ public class ZoomableImageView : ImageView {
     _zoomAndPan.ViewportChangedEvent += _onViewportChanged;
   }
 
+  public async Task SetImage(
+    Func<CancellationToken, Task<Bitmap?>> previewProvider,
+    Func<CancellationToken, Task<Bitmap?>> fullProvider,
+    CancellationToken token) {
+
+    try {
+      var preview = await previewProvider(token);
+      if (token.IsCancellationRequested) return;
+      if (preview is not { Width: > 0, Height: > 0 } || token.IsCancellationRequested) return;
+
+      Post(() => {
+        if (token.IsCancellationRequested) return;
+        ImageMatrix = ViewportMatrixBuilder.BuildForBitmap(_zoomAndPan.GetViewportState(), preview.Width, preview.Height);
+        this.UpdateImageBitmap(preview);
+      });
+
+      if (!token.IsCancellationRequested)
+        _ = _loadFullImage(fullProvider, token);
+    }
+    catch (Exception ex) {
+      MH.Utils.Log.Error(ex);
+    }
+  }
+
+  private async Task _loadFullImage(Func<CancellationToken, Task<Bitmap?>> fullProvider, CancellationToken token) {
+    try {
+      var bitmap = await fullProvider(token);
+      if (bitmap == null || token.IsCancellationRequested) return;
+
+      Post(() => {
+        if (token.IsCancellationRequested) return;
+        _applyTransform();
+        this.UpdateImageBitmap(bitmap);
+      });
+    }
+    catch (OperationCanceledException) { }
+  }
+
+  [Obsolete("Use SetImage with Bitmap providers because MediaStore thumbnail orientation is not reliable.")]
   public async Task SetPath(string path, MH.Utils.Imaging.Orientation orientation, Context context, CancellationToken token) {
     try {
       var thumb = await MediaStoreU.GetImageThumbnail(path, context, 512);
