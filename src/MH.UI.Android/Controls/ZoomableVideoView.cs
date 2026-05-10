@@ -1,4 +1,5 @@
 ﻿using Android.Content;
+using Android.Graphics;
 using Android.Views;
 using Android.Widget;
 using MH.UI.Android.Transforms;
@@ -48,6 +49,28 @@ public class ZoomableVideoView : FrameLayout {
 
   public void Clear() => _video.Clear();
 
+  public async Task SetPreview(Func<CancellationToken, Task<Bitmap?>> previewProvider, CancellationToken token) {
+    _video.ShowPreview();
+    _lockedHeight = null;
+
+    try {
+      var thumb = await previewProvider(token);
+      if (thumb is not { Width: > 0, Height: > 0 } || token.IsCancellationRequested) return;
+
+      Post(() => {
+        if (token.IsCancellationRequested) return;
+        _thumbW = thumb.Width;
+        _thumbH = thumb.Height;
+        _video.SetPreviewMatrix(ViewportMatrixBuilder.BuildForBitmap(_zoomAndPan.GetViewportState(), _thumbW, _thumbH));
+        _video.SetPreview(thumb);
+      });
+    }
+    catch (Exception ex) {
+      MH.Utils.Log.Error(ex);
+    }
+  }
+
+  [Obsolete("Use SetPreview with Bitmap provider because MediaStore thumbnail orientation is not reliable.")]
   public async Task SetPath(string videoPath, MH.Utils.Imaging.Orientation orientation, Context context, CancellationToken token) {
     _video.ShowPreview();
     _lockedHeight = null;
