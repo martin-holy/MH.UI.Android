@@ -4,6 +4,9 @@
 	- [N] ViewExtensions: ApplySystemBarInsets
 	- [B] ImagingU: ApplyOrientation
 	- [N] BitmapExtensions: Resize
+	- [U] ImagingU: CreateImageThumbnail exact resize
+	- [U] ZoomableVideoView: SetPreview replacing SetPath
+	- [U] ZoomableImageView: SetImage replacing SetPath
 
 3.0.0:
 	- [B] MediaStoreU: DeleteFiles MediaScanner
