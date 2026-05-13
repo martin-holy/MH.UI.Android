@@ -7,6 +7,7 @@
 	- [U] ImagingU: CreateImageThumbnail exact resize
 	- [U] ZoomableVideoView: SetPreview replacing SetPath
 	- [U] ZoomableImageView: SetImage replacing SetPath
+	- [B] ZoomableVideoView: Setting content size
 
 3.0.0:
 	- [B] MediaStoreU: DeleteFiles MediaScanner
