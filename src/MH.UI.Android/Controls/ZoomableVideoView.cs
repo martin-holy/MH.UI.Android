@@ -105,7 +105,8 @@ public class ZoomableVideoView : FrameLayout {
         _lockedHeight = expected;
     }
 
-    _zoomAndPan.SetContentSize(e.Width, e.Height);
+    if (_zoomAndPan.ContentWidth <= 0 || _zoomAndPan.ContentHeight <= 0)
+      _zoomAndPan.SetContentSize(e.Width, e.Height);
   }
 
   protected override void OnMeasure(int widthMeasureSpec, int heightMeasureSpec) {
