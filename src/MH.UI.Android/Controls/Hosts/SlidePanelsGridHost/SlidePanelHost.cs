@@ -18,10 +18,14 @@ public class SlidePanelHost : FrameLayout {
     _dataContext = dataContext;
     _dataContext.Bind(nameof(SlidePanel.IsOpen), x => x.IsOpen, _ => _refreshPosition(true), false).DisposeWith(bindings);
     this.WithClickAction(_onClick);
+    this.WithLongClickAction(_onLongClick);
     AddView(content, LPU.FrameMatch());
   }
 
   private static void _onClick(SlidePanelHost self) =>
+    self._dataContext.ToggleOverlay();
+
+  private static void _onLongClick(SlidePanelHost self) =>
     self._dataContext.TogglePinned();
 
   protected override void OnSizeChanged(int w, int h, int oldw, int oldh) {
