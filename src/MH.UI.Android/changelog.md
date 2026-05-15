@@ -8,6 +8,8 @@
 	- [U] ZoomableVideoView: SetPreview replacing SetPath
 	- [U] ZoomableImageView: SetImage replacing SetPath
 	- [B] ZoomableVideoView: Setting content size
+	- [N] ViewExtensions: WithLongClickAction
+	- [N] SlidePanelHost: Click to toggle overlay, LongClick to toggle pinned
 
 3.0.0:
 	- [B] MediaStoreU: DeleteFiles MediaScanner
