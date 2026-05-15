@@ -34,6 +34,12 @@ public static class ViewExtensions {
     return view;
   }
 
+  public static T WithLongClickAction<T>(this T view, Action<T> action) where T : View {
+    view.LongClick += Handler;
+    void Handler(object? s, EventArgs _) => action((T)s!);
+    return view;
+  }
+
   public static void ApplySystemBarInsets(this View view) {
     if (Build.VERSION.SdkInt < BuildVersionCodes.R) return;
     view.SetOnApplyWindowInsetsListener(new InsetsListener(view.PaddingLeft, view.PaddingTop, view.PaddingRight, view.PaddingBottom));
