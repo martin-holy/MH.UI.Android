@@ -1,7 +1,6 @@
 ﻿using Android.Content;
 using Android.Views;
 using Android.Widget;
-using MH.UI.Android.Extensions;
 using MH.UI.Android.Utils;
 using MH.UI.Controls;
 using MH.Utils;
@@ -17,16 +16,8 @@ public class SlidePanelHost : FrameLayout {
   public SlidePanelHost(Context context, View content, SlidePanel dataContext, BindingScope bindings) : base(context) {
     _dataContext = dataContext;
     _dataContext.Bind(nameof(SlidePanel.IsOpen), x => x.IsOpen, _ => _refreshPosition(true), false).DisposeWith(bindings);
-    this.WithClickAction(_onClick);
-    this.WithLongClickAction(_onLongClick);
     AddView(content, LPU.FrameMatch());
   }
-
-  private static void _onClick(SlidePanelHost self) =>
-    self._dataContext.ToggleOverlay();
-
-  private static void _onLongClick(SlidePanelHost self) =>
-    self._dataContext.TogglePinned();
 
   protected override void OnSizeChanged(int w, int h, int oldw, int oldh) {
     base.OnSizeChanged(w, h, oldw, oldh);
