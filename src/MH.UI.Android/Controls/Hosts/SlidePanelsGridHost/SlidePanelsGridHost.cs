@@ -62,7 +62,7 @@ public class SlidePanelsGridHost : FrameLayout {
   }
 
   private void _initPanel(SlidePanel panel, BindingScope bindings) {
-    panel.Bind(nameof(SlidePanel.IsPinned), x => x.IsPinned, _ => _updateLayout(), false).DisposeWith(bindings);
+    panel.Bind(nameof(SlidePanel.Mode), x => x.Mode, _ => _updateLayout(), false).DisposeWith(bindings);
     panel.Bind(nameof(SlidePanel.Size), x => x.Size, _ => _updateLayout(), false).DisposeWith(bindings);
   }
 
@@ -70,8 +70,8 @@ public class SlidePanelsGridHost : FrameLayout {
     _updateMiddleMargins(_gridMode == TopAndBottomPanelsPlacement.MiddleOnly ? _middleContent : _pagerHost);
 
   private void _updateMiddleMargins(View view) {
-    int top = DataContext.PanelTop.IsPinned ? _panelTop.Height : 0;
-    int bottom = DataContext.PanelBottom.IsPinned ? _panelBottom.Height : 0;
+    int top = DataContext.PanelTop.Mode == SlidePanel.LayoutMode.Docked ? _panelTop.Height : 0;
+    int bottom = DataContext.PanelBottom.Mode == SlidePanel.LayoutMode.Docked ? _panelBottom.Height : 0;
 
     if (view.LayoutParameters is not MarginLayoutParams lp) return;
     if (lp.TopMargin == top && lp.BottomMargin == bottom) return;
