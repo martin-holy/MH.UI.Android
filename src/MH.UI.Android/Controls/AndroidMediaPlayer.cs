@@ -103,6 +103,7 @@ public class AndroidMediaPlayer : Java.Lang.Object, IUiMediaPlayer {
 
   private void _onCompletion(object? sender, EventArgs e) {
     ViewModel?.OnMediaEnded();
+    Play();
   }
 
   private void _onVideoSizeChanged(object? sender, VideoSizeChangedEventArgs e) {
