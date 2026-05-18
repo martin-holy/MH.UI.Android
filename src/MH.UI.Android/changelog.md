@@ -1,5 +1,6 @@
 3.2.0:
 	- [U] SlidePanelHost: Toggle Overlay on Click and Pinned on LongClick removed
+	- [U] AndroidMediaPlayer: Play in loop
 
 3.1.0:
 	- [U] WindowExtensions: EnterFullScreen keepStatusBarOnCutoutDevices option
