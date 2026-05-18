@@ -23,9 +23,9 @@
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<RepositoryUrl>https://github.com/martin-holy/MH.UI.Android</RepositoryUrl>
 
-		<Version>3.1.0</Version>
+		<Version>3.2.0</Version>
 		<AssemblyVersion>3.0.0.0</AssemblyVersion>
-		<FileVersion>3.1.0.0</FileVersion>
+		<FileVersion>3.2.0.0</FileVersion>
 
 		<IncludeSymbols>true</IncludeSymbols>
 		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
@@ -37,7 +37,7 @@
   </ItemGroup>
 
 	<ItemGroup Condition="'$(Configuration)'=='Release'">
-		<PackageReference Include="MH.UI" Version="5.1.0" />
+		<PackageReference Include="MH.UI" Version="5.1.1" />
 		<PackageReference Include="MH.Utils" Version="4.0.0" />
 	</ItemGroup>
 
