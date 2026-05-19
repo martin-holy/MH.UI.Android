@@ -6,7 +6,6 @@ using AndroidX.RecyclerView.Widget;
 using MH.UI.Android.Controls.Hosts.TreeMenuHost;
 using MH.UI.Android.Utils;
 using MH.UI.Controls;
-using MH.Utils.BaseClasses;
 using MH.Utils.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -57,7 +56,7 @@ public abstract class TreeViewHostBase<TView, TAdapter> : RelativeLayout, IAndro
     root.IsExpanded = true;
 
   public virtual void ScrollToTop() =>
-    _recyclerView.ScrollTo(0, 0);
+    Post(() => _recyclerView.ScrollToPosition(0));
 
   public virtual void ScrollToItems(object[] items, bool exactly) {
     Post(() => _scrollToItems(items, exactly));
