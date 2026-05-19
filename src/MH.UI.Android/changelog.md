@@ -1,3 +1,6 @@
+3.2.1:
+	- [B] TreeViewHostBase: ScrollToTop
+
 3.2.0:
 	- [U] SlidePanelHost: Toggle Overlay on Click and Pinned on LongClick removed
 	- [U] AndroidMediaPlayer: Play in loop
