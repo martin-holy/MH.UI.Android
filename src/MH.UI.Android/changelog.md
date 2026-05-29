@@ -1,5 +1,7 @@
-3.2.1:
+3.3.0:
 	- [B] TreeViewHostBase: ScrollToTop
+	- [N] ItemsViewBase: SetItems method
+	- [B] SelectableItemsView: NotifyItemSelectionChange
 
 3.2.0:
 	- [U] SlidePanelHost: Toggle Overlay on Click and Pinned on LongClick removed
