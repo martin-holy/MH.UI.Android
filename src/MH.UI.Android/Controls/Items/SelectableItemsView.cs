@@ -5,6 +5,7 @@ using MH.UI.Android.Utils;
 using MH.Utils;
 using MH.Utils.Collections;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace MH.UI.Android.Controls.Items;
@@ -22,14 +23,13 @@ public class SelectableItemsView<T> : ItemsViewBase<T> where T : class {
     Selection = new SelectionManager<T>(ReferenceEqualityComparer<T>.Instance);
     Selection.ItemSelectionChanged += (item, _) => _notifyItemSelectionChange(item);
     Selection.Cleared += items => {
-      foreach (var item in items) {
+      foreach (var item in items)
         _notifyItemSelectionChange(item);
-      }
     };
   }
 
   private void _notifyItemSelectionChange(T item) {
-    if (_items is not IList<T> list) return;
+    if (_items is not IList list) return;
     var index = list.IndexOf(item);
     if (index >= 0)
       ItemsAdapter?.NotifyItemChanged(index, _selectionPayload);
