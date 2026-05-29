@@ -25,6 +25,20 @@ public abstract class ItemsViewBase<T> : RecyclerView {
       newCol.CollectionChanged += _onCollectionChanged;
   }
 
+  public void SetItems(IReadOnlyList<T> items) {
+    if (ReferenceEquals(_items, items)) return;
+
+    if (_items is INotifyCollectionChanged oldCol)
+      oldCol.CollectionChanged -= _onCollectionChanged;
+
+    _items = items;
+
+    if (_items is INotifyCollectionChanged newCol)
+      newCol.CollectionChanged += _onCollectionChanged;
+
+    ItemsAdapter?.NotifyDataSetChanged();
+  }
+
   private void _raiseItemClicked(T item) =>
     ItemClickedEvent?.Invoke(item);
 
