@@ -90,7 +90,7 @@ public class TreeMenuHostSizeObserver : RecyclerView.AdapterDataObserver {
     var maxLevel = 0;
     foreach (var item in items) {
       maxLevel = Math.Max(maxLevel, item.Level);
-      if (item.TreeItem is MenuItem { IsHidden: false } menuItem && !string.IsNullOrEmpty(menuItem.Text))
+      if (item.TreeItem is MenuItem menuItem && !string.IsNullOrEmpty(menuItem.Text))
         maxTextWidth = Math.Max(maxTextWidth, _paint.MeasureText(menuItem.Text));
     }
 
@@ -108,7 +108,7 @@ public class TreeMenuHostSizeObserver : RecyclerView.AdapterDataObserver {
 
     foreach (var item in items) {
       totalHeight += item.TreeItem switch {
-        MenuItem mi => mi.IsHidden ? 0 : DimensU.MenuItemHeight,
+        MenuItem mi => DimensU.MenuItemHeight,
         MenuItemSeparator => DimensU.MenuItemSeparatorHeight + DimensU.Spacing,
         _ => 0
       };
