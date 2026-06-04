@@ -7,6 +7,7 @@ using MH.Utils.Collections;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 
 namespace MH.UI.Android.Controls.Items;
 
@@ -38,5 +39,17 @@ public class SelectableItemsView<T> : ItemsViewBase<T> where T : class {
   internal override void HandleItemClick(T item) {
     base.HandleItemClick(item);
     Selection.Toggle(item);
+  }
+
+  protected override void _onCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e) {
+    base._onCollectionChanged(sender, e);
+
+    if (e.Action == NotifyCollectionChangedAction.Remove && e.OldItems != null) {
+      foreach (T item in e.OldItems)
+        Selection.Deselect(item);
+    }
+    else if (e.Action == NotifyCollectionChangedAction.Reset) {
+      Selection.Clear();
+    }
   }
 }
