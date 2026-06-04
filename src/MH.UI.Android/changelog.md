@@ -5,6 +5,8 @@
 	- [U] MH.Utils 4.1.0
 	- [C] TreeMenuItemV: Item.IsHidden logic removed
 	- [C] TreeMenuHostSizeObserver: Item.IsHidden logic removed
+	- [U] ItemsViewBase: protected virtual _onCollectionChanged
+	- [U] SelectableItemsView: update Selection on _onCollectionChanged
 
 3.2.0:
 	- [U] SlidePanelHost: Toggle Overlay on Click and Pinned on LongClick removed
