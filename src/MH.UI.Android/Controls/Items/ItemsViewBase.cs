@@ -53,7 +53,7 @@ public abstract class ItemsViewBase<T> : RecyclerView {
     };
   }
 
-  private void _onCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e) {
+  protected virtual void _onCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e) {
     if (ItemsAdapter == null) return;
     if (e.Action == NotifyCollectionChangedAction.Add && e.NewItems != null)
       ItemsAdapter.NotifyItemRangeInserted(e.NewStartingIndex, e.NewItems.Count);
