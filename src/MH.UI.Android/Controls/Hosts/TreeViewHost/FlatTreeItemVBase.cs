@@ -69,7 +69,7 @@ public abstract class FlatTreeItemVBase : LinearLayout, IBindable<FlatTreeItem> 
   }
 
   public void BindIsExpandedVisible(FlatTreeItem item) {
-    _expandedIcon.Visibility = item.TreeItem.Items.Count > 0 ? ViewStates.Visible : ViewStates.Invisible;
+    _expandedIcon.Visibility = item.HasVisibleChildren ? ViewStates.Visible : ViewStates.Invisible;
   }
 
   public virtual void Unbind() { }
