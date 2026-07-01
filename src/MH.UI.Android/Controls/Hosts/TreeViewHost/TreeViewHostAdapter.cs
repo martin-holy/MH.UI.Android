@@ -14,7 +14,7 @@ public class TreeViewHostAdapter : TreeViewHostAdapterBase {
   private readonly ITreeItemViewHolderFactory _factory;
   private static readonly Java.Lang.Object _isSelectedPayload = new Java.Lang.String("IsSelected");
 
-  public TreeViewHostAdapter(TreeViewHost host, ITreeItemViewHolderFactory? factory = null) : base(host.DataContext.RootHolder) {
+  public TreeViewHostAdapter(TreeViewHost host, ITreeItemViewHolderFactory? factory = null) : base(host.DataContext.FlatTree) {
     _host = host;
     _factory = factory ?? new DefaultTreeItemViewHolderFactory();
     _flatTree.TreeItemPropertyChangedEvent += _onTreeItemPropertyChanged;

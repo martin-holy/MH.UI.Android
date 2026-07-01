@@ -19,7 +19,7 @@ public class CollectionViewHostAdapter : TreeViewHostAdapterBase {
   private static readonly Java.Lang.Object _sourceCountPayload = new Java.Lang.String("SourceCount");
   private readonly CollectionViewHost host;
 
-  public CollectionViewHostAdapter(CollectionViewHost _host) : base(_host.DataContext.RootHolder) {
+  public CollectionViewHostAdapter(CollectionViewHost _host) : base(_host.DataContext.FlatTree) {
     host = _host;
     _flatTree.TreeItemPropertyChangedEvent += _onTreeItemPropertyChanged;
   }

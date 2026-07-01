@@ -21,9 +21,7 @@ public abstract class TreeViewHostBase<TView, TAdapter> : RelativeLayout, IAndro
   public TView DataContext { get; }
   public TAdapter? Adapter { get; set; }
   public TreeMenu? ItemMenu { get; }
-  public event EventHandler<bool>? HostIsVisibleChangedEvent;
   TreeView IAndroidTreeViewHost.DataContext => DataContext;
-  double ITreeViewHost.Width => Width;
 
   protected TreeViewHostBase(Context context, TView dataContext, Func<object, IEnumerable<ITreeItem>>? itemMenuFactory) : base(context) {
     DataContext = dataContext;
@@ -49,22 +47,18 @@ public abstract class TreeViewHostBase<TView, TAdapter> : RelativeLayout, IAndro
 
   protected override void OnVisibilityChanged(View changedView, [GeneratedEnum] ViewStates visibility) {
     base.OnVisibilityChanged(changedView, visibility);
-    HostIsVisibleChangedEvent?.Invoke(this, visibility == ViewStates.Visible);
+    DataContext.SetVisible(visibility == ViewStates.Visible);
   }
-
-  public virtual void ExpandRootWhenReady(ITreeItem root) =>
-    root.IsExpanded = true;
 
   public virtual void ScrollToTop() =>
     Post(() => _recyclerView.ScrollToPosition(0));
 
-  public virtual void ScrollToItems(object[] items, bool exactly) {
-    Post(() => _scrollToItems(items, exactly));
+  public virtual void ScrollTo(ITreeItem item, bool exactly) {
+    Post(() => _scrollTo(item, exactly));
   }
 
-  private void _scrollToItems(object[] items, bool exactly) {
-    if (Adapter == null || items[^1] is not ITreeItem item) return;
-    var position = Adapter._flatTree.IndexOf(item);
+  private void _scrollTo(ITreeItem item, bool exactly) {
+    var position = DataContext.FlatTree.IndexOf(item);
     if (position < 0) return;
 
     if (exactly && _recyclerView.GetLayoutManager() is LinearLayoutManager layoutManager)

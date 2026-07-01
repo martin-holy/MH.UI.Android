@@ -1,9 +1,7 @@
 ﻿using AndroidX.RecyclerView.Widget;
 using MH.Utils;
 using MH.Utils.BaseClasses;
-using MH.Utils.Interfaces;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 
 namespace MH.UI.Android.Controls.Hosts.TreeViewHost;
 
@@ -16,19 +14,14 @@ public abstract class TreeViewHostAdapterBase : RecyclerView.Adapter {
   public override int ItemCount => _flatTree.Items.Count;
   public IReadOnlyList<FlatTreeItem> Items => _flatTree.Items;
 
-  protected TreeViewHostAdapterBase(ObservableCollection<ITreeItem> rootHolder) {
-    _flatTree = new(rootHolder);
+  protected TreeViewHostAdapterBase(FlatTree flatTree) {
+    _flatTree = flatTree;
     _flatTree.ResetEvent += NotifyDataSetChanged;
     _flatTree.RangeInsertedEvent += NotifyItemRangeInserted;
     _flatTree.RangeRemovedEvent += NotifyItemRangeRemoved;
     _flatTree.IsExpandedChangedEvent += (index) => NotifyItemChanged(index, _isExpandedPayload);
     _flatTree.IsExpandedVisibilityChangedEvent += (index) => NotifyItemChanged(index, _isExpandedVisiblePayload);
-    Reset();
-  }
-
-  internal void Reset() {
-    if (_disposed) return;
-    Tasks.Dispatch(_flatTree.Reset);
+    _flatTree.Reset();
   }
 
   public override void OnBindViewHolder(RecyclerView.ViewHolder holder, int position, IList<Java.Lang.Object> payloads) {

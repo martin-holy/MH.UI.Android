@@ -1,5 +1,4 @@
 ﻿using Android.Content;
-using Android.Views;
 using AndroidX.RecyclerView.Widget;
 using MH.UI.Android.Controls.Hosts.TreeViewHost;
 using MH.UI.Controls;
@@ -12,7 +11,7 @@ namespace MH.UI.Android.Controls.Hosts.CollectionViewHost;
 public class CollectionViewHost : TreeViewHostBase<CollectionView, CollectionViewHostAdapter>, ICollectionViewHost {
   public bool IsMultiSelectOn { get; set; }
   public Func<Context, CollectionView.ViewMode, ICollectionViewItemContent> CreateItemContent { get; }
-  public readonly RecyclerView.RecycledViewPool ItemViewPool = new RecyclerView.RecycledViewPool();
+  public RecyclerView.RecycledViewPool ItemViewPool { get; } = new();
 
   public CollectionViewHost(
     Context context,
@@ -29,11 +28,7 @@ public class CollectionViewHost : TreeViewHostBase<CollectionView, CollectionVie
 
   protected override void OnSizeChanged(int w, int h, int oldw, int oldh) {
     base.OnSizeChanged(w, h, oldw, oldh);
-
-    if (Visibility == ViewStates.Visible && DataContext?.RootHolder is [ICollectionViewGroup { Width: 0 } group]) {
-      group.Width = w;
-      Adapter?.Reset();
-    }
+    if (w != oldw) DataContext.SetWidth(w);
   }
 
   internal void HandleItemClick(ICollectionViewRow row, ISelectable? itemDataContext) {

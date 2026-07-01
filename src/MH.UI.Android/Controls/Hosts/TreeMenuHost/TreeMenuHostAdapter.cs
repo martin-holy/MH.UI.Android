@@ -10,7 +10,7 @@ using System.Collections.Generic;
 
 namespace MH.UI.Android.Controls.Hosts.TreeMenuHost;
 
-public class TreeMenuHostAdapter(TreeMenuHost _host) : TreeViewHostAdapterBase(_host.DataContext.RootHolder) {
+public class TreeMenuHostAdapter(TreeMenuHost _host) : TreeViewHostAdapterBase(_host.DataContext.FlatTree) {
 
   public override int GetItemViewType(int position) =>
     Items[position].TreeItem is MenuItemSeparator ? 1 : 0;
