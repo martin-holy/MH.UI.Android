@@ -1,4 +1,4 @@
-3.3.0 (not released):
+4.0.0 (not released):
 	- [B] TreeViewHostBase: ScrollToTop
 	- [N] ItemsViewBase: SetItems method
 	- [B] SelectableItemsView: NotifyItemSelectionChange
@@ -7,6 +7,8 @@
 	- [C] TreeMenuHostSizeObserver: Item.IsHidden logic removed
 	- [U] ItemsViewBase: protected virtual _onCollectionChanged
 	- [U] SelectableItemsView: update Selection on _onCollectionChanged
+	- [U] TreeView and CollectionView FlatTree rewrite
+	- [U] MH.UI 6.0.0
 
 3.2.0:
 	- [U] SlidePanelHost: Toggle Overlay on Click and Pinned on LongClick removed
