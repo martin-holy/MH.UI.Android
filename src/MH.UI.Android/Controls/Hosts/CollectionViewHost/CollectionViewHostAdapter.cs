@@ -5,9 +5,8 @@ using MH.UI.Android.Controls.Recycler;
 using MH.UI.Android.Extensions;
 using MH.UI.Android.Utils;
 using MH.UI.Interfaces;
-using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
-using MH.Utils.Interfaces;
+using MH.Utils.Tree;
 using System.Collections.Generic;
 using System.ComponentModel;
 
