@@ -21,7 +21,7 @@ public static class Init {
     MH.Utils.Clipboard.SetText = ClipboardU.SetText;
 
     //MH.Utils.Imaging.GetBitmapHashPixels = Imaging.GetBitmapHashPixels;
-    MH.Utils.Imaging.ResizeJpg = _resizeJpg;
+    MH.Utils.Imaging.ImagingU.ResizeJpg = _resizeJpg;
 
     MH.UI.Controls.Dialog.SetShowAsyncImplementation(DialogHost.ShowAsync);
 

@@ -5,6 +5,7 @@ using MH.Utils;
 using MH.Utils.Extensions;
 using System;
 using System.IO;
+using MHOrientation = MH.Utils.Imaging.ImagingU.Orientation;
 
 namespace MH.UI.Android.Utils;
 
@@ -84,32 +85,32 @@ public static class ImagingU {
     }
   }
 
-  public static Bitmap ApplyOrientation(this Bitmap bitmap, MH.Utils.Imaging.Orientation orientation) {
-    if (orientation == MH.Utils.Imaging.Orientation.Normal) return bitmap;
+  public static Bitmap ApplyOrientation(this Bitmap bitmap, MHOrientation orientation) {
+    if (orientation == MHOrientation.Normal) return bitmap;
 
     var matrix = new Matrix();
 
     switch (orientation) {
-      case MH.Utils.Imaging.Orientation.Rotate90:
+      case MHOrientation.Rotate90:
         matrix.PostRotate(90);
         break;
-      case MH.Utils.Imaging.Orientation.Rotate180:
+      case MHOrientation.Rotate180:
         matrix.PostRotate(180);
         break;
-      case MH.Utils.Imaging.Orientation.Rotate270:
+      case MHOrientation.Rotate270:
         matrix.PostRotate(270);
         break;
-      case MH.Utils.Imaging.Orientation.FlipHorizontal:
+      case MHOrientation.FlipHorizontal:
         matrix.PostScale(-1, 1);
         break;
-      case MH.Utils.Imaging.Orientation.FlipVertical:
+      case MHOrientation.FlipVertical:
         matrix.PostScale(1, -1);
         break;
-      case MH.Utils.Imaging.Orientation.Transpose:
+      case MHOrientation.Transpose:
         matrix.PostRotate(90);
         matrix.PostScale(-1, 1);
         break;
-      case MH.Utils.Imaging.Orientation.Transverse:
+      case MHOrientation.Transverse:
         matrix.PostRotate(270);
         matrix.PostScale(-1, 1);
         break;
@@ -124,30 +125,30 @@ public static class ImagingU {
     return bitmap;
   }
 
-  public static MH.Utils.Imaging.Orientation ConvertOrientationFromAndroidToMH(int orientation) =>
+  public static MHOrientation ConvertOrientationFromAndroidToMH(int orientation) =>
     orientation switch {
-      (int)global::Android.Media.Orientation.Normal => MH.Utils.Imaging.Orientation.Normal,
-      (int)global::Android.Media.Orientation.Rotate90 => MH.Utils.Imaging.Orientation.Rotate90,
-      (int)global::Android.Media.Orientation.Rotate180 => MH.Utils.Imaging.Orientation.Rotate180,
-      (int)global::Android.Media.Orientation.Rotate270 => MH.Utils.Imaging.Orientation.Rotate270,
-      (int)global::Android.Media.Orientation.FlipHorizontal => MH.Utils.Imaging.Orientation.FlipHorizontal,
-      (int)global::Android.Media.Orientation.FlipVertical => MH.Utils.Imaging.Orientation.FlipVertical,
-      (int)global::Android.Media.Orientation.Transpose => MH.Utils.Imaging.Orientation.Transpose,
-      (int)global::Android.Media.Orientation.Transverse => MH.Utils.Imaging.Orientation.Transverse,
-      _ => MH.Utils.Imaging.Orientation.Normal
+      (int)Orientation.Normal => MHOrientation.Normal,
+      (int)Orientation.Rotate90 => MHOrientation.Rotate90,
+      (int)Orientation.Rotate180 => MHOrientation.Rotate180,
+      (int)Orientation.Rotate270 => MHOrientation.Rotate270,
+      (int)Orientation.FlipHorizontal => MHOrientation.FlipHorizontal,
+      (int)Orientation.FlipVertical => MHOrientation.FlipVertical,
+      (int)Orientation.Transpose => MHOrientation.Transpose,
+      (int)Orientation.Transverse => MHOrientation.Transverse,
+      _ => MHOrientation.Normal
     };
 
-  public static global::Android.Media.Orientation ConvertOrientationFromMHToAndroid(MH.Utils.Imaging.Orientation orientation) =>
+  public static Orientation ConvertOrientationFromMHToAndroid(MHOrientation orientation) =>
     orientation switch {
-      MH.Utils.Imaging.Orientation.Normal => global::Android.Media.Orientation.Normal,
-      MH.Utils.Imaging.Orientation.Rotate90 => global::Android.Media.Orientation.Rotate90,
-      MH.Utils.Imaging.Orientation.Rotate180 => global::Android.Media.Orientation.Rotate180,
-      MH.Utils.Imaging.Orientation.Rotate270 => global::Android.Media.Orientation.Rotate270,
-      MH.Utils.Imaging.Orientation.FlipHorizontal => global::Android.Media.Orientation.FlipHorizontal,
-      MH.Utils.Imaging.Orientation.FlipVertical => global::Android.Media.Orientation.FlipVertical,
-      MH.Utils.Imaging.Orientation.Transpose => global::Android.Media.Orientation.Transpose,
-      MH.Utils.Imaging.Orientation.Transverse => global::Android.Media.Orientation.Transverse,
-      _ => global::Android.Media.Orientation.Normal
+      MHOrientation.Normal => Orientation.Normal,
+      MHOrientation.Rotate90 => Orientation.Rotate90,
+      MHOrientation.Rotate180 => Orientation.Rotate180,
+      MHOrientation.Rotate270 => Orientation.Rotate270,
+      MHOrientation.FlipHorizontal => Orientation.FlipHorizontal,
+      MHOrientation.FlipVertical => Orientation.FlipVertical,
+      MHOrientation.Transpose => Orientation.Transpose,
+      MHOrientation.Transverse => Orientation.Transverse,
+      _ => Orientation.Normal
     };
 
   private static int _calculateSampleSize(int srcSize, int desiredSize) {
