@@ -1,8 +1,8 @@
-4.0.0 (not released):
+4.0.0:
 	- [B] TreeViewHostBase: ScrollToTop
 	- [N] ItemsViewBase: SetItems method
 	- [B] SelectableItemsView: NotifyItemSelectionChange
-	- [U] MH.Utils 4.1.0
+	- [U] MH.Utils 5.0.0
 	- [C] TreeMenuItemV: Item.IsHidden logic removed
 	- [C] TreeMenuHostSizeObserver: Item.IsHidden logic removed
 	- [U] ItemsViewBase: protected virtual _onCollectionChanged
