@@ -1,3 +1,7 @@
+4.0.1:
+	- [U] MH.UI 6.0.1
+	- [U] MH.Utils 5.0.1
+
 4.0.0:
 	- [B] TreeViewHostBase: ScrollToTop
 	- [N] ItemsViewBase: SetItems method
