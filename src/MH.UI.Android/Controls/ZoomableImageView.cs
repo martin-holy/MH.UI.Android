@@ -59,7 +59,7 @@ public class ZoomableImageView : ImageView {
   }
 
   [Obsolete("Use SetImage with Bitmap providers because MediaStore thumbnail orientation is not reliable.")]
-  public async Task SetPath(string path, MH.Utils.Imaging.ImagingU.Orientation orientation, Context context, CancellationToken token) {
+  public async Task SetPath(string path, MH.Utils.Imaging.Orientation orientation, Context context, CancellationToken token) {
     try {
       var thumb = await MediaStoreU.GetImageThumbnail(path, context, 512);
       if (token.IsCancellationRequested) return;
@@ -81,7 +81,7 @@ public class ZoomableImageView : ImageView {
     }
   }
 
-  private async Task _loadFullImageAsync(string path, MH.Utils.Imaging.ImagingU.Orientation orientation, CancellationToken token) {
+  private async Task _loadFullImageAsync(string path, MH.Utils.Imaging.Orientation orientation, CancellationToken token) {
     try {
       var bitmap = await Task.Run(() => {
         token.ThrowIfCancellationRequested();

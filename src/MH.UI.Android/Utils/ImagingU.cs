@@ -5,7 +5,7 @@ using MH.Utils;
 using MH.Utils.Extensions;
 using System;
 using System.IO;
-using MHOrientation = MH.Utils.Imaging.ImagingU.Orientation;
+using MHOrientation = MH.Utils.Imaging.Orientation;
 
 namespace MH.UI.Android.Utils;
 

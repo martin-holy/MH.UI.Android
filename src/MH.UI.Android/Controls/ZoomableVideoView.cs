@@ -71,7 +71,7 @@ public class ZoomableVideoView : FrameLayout {
   }
 
   [Obsolete("Use SetPreview with Bitmap provider because MediaStore thumbnail orientation is not reliable.")]
-  public async Task SetPath(string videoPath, MH.Utils.Imaging.ImagingU.Orientation orientation, Context context, CancellationToken token) {
+  public async Task SetPath(string videoPath, MH.Utils.Imaging.Orientation orientation, Context context, CancellationToken token) {
     _video.ShowPreview();
     _lockedHeight = null;
 
