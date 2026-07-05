@@ -178,10 +178,10 @@ public static class ImagingU {
     dstExif.UpdateDimensions(dstW, dstH);
     dstExif.SaveAttributes();
 
-    var xmp = XmpU.ReadFromJpeg(src);
+    var xmp = MH.Utils.Imaging.XmpU.ReadFromJpeg(src);
     if (!string.IsNullOrEmpty(xmp)) {
-      xmp = XmpU.UpdateDimensions(xmp, dstW, dstH);
-      XmpU.WriteToJpeg(dest, xmp);
+      xmp = MH.Utils.Imaging.XmpU.UpdateDimensions(xmp, dstW, dstH);
+      MH.Utils.Imaging.XmpU.WriteToJpeg(dest, xmp);
     }
   }
 
