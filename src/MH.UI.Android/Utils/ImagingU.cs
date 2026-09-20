@@ -63,6 +63,7 @@ public static class ImagingU {
     }
   }
 
+  [Obsolete("Use MH.Utils.Imaging.VideoMetadata")]
   public static object[]? GetVideoMetadata(string dirPath, string fileName) {
     var srcPath = IOExtensions.PathCombine(dirPath, fileName);
     var retriever = new MediaMetadataRetriever();
