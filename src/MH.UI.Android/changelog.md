@@ -1,3 +1,6 @@
+4.1.0(not released):
+	- [U] ImagingU: GetVideoMetadata obsolete
+
 4.0.2:
 	- [U] MH.UI 6.1.0
 	- [U] MH.Utils 5.1.0
