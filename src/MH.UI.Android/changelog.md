@@ -1,5 +1,6 @@
 4.1.0(not released):
 	- [U] ImagingU: GetVideoMetadata obsolete
+	- [U] .NET 10.0
 
 4.0.2:
 	- [U] MH.UI 6.1.0
