@@ -23,10 +23,12 @@ public static class Init {
     //MH.Utils.Imaging.GetBitmapHashPixels = Imaging.GetBitmapHashPixels;
     MH.Utils.Imaging.ImagingU.ResizeJpg = _resizeJpg;
 
-    MH.UI.Controls.Dialog.SetShowAsyncImplementation(DialogHost.ShowAsync);
-
     _handler = new(Looper.MainLooper!);
     MH.Utils.Tasks.Dispatch = action => _handler.Post(action);
+  }
+
+  public static void SetDialogImplementation() {
+    MH.UI.Controls.Dialog.SetShowAsyncImplementation(DialogHost.ShowAsync);
   }
 
   private static void _resizeJpg(string src, string dest, int px, bool withMetadata, bool withThumbnail, int quality) {
