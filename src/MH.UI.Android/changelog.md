@@ -1,6 +1,7 @@
 4.1.0(not released):
 	- [U] ImagingU: GetVideoMetadata obsolete
 	- [U] .NET 10.0
+	- [U] SetDialogImplementation extracted from SetDelegates so it can be called separately because of localization
 
 4.0.2:
 	- [U] MH.UI 6.1.0
